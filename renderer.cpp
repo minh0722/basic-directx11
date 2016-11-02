@@ -8,10 +8,24 @@ Renderer::Renderer()
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
-
 	initSwapChain(window);
+
+	initIndexBuffer();
+	initVertexBuffer();
 	initVertexShader();
 	initPixelShader();
+
+	initRenderTargetView(m_SwapChain.Get());
+	initDepthStencilBuffer();
+	initDepthStencil();
+
+	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+
+	initRasterizerState();
+
+	m_DeviceContext->RSSetState(m_RasterizerState.Get());
+
+	initViewPort();
 }
 
 void Renderer::render()
@@ -134,6 +148,120 @@ void Renderer::initSwapChain(HWND window)
 			m_Device.GetAddressOf(),
 			nullptr,
 			m_DeviceContext.GetAddressOf()));
+}
+
+void Renderer::initRenderTargetView(IDXGISwapChain * swapChain)
+{
+	ComPtr<ID3D11Texture2D> backBufferTexture;
+	THROW_IF_FAILED(
+		swapChain->GetBuffer(
+			0,
+			__uuidof(ID3D11Texture2D),
+			reinterpret_cast<LPVOID*>(backBufferTexture.GetAddressOf())));
+
+	THROW_IF_FAILED(
+		m_Device->CreateRenderTargetView(
+			backBufferTexture.Get(),
+			nullptr,
+			m_RenderTargetView.GetAddressOf()));
+}
+
+void Renderer::initDepthStencilBuffer()
+{
+	D3D11_TEXTURE2D_DESC depthStencilBufferDesc = {};
+
+	depthStencilBufferDesc.Width = screenWidth;
+	depthStencilBufferDesc.Height = screenHeight;
+	depthStencilBufferDesc.MipLevels = 1;
+	depthStencilBufferDesc.ArraySize = 1;
+	depthStencilBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilBufferDesc.SampleDesc.Count = 1;
+	depthStencilBufferDesc.SampleDesc.Quality = 0;
+	depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilBufferDesc.CPUAccessFlags = 0;
+	depthStencilBufferDesc.MiscFlags = 0;
+
+	THROW_IF_FAILED(
+		m_Device->CreateTexture2D(
+			&depthStencilBufferDesc, 
+			nullptr, 
+			m_DepthStencilBuffer.GetAddressOf()));
+}
+
+void Renderer::initDepthStencil()
+{
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	// Stencil operations if pixel is front_facing
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing.
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	THROW_IF_FAILED(
+		m_Device->CreateDepthStencilState(
+			&depthStencilDesc,
+			m_DepthStencilState.GetAddressOf()));
+
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
+
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	THROW_IF_FAILED(
+		m_Device->CreateDepthStencilView(
+			m_DepthStencilBuffer.Get(), 
+			&depthStencilViewDesc, 
+			m_DepthStencilView.GetAddressOf()));
+
+
+}
+
+void Renderer::initRasterizerState()
+{
+	D3D11_RASTERIZER_DESC desc = {};
+	desc.AntialiasedLineEnable = false;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.DepthBias = 0;
+	desc.DepthBiasClamp = 0.0f;
+	desc.DepthClipEnable = true;
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.FrontCounterClockwise = true;
+	desc.MultisampleEnable = false;
+	desc.ScissorEnable = false;
+	desc.SlopeScaledDepthBias = 0.0f;
+
+	THROW_IF_FAILED(m_Device->CreateRasterizerState(&desc, m_RasterizerState.GetAddressOf()));
+}
+
+void Renderer::initViewPort()
+{
+	D3D11_VIEWPORT desc = {};
+	desc.Width = screenWidth;
+	desc.Height = screenHeight;
+	desc.MinDepth = 0.0f;
+	desc.MaxDepth = 1.0f;
+	desc.TopLeftX = 0.0f;
+	desc.TopLeftY = 0.0f;
+
+	m_DeviceContext->RSSetViewports(1, &desc);
 }
 
 void Renderer::initVertexBuffer()

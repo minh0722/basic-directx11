@@ -27,6 +27,9 @@ SystemClass::SystemClass()
 	// Initialize the input object.
 	m_Input->Initialize();
 
+	// Initialize the renderer
+	m_Renderer.Initialize(m_hwnd);
+
 	//// Create the graphics object.  This object will handle rendering all the graphics for this application.
 	//m_Graphics = new GraphicsClass;
 	//THROW_IF_NULL(m_Graphics);
@@ -63,6 +66,9 @@ bool SystemClass::Initialize()
 
 	// Initialize the input object.
 	m_Input->Initialize();
+
+	// Initialize the renderer
+	m_Renderer.Initialize(m_hwnd);
 
 	//// Create the graphics object.  This object will handle rendering all the graphics for this application.
 	//m_Graphics = new GraphicsClass;
@@ -140,7 +146,7 @@ void SystemClass::Run()
 				done = true;
 			}
 		}
-
+		m_Renderer.render();
 	}
 
 	return;

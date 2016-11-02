@@ -30,6 +30,11 @@ private:
 	void initPixelShader();
 
 	void initSwapChain(HWND window);
+	void initRenderTargetView(IDXGISwapChain* swapChain);
+	void initDepthStencilBuffer();
+	void initDepthStencil();
+	void initRasterizerState();
+	void initViewPort();
 
 	void initVertexBuffer();
 	void initIndexBuffer();
@@ -52,7 +57,7 @@ private:
 	ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
 	ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
 	ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
-	ComPtr<ID3D11RasterizerState> m_RasterState;
+	ComPtr<ID3D11RasterizerState> m_RasterizerState;
 
 	ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 

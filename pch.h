@@ -26,6 +26,9 @@
 
 using namespace Microsoft::WRL;
 
+static const UINT screenWidth = 1080;
+static const UINT screenHeight = 720;
+
 #define THROW_IF_FAILED(hr) SafetyCheck::ThrowIfFailed(hr, __FILE__, __LINE__)
 #define THROW_IF_NULL(ptr) SafetyCheck::ThrowIfNull(ptr, __FILE__, __LINE__)
 #define THROW_IF_FALSE(flag) SafetyCheck::ThrowIfFalse(flag, __FILE__, __LINE__)
