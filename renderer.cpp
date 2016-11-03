@@ -29,13 +29,15 @@ void Renderer::Initialize(HWND window)
 }
 
 void Renderer::render()
-{	
-	m_DeviceContext->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+{
+	FLOAT color[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
+	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	m_DeviceContext->IASetVertexBuffers(0, 1, m_VertexBuffer.GetAddressOf(), &stride, &offset);
-
+	m_DeviceContext->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	m_DeviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
@@ -73,6 +75,7 @@ void Renderer::render()
 	m_DeviceContext->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 
 	m_DeviceContext->DrawIndexed(3, 0, 0);
+	m_SwapChain->Present(0, 0);
 }
 
 void Renderer::initVertexShader()
@@ -124,7 +127,6 @@ void Renderer::initSwapChain(HWND window)
 
 	// set to windowed mode
 	swapChainDesc.Windowed = true;
-
 
 	// discard the back buffer contents after presenting
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -230,8 +232,6 @@ void Renderer::initDepthStencil()
 			m_DepthStencilBuffer.Get(), 
 			&depthStencilViewDesc, 
 			m_DepthStencilView.GetAddressOf()));
-
-
 }
 
 void Renderer::initRasterizerState()
@@ -243,7 +243,7 @@ void Renderer::initRasterizerState()
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.FrontCounterClockwise = true;
+	desc.FrontCounterClockwise = false;
 	desc.MultisampleEnable = false;
 	desc.ScissorEnable = false;
 	desc.SlopeScaledDepthBias = 0.0f;
