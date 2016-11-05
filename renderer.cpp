@@ -9,23 +9,21 @@ void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
 	initSwapChain(window);
+	initRenderTargetView(m_SwapChain.Get());
+	initViewPort();
 
 	initIndexBuffer();
 	initVertexBuffer();
 	initVertexShader();
 	initPixelShader();
 
-	initRenderTargetView(m_SwapChain.Get());
 	initDepthStencilBuffer();
 	initDepthStencil();
 
-	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	//m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	//m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 
 	initRasterizerState();
-
-	m_DeviceContext->RSSetState(m_RasterizerState.Get());
-
-	initViewPort();
 }
 
 void Renderer::render()
@@ -54,7 +52,7 @@ void Renderer::render()
 	vertexShaderInputLayout[1].SemanticIndex = 0;
 	vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	vertexShaderInputLayout[1].InputSlot = 0;
-	vertexShaderInputLayout[1].AlignedByteOffset = sizeof(Position);
+	vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	vertexShaderInputLayout[1].InstanceDataStepRate = 0;
 
@@ -166,6 +164,8 @@ void Renderer::initRenderTargetView(IDXGISwapChain * swapChain)
 			backBufferTexture.Get(),
 			nullptr,
 			m_RenderTargetView.GetAddressOf()));
+
+	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr);
 }
 
 void Renderer::initDepthStencilBuffer()
@@ -219,7 +219,7 @@ void Renderer::initDepthStencil()
 			&depthStencilDesc,
 			m_DepthStencilState.GetAddressOf()));
 
-	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
+	//m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
@@ -232,6 +232,8 @@ void Renderer::initDepthStencil()
 			m_DepthStencilBuffer.Get(), 
 			&depthStencilViewDesc, 
 			m_DepthStencilView.GetAddressOf()));
+
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
 void Renderer::initRasterizerState()
@@ -243,23 +245,25 @@ void Renderer::initRasterizerState()
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
 	desc.FillMode = D3D11_FILL_SOLID;
-	desc.FrontCounterClockwise = false;
+	desc.FrontCounterClockwise = true;
 	desc.MultisampleEnable = false;
 	desc.ScissorEnable = false;
 	desc.SlopeScaledDepthBias = 0.0f;
 
 	THROW_IF_FAILED(m_Device->CreateRasterizerState(&desc, m_RasterizerState.GetAddressOf()));
+
+	m_DeviceContext->RSSetState(m_RasterizerState.Get());
 }
 
 void Renderer::initViewPort()
 {
 	D3D11_VIEWPORT desc = {};
-	desc.Width = screenWidth;
-	desc.Height = screenHeight;
-	desc.MinDepth = 0.0f;
-	desc.MaxDepth = 1.0f;
 	desc.TopLeftX = 0.0f;
 	desc.TopLeftY = 0.0f;
+	desc.Width = screenWidth;
+	desc.Height = screenHeight;
+	//desc.MinDepth = 0.0f;
+	//desc.MaxDepth = 1.0f;
 
 	m_DeviceContext->RSSetViewports(1, &desc);
 }
