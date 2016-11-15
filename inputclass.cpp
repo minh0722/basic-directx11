@@ -2,7 +2,7 @@
 // Filename: inputclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "inputclass.h"
-
+#include <iostream>
 
 InputClass::InputClass()
 {

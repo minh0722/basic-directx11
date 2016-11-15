@@ -102,7 +102,7 @@ void SystemClass::Shutdown()
 	if(m_Input)
 	{
 		delete m_Input;
-		m_Input = 0;
+		m_Input = nullptr;
 	}
 
 	// Shutdown the window.
