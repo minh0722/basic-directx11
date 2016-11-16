@@ -4,8 +4,28 @@
 class GraphicsComponent
 {
 public:
-	GraphicsComponent();
+	struct GraphicsComponentDesc
+	{
+		ID3D11Device* device;
+		LPCWSTR vertexShaderFilePath;
+		LPCWSTR pixelShaderFilePath;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> vertexInputLayout;
+	};
+
+public:
+	GraphicsComponent(GraphicsComponentDesc& desc);
 	~GraphicsComponent();
+	
+	void render();
+
+protected:
+
+	void initVertexShader(ID3D11Device* device, LPCWSTR filePath);
+	void initPixelShader(ID3D11Device* device, LPCWSTR filePath);
+	void initVertexInputLayout(
+		ID3D11Device* device,
+		LPCWSTR filePath,
+		std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
 
 private:
 	ComPtr<ID3D11VertexShader> m_VertexShader;
@@ -16,4 +36,3 @@ private:
 
 	ComPtr<ID3D11InputLayout> m_VertexInputLayout;
 };
-

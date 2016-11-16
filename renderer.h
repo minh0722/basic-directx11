@@ -25,6 +25,10 @@ public:
 	void Initialize(HWND window);
 	
 	void render();
+
+	Renderer(const Renderer&) = delete;
+	Renderer& operator=(const Renderer&) = delete;
+
 private:
 	void initVertexShader();
 	void initPixelShader();
