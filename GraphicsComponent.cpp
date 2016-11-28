@@ -15,7 +15,23 @@ GraphicsComponent::~GraphicsComponent()
 
 void GraphicsComponent::Render(ID3D11DeviceContext* context)
 {
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	UINT startSlot = 0;
+	UINT numBuffers = 1;
 
+	context->IASetVertexBuffers(startSlot, numBuffers, m_VertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetInputLayout(m_VertexInputLayout.Get());
+
+	context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+	context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+
+	UINT indexCount = 3;
+	UINT startIndexLocation = 0;
+	UINT baseVertexLocation = 0;
+	context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
 void GraphicsComponent::InitIndexBuffer(ID3D11Device* device, std::vector<uint32_t>& indices)
