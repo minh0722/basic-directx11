@@ -146,7 +146,7 @@ void SystemClass::Run()
 				done = true;
 			}
 		}
-		m_Renderer.render();
+		m_Renderer.Render();
 	}
 
 	return;

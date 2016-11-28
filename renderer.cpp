@@ -8,25 +8,25 @@ Renderer::Renderer()
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
-	initSwapChain(window);
-	initRenderTargetView(m_SwapChain.Get());
-	initViewPort();
+	InitSwapChain(window);
+	InitRenderTargetView(m_SwapChain.Get());
+	InitViewPort();
 
-	initIndexBuffer();
-	initVertexBuffer();
-	initVertexShader();
-	initPixelShader();
+	InitIndexBuffer();
+	InitVertexBuffer();
+	InitVertexShader();
+	InitPixelShader();
 
-	initDepthStencilBuffer();
-	initDepthStencil();
+	InitDepthStencilBuffer();
+	InitDepthStencil();
 
 	//m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 	//m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 
-	initRasterizerState();
+	InitRasterizerState();
 }
 
-void Renderer::render()
+void Renderer::Render()
 {
 	FLOAT color[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
@@ -76,7 +76,7 @@ void Renderer::render()
 	m_SwapChain->Present(0, 0);
 }
 
-void Renderer::initVertexShader()
+void Renderer::InitVertexShader()
 {
 	ID3DBlob* blob;
 	THROW_IF_FAILED(D3DReadFileToBlob(L"vertexShader.cso", &blob));
@@ -90,7 +90,7 @@ void Renderer::initVertexShader()
 	
 }
 
-void Renderer::initPixelShader()
+void Renderer::InitPixelShader()
 {
 	ID3DBlob* blob;
 	THROW_IF_FAILED(D3DReadFileToBlob(L"pixelShader.cso", &blob));
@@ -103,7 +103,7 @@ void Renderer::initPixelShader()
 			m_PixelShader.GetAddressOf()));
 }
 
-void Renderer::initSwapChain(HWND window)
+void Renderer::InitSwapChain(HWND window)
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	swapChainDesc.BufferCount = 1;
@@ -150,7 +150,7 @@ void Renderer::initSwapChain(HWND window)
 			m_DeviceContext.GetAddressOf()));
 }
 
-void Renderer::initRenderTargetView(IDXGISwapChain * swapChain)
+void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 {
 	ComPtr<ID3D11Texture2D> backBufferTexture;
 	THROW_IF_FAILED(
@@ -168,7 +168,7 @@ void Renderer::initRenderTargetView(IDXGISwapChain * swapChain)
 	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr);
 }
 
-void Renderer::initDepthStencilBuffer()
+void Renderer::InitDepthStencilBuffer()
 {
 	D3D11_TEXTURE2D_DESC depthStencilBufferDesc = {};
 
@@ -191,7 +191,7 @@ void Renderer::initDepthStencilBuffer()
 			m_DepthStencilBuffer.GetAddressOf()));
 }
 
-void Renderer::initDepthStencil()
+void Renderer::InitDepthStencil()
 {
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 	depthStencilDesc.DepthEnable = true;
@@ -236,7 +236,7 @@ void Renderer::initDepthStencil()
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
-void Renderer::initRasterizerState()
+void Renderer::InitRasterizerState()
 {
 	D3D11_RASTERIZER_DESC desc = {};
 	desc.AntialiasedLineEnable = false;
@@ -255,7 +255,7 @@ void Renderer::initRasterizerState()
 	m_DeviceContext->RSSetState(m_RasterizerState.Get());
 }
 
-void Renderer::initViewPort()
+void Renderer::InitViewPort()
 {
 	D3D11_VIEWPORT desc = {};
 	desc.TopLeftX = 0.0f;
@@ -268,7 +268,7 @@ void Renderer::initViewPort()
 	m_DeviceContext->RSSetViewports(1, &desc);
 }
 
-void Renderer::initVertexBuffer()
+void Renderer::InitVertexBuffer()
 {
 	Vertex v[3];
 
@@ -300,7 +300,7 @@ void Renderer::initVertexBuffer()
 			m_VertexBuffer.GetAddressOf()));
 }
 
-void Renderer::initIndexBuffer()
+void Renderer::InitIndexBuffer()
 {
 	uint32_t indices[3] = { 0, 1, 2 };
 

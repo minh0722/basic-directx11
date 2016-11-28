@@ -16,13 +16,16 @@ public:
 	GraphicsComponent(GraphicsComponentDesc& desc);
 	~GraphicsComponent();
 	
-	void render();
+	void Render(ID3D11DeviceContext* context);
+
+	void InitIndexBuffer(ID3D11Device* device, std::vector<uint32_t>& indices);
+	void InitVertexBuffer(ID3D11Device* device, std::vector<Vertex>& vertices);
 
 protected:
 
-	void initVertexShader(ID3D11Device* device, LPCWSTR filePath);
-	void initPixelShader(ID3D11Device* device, LPCWSTR filePath);
-	void initVertexInputLayout(
+	void InitVertexShader(ID3D11Device* device, LPCWSTR filePath);
+	void InitPixelShader(ID3D11Device* device, LPCWSTR filePath);
+	void InitVertexInputLayout(
 		ID3D11Device* device,
 		LPCWSTR filePath,
 		std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);

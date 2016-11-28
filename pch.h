@@ -33,6 +33,23 @@ static const UINT screenHeight = 720;
 #define THROW_IF_NULL(ptr) SafetyCheck::ThrowIfNull(ptr, __FILE__, __LINE__)
 #define THROW_IF_FALSE(flag) SafetyCheck::ThrowIfFalse(flag, __FILE__, __LINE__)
 
+struct Position
+{
+	float x, y, z, w;
+};
+
+struct Color
+{
+	float r, g, b, a;
+};
+
+struct Vertex
+{
+	Position pos;
+	Color color;
+};
+
+
 namespace SafetyCheck
 {
 	inline void ThrowIfFailed(HRESULT hr, char* file, int line)

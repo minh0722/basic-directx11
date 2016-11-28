@@ -1,22 +1,6 @@
 #pragma once
 #include "pch.h"
 
-struct Position
-{
-	float x, y, z, w;
-};
-
-struct Color
-{
-	float r, g, b, a;
-};
-
-struct Vertex
-{
-	Position pos;
-	Color color;
-};
-
 class Renderer
 {
 public:
@@ -24,24 +8,24 @@ public:
 
 	void Initialize(HWND window);
 	
-	void render();
+	void Render();
 
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
 
 private:
-	void initVertexShader();
-	void initPixelShader();
+	void InitVertexShader();
+	void InitPixelShader();
 
-	void initSwapChain(HWND window);
-	void initRenderTargetView(IDXGISwapChain* swapChain);
-	void initDepthStencilBuffer();
-	void initDepthStencil();
-	void initRasterizerState();
-	void initViewPort();
+	void InitSwapChain(HWND window);
+	void InitRenderTargetView(IDXGISwapChain* swapChain);
+	void InitDepthStencilBuffer();
+	void InitDepthStencil();
+	void InitRasterizerState();
+	void InitViewPort();
 
-	void initVertexBuffer();
-	void initIndexBuffer();
+	void InitVertexBuffer();
+	void InitIndexBuffer();
 
 private:
 
