@@ -47,6 +47,28 @@ struct Vertex
 {
 	Position pos;
 	Color color;
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC> GetLayout()
+	{
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layouts(2);
+		layouts[0].SemanticName = "POSITION";
+		layouts[0].SemanticIndex = 0;								// will use POSITION0 semantic
+		layouts[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+		layouts[0].InputSlot = 0;									// 0 ~ 15
+		layouts[0].AlignedByteOffset = 0;
+		layouts[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+		layouts[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+		layouts[1].SemanticName = "COLOR";
+		layouts[1].SemanticIndex = 0;
+		layouts[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		layouts[1].InputSlot = 0;
+		layouts[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		layouts[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		layouts[1].InstanceDataStepRate = 0;
+
+		return layouts;
+	}
 };
 
 
