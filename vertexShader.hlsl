@@ -15,6 +15,8 @@ PixelOutput main(VertexInput inputVertex)
 {
 	PixelOutput output;
 
+	inputVertex.pos.w = 1.0f;
+
 	output.pos = inputVertex.pos;
 	output.color = inputVertex.color;
 

@@ -18,7 +18,7 @@ public:
 	GraphicsComponent& operator=(const GraphicsComponent&) = delete;
 
 	GraphicsComponent(const GraphicsComponentDesc& desc);
-	
+
 	void Render(ID3D11DeviceContext* context) override;
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
 	void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) override;
