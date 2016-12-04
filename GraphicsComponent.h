@@ -1,7 +1,8 @@
 #pragma once
 #include "pch.h"
+#include "BaseComponent.h"
 
-class GraphicsComponent
+class GraphicsComponent : public BaseComponent
 {
 public:
 	struct GraphicsComponentDesc
@@ -13,22 +14,23 @@ public:
 	};
 
 public:
-	GraphicsComponent(GraphicsComponentDesc& desc);
-	~GraphicsComponent();
-	
-	void Render(ID3D11DeviceContext* context);
+	GraphicsComponent(const GraphicsComponent&) = delete;
+	GraphicsComponent& operator=(const GraphicsComponent&) = delete;
 
-	void InitIndexBuffer(ID3D11Device* device, std::vector<uint32_t>& indices);
-	void InitVertexBuffer(ID3D11Device* device, std::vector<Vertex>& vertices);
+	GraphicsComponent(const GraphicsComponentDesc& desc);
+	
+	void Render(ID3D11DeviceContext* context) override;
+	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
+	void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) override;
 
 protected:
 
-	void InitVertexShader(ID3D11Device* device, LPCWSTR filePath);
-	void InitPixelShader(ID3D11Device* device, LPCWSTR filePath);
+	void InitVertexShader(ID3D11Device* device, const LPCWSTR filePath);
+	void InitPixelShader(ID3D11Device* device, const LPCWSTR filePath);
 	void InitVertexInputLayout(
 		ID3D11Device* device,
-		LPCWSTR filePath,
-		std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
+		const LPCWSTR filePath,
+		const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
 
 private:
 	ComPtr<ID3D11VertexShader> m_VertexShader;

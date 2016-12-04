@@ -1,16 +1,13 @@
 #include "pch.h"
 #include "GraphicsComponent.h"
 
-GraphicsComponent::GraphicsComponent(GraphicsComponentDesc& desc)
+GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {
 	InitVertexShader(desc.device, desc.vertexShaderFilePath);
 	InitPixelShader(desc.device, desc.pixelShaderFilePath);
 	InitVertexInputLayout(desc.device, desc.vertexShaderFilePath, desc.vertexInputLayout);
-}
 
-
-GraphicsComponent::~GraphicsComponent()
-{
+	// TODO: handle exceptions here...
 }
 
 void GraphicsComponent::Render(ID3D11DeviceContext* context)
@@ -34,7 +31,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 	context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
-void GraphicsComponent::InitIndexBuffer(ID3D11Device* device, std::vector<uint32_t>& indices)
+void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
 {
 	size_t indicesCount = indices.size();
 
@@ -56,7 +53,7 @@ void GraphicsComponent::InitIndexBuffer(ID3D11Device* device, std::vector<uint32
 			m_IndexBuffer.GetAddressOf()));
 }
 
-void GraphicsComponent::InitVertexBuffer(ID3D11Device* device, std::vector<Vertex>& vertices)
+void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices)
 {
 	size_t verticesCount = vertices.size();
 
@@ -78,7 +75,7 @@ void GraphicsComponent::InitVertexBuffer(ID3D11Device* device, std::vector<Verte
 			m_VertexBuffer.GetAddressOf()));
 }
 
-void GraphicsComponent::InitVertexShader(ID3D11Device* device, LPCWSTR filePath)
+void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)
 {
 	ID3DBlob* blob;
 	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &blob));
@@ -91,7 +88,7 @@ void GraphicsComponent::InitVertexShader(ID3D11Device* device, LPCWSTR filePath)
 			m_VertexShader.GetAddressOf()));
 }
 
-void GraphicsComponent::InitPixelShader(ID3D11Device* device, LPCWSTR filePath)
+void GraphicsComponent::InitPixelShader(ID3D11Device* device, const LPCWSTR filePath)
 {
 	ID3DBlob* blob;
 	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &blob));
@@ -104,7 +101,7 @@ void GraphicsComponent::InitPixelShader(ID3D11Device* device, LPCWSTR filePath)
 			m_PixelShader.GetAddressOf()));
 }
 
-void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, LPCWSTR filePath, std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc)
+void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, const LPCWSTR filePath, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc)
 {
 	ID3DBlob* vertexBlob;
 	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &vertexBlob));

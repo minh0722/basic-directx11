@@ -1,6 +1,7 @@
 #pragma once
 
-#include "GraphicsComponent.h"
+#include "BaseComponent.h"
+#include "vector"
 
 class Triangle
 {
@@ -8,7 +9,9 @@ public:
 	Triangle();
 	~Triangle();
 
-private:
-	GraphicsComponent m_GraphicsComponent;
-};
+	void AddComponent(BaseComponent* newComponent);
+	void Render(ID3D11DeviceContext* context);
 
+private:
+	std::vector<BaseComponent*> m_Components;
+};
