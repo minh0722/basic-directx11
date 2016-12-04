@@ -5,4 +5,4 @@ FOLDER=C:/Users/Minh/Documents/Visual\ Studio\ 2015/Projects/dxProject/dxProject
 
 cp "${FOLDER}"/*.h .
 cp "${FOLDER}"/*.cpp .
-cp "${FOLDER}"/*.cso .
+cp "${FOLDER}"/*.hlsl .
