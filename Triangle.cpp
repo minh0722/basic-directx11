@@ -12,12 +12,12 @@ Triangle::~Triangle()
 	}
 }
 
-void Triangle::AddComponent(BaseComponent * newComponent)
+void Triangle::AddComponent(BaseComponent* newComponent)
 {
 	m_Components.push_back(newComponent);
 }
 
-void Triangle::Render(ID3D11DeviceContext * context)
+void Triangle::Render(ID3D11DeviceContext* context)
 {
 	for (auto& component : m_Components)
 	{
