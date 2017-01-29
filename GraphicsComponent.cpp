@@ -19,25 +19,23 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 
 	context->IASetVertexBuffers(startSlot, numBuffers, m_VertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_VertexInputLayout.Get());
 
 	context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
 	context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
-
-	UINT indexCount = 3;
+		
 	UINT startIndexLocation = 0;
 	UINT baseVertexLocation = 0;
-	context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+	context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
 {
-	size_t indicesCount = indices.size();
+	m_IndicesCount = indices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	desc.ByteWidth = indicesCount * sizeof(uint32_t);
+	desc.ByteWidth = m_IndicesCount * sizeof(uint32_t);
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(uint32_t);
@@ -73,6 +71,11 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 			&desc,
 			&initData,
 			m_VertexBuffer.GetAddressOf()));
+}
+
+void GraphicsComponent::SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology)
+{
+	context->IASetPrimitiveTopology(topology);
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

@@ -18,15 +18,17 @@ void Renderer::Initialize(HWND window)
 	InitRasterizerState();
 	
 	SetupTriangle();
+	SetupCube();
 }
 
 void Renderer::Render()
 {
-	FLOAT color[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	m_Triangle.Render(m_DeviceContext.Get());
+	//m_Triangle.Render(m_DeviceContext.Get());
+	m_Cube.Render(m_DeviceContext.Get());
 		
 	m_SwapChain->Present(0, 0);
 }
@@ -224,7 +226,7 @@ void Renderer::SetupTriangle()
 	};
 
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
-
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	graphicComponent->SetIndexBuffer(m_Device.Get(), {0, 1, 2});
 	graphicComponent->SetVertexBuffer(
 		m_Device.Get(),
@@ -237,4 +239,49 @@ void Renderer::SetupTriangle()
 	);
 
 	m_Triangle.AddComponent(graphicComponent);
+}
+
+void Renderer::SetupCube()
+{
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+	vertexShaderInputLayout[0].SemanticName = "POSITION";
+	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+	vertexShaderInputLayout[0].AlignedByteOffset = 0;
+	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+	vertexShaderInputLayout[1].SemanticName = "COLOR";
+	vertexShaderInputLayout[1].SemanticIndex = 0;
+	vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	vertexShaderInputLayout[1].InputSlot = 0;
+	vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
+	GraphicsComponent::GraphicsComponentDesc desc =
+	{
+		m_Device.Get(),
+		L"vertexShader.cso",
+		L"pixelShader.cso",
+		vertexShaderInputLayout
+	};
+
+	BaseComponent* graphicComponent = new GraphicsComponent(desc);
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 2, 1 });
+	graphicComponent->SetVertexBuffer(
+		m_Device.Get(),
+		{
+			//			pos							color
+			{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
+			{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
+			{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
+		}
+	);
+
+	//TODO: do tranformation of cude from local coordinates
+
+	m_Cube.AddComponent(graphicComponent);
 }

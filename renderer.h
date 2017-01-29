@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "Triangle.h"
+#include "Shape.h"
 
 class Renderer
 {
@@ -23,7 +23,7 @@ private:
 	void InitViewPort();
 
 	void SetupTriangle();
-
+	void SetupCube();
 private:
 
 	ComPtr<ID3D11Device> m_Device;
@@ -37,6 +37,7 @@ private:
 	ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 	HWND m_Window;
 
-	Triangle m_Triangle;
+	Shape m_Triangle;
+	Shape m_Cube;
 };
 

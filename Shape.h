@@ -1,13 +1,15 @@
 #pragma once
 
-#include "BaseComponent.h"
 #include "vector"
 
-class Triangle
+class BaseComponent;
+class Id3d11DeviceContext;
+
+class Shape
 {
 public:
-	Triangle();
-	~Triangle();
+	Shape();
+	~Shape();
 
 	void AddComponent(BaseComponent* newComponent);
 	void Render(ID3D11DeviceContext* context);
