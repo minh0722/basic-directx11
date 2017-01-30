@@ -268,6 +268,30 @@ void Renderer::SetupCube()
 		vertexShaderInputLayout
 	};
 
+    Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+    // right handed coordinate system
+    std::vector<Vertex> vertices =
+    {
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
+        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
+        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
+        { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
+        { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
+        { { 0.0f, 1.0f, 1.0f, 1.0f }, color },
+        { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
+        { { 1.0f, 1.0f, 0.0f, 1.0f }, color }
+    };
+
+    // do transform
+    Matrix44f m =
+    {
+        {1.0f, 0.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, 0.0f, 1.0f}
+    };
+
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 2, 1 });

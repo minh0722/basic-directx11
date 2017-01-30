@@ -10,7 +10,6 @@ SystemClass::SystemClass()
 	//m_Graphics = 0;
 
 	int screenWidth, screenHeight;
-	bool result;
 
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
@@ -47,7 +46,6 @@ SystemClass::~SystemClass()
 bool SystemClass::Initialize()
 {
 	int screenWidth, screenHeight;
-	bool result;
 
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
@@ -155,9 +153,6 @@ void SystemClass::Run()
 
 bool SystemClass::Frame()
 {
-	bool result;
-
-
 	// Check if the user pressed escape and wants to exit the application.
 	if(m_Input->IsKeyDown(VK_ESCAPE))
 	{
@@ -207,7 +202,6 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
 	WNDCLASSEX wc;
-	DEVMODE dmScreenSettings;
 	int posX, posY;
 
 

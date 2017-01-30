@@ -33,8 +33,27 @@ static const UINT screenHeight = 720;
 #define THROW_IF_NULL(ptr) SafetyCheck::ThrowIfNull(ptr, __FILE__, __LINE__)
 #define THROW_IF_FALSE(flag) SafetyCheck::ThrowIfFalse(flag, __FILE__, __LINE__)
 
+struct Vector4f
+{
+    float nums[4];
+};
+
+struct Matrix44f
+{
+    Vector4f v[4];
+};
+
 struct Position
 {
+    // row major matrix
+    void operator*(const Matrix44f& m)
+    {
+        x = m.v[0].nums[0] * x + m.v[0].nums[1] * y + m.v[0].nums[2]  z + m.v[0].nums[3] * w;
+        y = m.v[1].nums[0] * x + m.v[1].nums[1] * y + m.v[1].nums[2]  z + m.v[1].nums[3] * w;
+        z = m.v[2].nums[0] * x + m.v[2].nums[1] * y + m.v[2].nums[2]  z + m.v[2].nums[3] * w;
+        w = m.v[3].nums[0] * x + m.v[3].nums[1] * y + m.v[3].nums[2]  z + m.v[3].nums[3] * w;
+    }
+
 	float x, y, z, w;
 };
 
