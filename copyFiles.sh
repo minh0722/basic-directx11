@@ -3,6 +3,12 @@
 
 FOLDER=C:/Users/Minh/Documents/Visual\ Studio\ 2015/Projects/dxProject/dxProject
 
-cp "${FOLDER}"/*.h .
-cp "${FOLDER}"/*.cpp .
-cp "${FOLDER}"/*.hlsl .
+if [ "$1" == sync ]; then
+	cp ./*.h "${FOLDER}"
+	cp ./*.cpp "${FOLDER}"
+	cp ./*.hlsl "${FOLDER}"
+else
+	cp "${FOLDER}"/*.h .
+	cp "${FOLDER}"/*.cpp .
+	cp "${FOLDER}"/*.hlsl .
+fi
