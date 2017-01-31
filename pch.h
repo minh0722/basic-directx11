@@ -36,11 +36,38 @@ static const UINT screenHeight = 720;
 struct Vector4f
 {
     float nums[4];
+
+	float operator*(const Vector4f& other)
+	{
+		return nums[0] * other.nums[0] +
+			nums[1] * other.nums[1] +
+			nums[2] * other.nums[2] +
+			nums[3] * other.nums[3];
+	}
 };
 
 struct Matrix44f
 {
     Vector4f v[4];
+
+	Matrix44f Transpose() const
+	{
+		return { v[0].nums[0], v[1].nums[0], v[2].nums[0], v[3].nums[0],
+				 v[0].nums[1], v[1].nums[1], v[2].nums[1], v[3].nums[1],
+				 v[0].nums[2], v[1].nums[2], v[2].nums[2], v[3].nums[2],
+				 v[0].nums[3], v[1].nums[3], v[2].nums[3], v[3].nums[3] };
+	}
+
+	Matrix44f operator*(const Matrix44f& other)
+	{
+		Matrix44f transposed = other.Transpose();
+
+		return { v[0] * transposed.v[0], v[0] * transposed.v[1], v[0] * transposed.v[2], v[0] * transposed.v[3],
+				 v[1] * transposed.v[0], v[1] * transposed.v[1], v[1] * transposed.v[2], v[1] * transposed.v[3],
+				 v[2] * transposed.v[0], v[2] * transposed.v[1], v[2] * transposed.v[2], v[2] * transposed.v[3],
+				 v[3] * transposed.v[0], v[3] * transposed.v[1], v[3] * transposed.v[2], v[3] * transposed.v[3] };
+	}
+
 };
 
 struct Position
@@ -48,10 +75,10 @@ struct Position
     // row major matrix
     void operator*(const Matrix44f& m)
     {
-        x = m.v[0].nums[0] * x + m.v[0].nums[1] * y + m.v[0].nums[2]  z + m.v[0].nums[3] * w;
-        y = m.v[1].nums[0] * x + m.v[1].nums[1] * y + m.v[1].nums[2]  z + m.v[1].nums[3] * w;
-        z = m.v[2].nums[0] * x + m.v[2].nums[1] * y + m.v[2].nums[2]  z + m.v[2].nums[3] * w;
-        w = m.v[3].nums[0] * x + m.v[3].nums[1] * y + m.v[3].nums[2]  z + m.v[3].nums[3] * w;
+        x = m.v[0].nums[0] * x + m.v[0].nums[1] * y + m.v[0].nums[2] + z + m.v[0].nums[3] * w;
+        y = m.v[1].nums[0] * x + m.v[1].nums[1] * y + m.v[1].nums[2] + z + m.v[1].nums[3] * w;
+        z = m.v[2].nums[0] * x + m.v[2].nums[1] * y + m.v[2].nums[2] + z + m.v[2].nums[3] * w;
+        w = m.v[3].nums[0] * x + m.v[3].nums[1] * y + m.v[3].nums[2] + z + m.v[3].nums[3] * w;
     }
 
 	float x, y, z, w;
