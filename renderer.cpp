@@ -2,7 +2,7 @@
 #include "renderer.h"
 #include "GraphicsComponent.h"
 
-const float pi = std::acos(-1);
+const float pi = static_cast<float>(std::acos(-1));
 float cos45 = std::cos(pi / 4);
 float sin45 = std::sin(pi / 4);
 
