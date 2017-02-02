@@ -34,8 +34,48 @@ static const UINT screenHeight = 720;
 #define THROW_IF_NULL(ptr) SafetyCheck::ThrowIfNull(ptr, __FILE__, __LINE__)
 #define THROW_IF_FALSE(flag) SafetyCheck::ThrowIfFalse(flag, __FILE__, __LINE__)
 
+enum Axis
+{
+    X,
+    Y,
+    Z,
+    W,
+    AxisCount
+};
+
 struct Vector4f
 {
+    Vector4f() {}
+
+    Vector4f& operator=(const Vector4f& other)
+    {
+        if (this != &other)
+        {
+            nums[0] = other.nums[0];
+            nums[1] = other.nums[1];
+            nums[2] = other.nums[2];
+            nums[3] = other.nums[3];
+        }
+
+        return *this;
+    }
+
+    Vector4f(const Vector4f& other)
+    {
+        nums[0] = other.nums[0];
+        nums[1] = other.nums[1];
+        nums[2] = other.nums[2];
+        nums[3] = other.nums[3];
+    }
+
+    Vector4f(float n0, float n1, float n2, float n3) 
+    { 
+        nums[0] = n0;
+        nums[1] = n1; 
+        nums[2] = n2;
+        nums[3] = n3;
+    }
+
     float nums[4];
 
 	float operator*(const Vector4f& other)
@@ -50,6 +90,25 @@ struct Vector4f
 struct Matrix44f
 {
     Vector4f v[4];
+
+    Matrix44f(float v00, float v01, float v02, float v03,
+              float v10, float v11, float v12, float v13,
+              float v20, float v21, float v22, float v23,
+              float v30, float v31, float v32, float v33)
+    {
+        v[0] = { v00, v01, v02, v03 };
+        v[1] = { v10, v11, v12, v13 };
+        v[2] = { v20, v21, v22, v23 };
+        v[3] = { v30, v31, v32, v33 };
+    }
+
+    Matrix44f()
+    {
+        v[0].nums[0] = 1.0f;
+        v[1].nums[1] = 1.0f;
+        v[2].nums[2] = 1.0f;
+        v[3].nums[3] = 1.0f;
+    }
 
 	Matrix44f Transpose() const
 	{
