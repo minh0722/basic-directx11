@@ -23,6 +23,7 @@
 #include <chrono>
 #include <ppl.h>
 #include <random>
+#include <cmath>
 
 using namespace Microsoft::WRL;
 
@@ -68,20 +69,14 @@ struct Matrix44f
 				 v[3] * transposed.v[0], v[3] * transposed.v[1], v[3] * transposed.v[2], v[3] * transposed.v[3] };
 	}
 
-};
-
-struct Position
-{
-    // row major matrix
-    void operator*(const Matrix44f& m)
+    Vector4f operator*(const Vector4f& other)
     {
-        x = m.v[0].nums[0] * x + m.v[0].nums[1] * y + m.v[0].nums[2] + z + m.v[0].nums[3] * w;
-        y = m.v[1].nums[0] * x + m.v[1].nums[1] * y + m.v[1].nums[2] + z + m.v[1].nums[3] * w;
-        z = m.v[2].nums[0] * x + m.v[2].nums[1] * y + m.v[2].nums[2] + z + m.v[2].nums[3] * w;
-        w = m.v[3].nums[0] * x + m.v[3].nums[1] * y + m.v[3].nums[2] + z + m.v[3].nums[3] * w;
-    }
+        Vector4f result;
 
-	float x, y, z, w;
+        result = { v[0] * other, v[1] * other, v[2] * other, v[3] * other };
+
+        return result;
+    }
 };
 
 struct Color
@@ -91,7 +86,7 @@ struct Color
 
 struct Vertex
 {
-	Position pos;
+	Vector4f pos;
 	Color color;
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> GetLayout()

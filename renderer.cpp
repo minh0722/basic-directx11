@@ -2,6 +2,10 @@
 #include "renderer.h"
 #include "GraphicsComponent.h"
 
+const float pi = std::acos(-1);
+float cos45 = std::cos(pi / 4);
+float sin45 = std::sin(pi / 4);
+
 Renderer::Renderer()
 {
 }
@@ -69,7 +73,7 @@ void Renderer::InitSwapChain(HWND window)
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
-			D3D11_CREATE_DEVICE_DEBUG,
+			D3D11_CREATE_DEVICE_SINGLETHREADED,
 			feature,
 			ARRAYSIZE(feature),
 			D3D11_SDK_VERSION,
@@ -269,28 +273,47 @@ void Renderer::SetupCube()
 	};
 
     Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
-
-    // right handed coordinate system
+    
+    // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =
     {
         { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
-        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
-        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
         { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
+        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
+        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
         { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
-        { { 0.0f, 1.0f, 1.0f, 1.0f }, color },
+        { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
         { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
-        { { 1.0f, 1.0f, 0.0f, 1.0f }, color }
+        { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
     };
 
     // do transform
-    Matrix44f m =
+    Matrix44f translation =
     {
-        1.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f, 1.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 2.0f,
         0.0f, 0.0f, 0.0f, 1.0f
     };
+
+    // rotation 45 degrees around y axis
+    Matrix44f rotation =
+    {
+        cos45, 0.0f, sin45, 0.0f,
+        0.0f,  1.0f, 0.0f,  0.0f,
+       -sin45, 0.0f, cos45, 0.0f,
+        0.0f,  0.0f, 0.0f,  1.0f
+    };
+
+    // rotate then translate
+    Matrix44f transformMatrix = translation * rotation;
+
+    // after this coordinates are in world
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        vertices[i].pos = transformMatrix * vertices[i].pos;
+    }
+
 
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
