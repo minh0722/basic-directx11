@@ -1,3 +1,4 @@
+#pragma once
 #include "pch.h"
 #include "Vector4f.h"
 
@@ -6,13 +7,17 @@ class Matrix44f
 public:
     Matrix44f();
     Matrix44f(const XMMATRIX& other);
+    Matrix44f& operator=(const Matrix44f& other);
 
     Vector4f& operator[](uint16_t rowIndex);
     const Vector4f& operator[](uint16_t rowIndex) const;
 
     Matrix44f& operator*=(const Matrix44f& other);
+    Matrix44f& operator*=(const XMMATRIX& other);
 
     Matrix44f GetInverseMatrix();
+
+    XMMATRIX GetMatrixComponent() const;
 
 private:
     union

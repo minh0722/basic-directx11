@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Matrix44f.h"
 
 void Camera::SetTranslation(const Vector4f& translation)
 {
@@ -57,18 +58,18 @@ void Camera::SetRotation(Axis axis, float degree)
 	m_WorldMatrix *= rotationMatrix;
 }
 
-void Camera::SetScale(const XVector& scale)
+void Camera::SetScale(const Vector4f& scale)
 {
-	XMMATRIX scaleMatrix;
-    scaleMatrix(0, 0) = scale(0);
-    scaleMatrix(1, 1) = scale(1);
-    scaleMatrix(2, 2) = scale(2);
-    scaleMatrix(3, 3) = scale(3);
+	Matrix44f scaleMatrix;
+    scaleMatrix[0][0] = scale[0];
+    scaleMatrix[1][1] = scale[1];
+    scaleMatrix[2][2] = scale[2];
+    scaleMatrix[3][3] = scale[3];
 
 	m_WorldMatrix *= scaleMatrix;
 }
 
-XMMATRIX Camera::GetViewMatrix()
+Matrix44f Camera::GetViewMatrix() const
 {
-    return XMMatrixInverse(nullptr, m_WorldMatrix);
+    return Matrix44f(XMMatrixInverse(nullptr, m_WorldMatrix.GetMatrixComponent()));
 }

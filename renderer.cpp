@@ -272,29 +272,29 @@ void Renderer::SetupCube()
 	};
 
     {
-        //Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
+        Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-        //// left handed coordinate system. Same as directx
-        //std::vector<Vertex> vertices =
-        //{
-        //    { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
-        //    { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
-        //    { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
-        //    { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
-        //    { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
-        //    { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
-        //    { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
-        //    { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
-        //};
+        // left handed coordinate system. Same as directx
+        std::vector<Vertex> vertices =
+        {
+            { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
+            { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
+            { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
+            { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
+            { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
+            { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
+            { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
+            { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
+        };
 
-        //// do transform
-        //XMMATRIX translation =
-        //{
-        //    1.0f, 0.0f, 0.0f, 1.0f,
-        //    0.0f, 1.0f, 0.0f, 0.0f,
-        //    0.0f, 0.0f, 1.0f, 2.0f,
-        //    0.0f, 0.0f, 0.0f, 1.0f
-        //};
+        // do transform
+        XMMATRIX translation =
+        {
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 2.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
 
         //// rotation 45 degrees around y axis
         //XMMATRIX rotation =

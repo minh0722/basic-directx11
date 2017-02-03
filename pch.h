@@ -53,30 +53,9 @@ struct Color
 	float r, g, b, a;
 };
 
-struct XVector
-{
-    union
-    {
-        XMVECTOR v;
-        float fValues[4];
-    };
-
-    float& operator()(uint16_t index)
-    {
-        assert(index < 4);
-        return fValues[index];
-    }
-
-    float operator()(uint16_t index) const
-    {
-        assert(index < 4);
-        return fValues[index];
-    }
-};
-
 struct Vertex
 {
-	XVector pos;
+	XMVECTOR pos;
 	Color color;
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> GetLayout()
