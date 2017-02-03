@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "renderer.h"
 #include "GraphicsComponent.h"
+#include "Matrix44f.h"
 
 float cos45 = std::cos(PI / 4);
 float sin45 = std::sin(PI / 4);
@@ -272,7 +273,7 @@ void Renderer::SetupCube()
 	};
 
     {
-        Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
+        Vector4f color = { 1.0f, 0.0f, 0.0f, 0.0f };
 
         // left handed coordinate system. Same as directx
         std::vector<Vertex> vertices =
@@ -296,23 +297,23 @@ void Renderer::SetupCube()
             0.0f, 0.0f, 0.0f, 1.0f
         };
 
-        //// rotation 45 degrees around y axis
-        //XMMATRIX rotation =
-        //{
-        //    cos45, 0.0f, sin45, 0.0f,
-        //    0.0f,  1.0f, 0.0f,  0.0f,
-        //   -sin45, 0.0f, cos45, 0.0f,
-        //    0.0f,  0.0f, 0.0f,  1.0f
-        //};
+        // rotation 45 degrees around y axis
+        XMMATRIX rotation =
+        {
+            cos45, 0.0f, sin45, 0.0f,
+            0.0f,  1.0f, 0.0f,  0.0f,
+           -sin45, 0.0f, cos45, 0.0f,
+            0.0f,  0.0f, 0.0f,  1.0f
+        };
 
-        //// rotate then translate
-        //XMMATRIX transformMatrix = translation * rotation;
+        // rotate then translate
+        Matrix44f transformMatrix = translation * rotation;
 
-        //// after this coordinates are in world
-        //for (size_t i = 0; i < vertices.size(); ++i)
-        //{
-        //    vertices[i].pos = transformMatrix * vertices[i].pos;
-        //}
+        // after this coordinates are in world
+        for (size_t i = 0; i < vertices.size(); ++i)
+        {
+            //vertices[i].pos = transformMatrix * vertices[i].pos;
+        }
     }
 
 

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GraphicsComponent.h"
+#include "renderer.h"
 
 GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {

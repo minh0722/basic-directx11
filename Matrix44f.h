@@ -7,6 +7,7 @@ class Matrix44f
 public:
     Matrix44f();
     Matrix44f(const XMMATRIX& other);
+	Matrix44f(const Matrix44f& other);
     Matrix44f& operator=(const Matrix44f& other);
 
     Vector4f& operator[](uint16_t rowIndex);

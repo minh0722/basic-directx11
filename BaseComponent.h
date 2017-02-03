@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 
+struct Vertex;
+
 class BaseComponent
 {
 public:

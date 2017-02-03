@@ -10,6 +10,11 @@ Matrix44f::Matrix44f(const XMMATRIX& other)
     m_matrix = other;
 }
 
+Matrix44f::Matrix44f(const Matrix44f& other)
+{
+	m_matrix = other.m_matrix;
+}
+
 Matrix44f& Matrix44f::operator=(const Matrix44f& other)
 {
     if(this != &other)
