@@ -11,5 +11,4 @@ public:
 	Matrix44f GetViewMatrix();
 private:
     Matrix44f m_WorldMatrix;
-
 };

@@ -2,15 +2,18 @@
 
 void Camera::SetTranslation(const Vector4f& translation)
 {
-	Matrix44f translationMatrix;
-	translationMatrix.SetColumn(3, translation);
+    Matrix44f translationMatrix;
+    translationMatrix[0][3] = translation[0];
+    translationMatrix[1][3] = translation[1];
+    translationMatrix[2][3] = translation[2];
+    translationMatrix[3][3] = translation[3];
 
-	m_WorldMatrix *= translationMatrix;
+    m_WorldMatrix *= translationMatrix;
 }
 
 void Camera::SetRotation(Axis axis, float degree)
 {
-	Matrix44f rotationMatrix;
+	XMMATRIX rotationMatrix;
 	float radians = degree * RADIAN;
 	float cosRes = std::cos(radians);
 	float sinRes = std::sin(radians);
@@ -54,18 +57,18 @@ void Camera::SetRotation(Axis axis, float degree)
 	m_WorldMatrix *= rotationMatrix;
 }
 
-void Camera::SetScale(const Vector4f& scale)
+void Camera::SetScale(const XVector& scale)
 {
-	Matrix44f scaleMatrix;
-	scaleMatrix.m_v[0].SetColumn(0, scale.nums[0]);
-	scaleMatrix.m_v[1].SetColumn(1, scale.nums[0]);
-	scaleMatrix.m_v[2].SetColumn(2, scale.nums[0]);
-	scaleMatrix.m_v[3].SetColumn(3, scale.nums[0]);
+	XMMATRIX scaleMatrix;
+    scaleMatrix(0, 0) = scale(0);
+    scaleMatrix(1, 1) = scale(1);
+    scaleMatrix(2, 2) = scale(2);
+    scaleMatrix(3, 3) = scale(3);
 
 	m_WorldMatrix *= scaleMatrix;
 }
 
-Matrix44f Camera::GetViewMatrix()
+XMMATRIX Camera::GetViewMatrix()
 {
-
+    return XMMatrixInverse(nullptr, m_WorldMatrix);
 }

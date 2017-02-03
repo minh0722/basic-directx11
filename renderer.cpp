@@ -271,46 +271,48 @@ void Renderer::SetupCube()
 		vertexShaderInputLayout
 	};
 
-    Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
-    
-    // left handed coordinate system. Same as directx
-    std::vector<Vertex> vertices =
     {
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
-    };
+        //Color color = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    // do transform
-    Matrix44f translation =
-    {
-        1.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 2.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
+        //// left handed coordinate system. Same as directx
+        //std::vector<Vertex> vertices =
+        //{
+        //    { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
+        //    { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
+        //    { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
+        //    { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
+        //    { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
+        //    { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
+        //    { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
+        //    { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
+        //};
 
-    // rotation 45 degrees around y axis
-    Matrix44f rotation =
-    {
-        cos45, 0.0f, sin45, 0.0f,
-        0.0f,  1.0f, 0.0f,  0.0f,
-       -sin45, 0.0f, cos45, 0.0f,
-        0.0f,  0.0f, 0.0f,  1.0f
-    };
+        //// do transform
+        //XMMATRIX translation =
+        //{
+        //    1.0f, 0.0f, 0.0f, 1.0f,
+        //    0.0f, 1.0f, 0.0f, 0.0f,
+        //    0.0f, 0.0f, 1.0f, 2.0f,
+        //    0.0f, 0.0f, 0.0f, 1.0f
+        //};
 
-    // rotate then translate
-    Matrix44f transformMatrix = translation * rotation;
+        //// rotation 45 degrees around y axis
+        //XMMATRIX rotation =
+        //{
+        //    cos45, 0.0f, sin45, 0.0f,
+        //    0.0f,  1.0f, 0.0f,  0.0f,
+        //   -sin45, 0.0f, cos45, 0.0f,
+        //    0.0f,  0.0f, 0.0f,  1.0f
+        //};
 
-    // after this coordinates are in world
-    for (size_t i = 0; i < vertices.size(); ++i)
-    {
-        vertices[i].pos = transformMatrix * vertices[i].pos;
+        //// rotate then translate
+        //XMMATRIX transformMatrix = translation * rotation;
+
+        //// after this coordinates are in world
+        //for (size_t i = 0; i < vertices.size(); ++i)
+        //{
+        //    vertices[i].pos = transformMatrix * vertices[i].pos;
+        //}
     }
 
 
