@@ -48,6 +48,11 @@ Matrix44f& Matrix44f::operator*=(const XMMATRIX& other)
     return *this;
 }
 
+Vector4f Matrix44f::operator*(const Vector4f& v)
+{
+	return { m_rows[0].DotProduct(v), m_rows[1].DotProduct(v), m_rows[2].DotProduct(v), m_rows[3].DotProduct(v) };
+}
+
 Matrix44f Matrix44f::GetInverseMatrix()
 {
     XMMATRIX input(&m_elements[0][0]);

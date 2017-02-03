@@ -2,6 +2,7 @@
 #include "renderer.h"
 #include "GraphicsComponent.h"
 #include "Matrix44f.h"
+#include "Camera.h"
 
 float cos45 = std::cos(PI / 4);
 float sin45 = std::sin(PI / 4);
@@ -312,8 +313,21 @@ void Renderer::SetupCube()
         // after this coordinates are in world
         for (size_t i = 0; i < vertices.size(); ++i)
         {
-            //vertices[i].pos = transformMatrix * vertices[i].pos;
+            vertices[i].pos = transformMatrix * vertices[i].pos;
         }
+
+
+		Camera camera;
+		camera.SetTranslation({ 0.0f, 2.0f, 0.0f, 1.0f });
+		camera.SetRotation(Axis::Y, 45.0f);
+
+		Matrix44f viewMatrix = camera.GetViewMatrix();
+
+		// after this coordinates are in view
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			vertices[i].pos = viewMatrix * vertices[i].pos;
+		}
     }
 
 
