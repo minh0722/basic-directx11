@@ -1,6 +1,11 @@
 #include "Camera.h"
 #include "Matrix44f.h"
 
+Camera::Camera()
+{
+
+}
+
 void Camera::SetTranslation(const Vector4f& translation)
 {
     Matrix44f translationMatrix;

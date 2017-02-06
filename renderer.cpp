@@ -273,75 +273,114 @@ void Renderer::SetupCube()
 		vertexShaderInputLayout
 	};
 
+	///////////////////////////////////////////////////////////////////////
+    Vector4f color = { 1.0f, 0.0f, 0.0f, 0.0f };
+
+	Matrix44f worldViewProj;
+
+    // left handed coordinate system. Same as directx
+    std::vector<Vertex> vertices =
     {
-        Vector4f color = { 1.0f, 0.0f, 0.0f, 0.0f };
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
+        { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
+        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
+        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
+        { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
+        { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
+        { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
+        { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
+    };
 
-        // left handed coordinate system. Same as directx
-        std::vector<Vertex> vertices =
-        {
-            { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
-            { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
-            { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
-            { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
-            { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
-            { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
-            { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
-            { { 0.0f, 1.0f, 1.0f, 1.0f }, color }
-        };
+    // do transform
+    XMMATRIX translation =
+    {
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 2.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
 
-        // do transform
-        XMMATRIX translation =
-        {
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 2.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
+    // rotation 45 degrees around y axis
+    XMMATRIX rotation =
+    {
+        cos45, 0.0f, sin45, 0.0f,
+        0.0f,  1.0f, 0.0f,  0.0f,
+        -sin45, 0.0f, cos45, 0.0f,
+        0.0f,  0.0f, 0.0f,  1.0f
+    };
 
-        // rotation 45 degrees around y axis
-        XMMATRIX rotation =
-        {
-            cos45, 0.0f, sin45, 0.0f,
-            0.0f,  1.0f, 0.0f,  0.0f,
-           -sin45, 0.0f, cos45, 0.0f,
-            0.0f,  0.0f, 0.0f,  1.0f
-        };
+    // rotate then translate
+    Matrix44f worldMatrix = translation * rotation;
 
-        // rotate then translate
-        Matrix44f transformMatrix = translation * rotation;
-
-        // after this coordinates are in world
-        for (size_t i = 0; i < vertices.size(); ++i)
-        {
-            vertices[i].pos = transformMatrix * vertices[i].pos;
-        }
+    //// after this coordinates are in world
+    //for (size_t i = 0; i < vertices.size(); ++i)
+    //{
+    //    vertices[i].pos = transformMatrix * vertices[i].pos;
+    //}
 
 
-		Camera camera;
-		camera.SetTranslation({ 0.0f, 2.0f, 0.0f, 1.0f });
-		camera.SetRotation(Axis::Y, 45.0f);
+	Camera camera;
+	camera.SetTranslation({ 1.0f, 1.0f, 1.0f, 1.0f });
+	camera.SetRotation(Axis::Y, 30.0f);
 
-		Matrix44f viewMatrix = camera.GetViewMatrix();
+	Matrix44f viewMatrix = camera.GetViewMatrix();
 
-		// after this coordinates are in view
-		for (size_t i = 0; i < vertices.size(); ++i)
-		{
-			vertices[i].pos = viewMatrix * vertices[i].pos;
-		}
-    }
+	//// after this coordinates are in view
+	//for (size_t i = 0; i < vertices.size(); ++i)
+	//{
+	//	vertices[i].pos = viewMatrix * vertices[i].pos;
+	//}
 
+	worldViewProj = worldMatrix * viewMatrix;
+
+
+	float cuboitWidth = 10.0f;
+	float cuboitHeight = 5.0f;
+	float zFar = 10.0f;
+	float zNear = 0.0f;
+	Matrix44f orthographicProjMatrix;
+	Vector4f* rows = orthographicProjMatrix.GetRows();
+
+	rows[0][0] = 1 / cuboitWidth;
+	rows[1][0] = 1 / cuboitHeight;
+	rows[2][2] = -2 / (zFar - zNear);
+	rows[2][3] = -((zFar + zNear) / (zFar - zNear));
+	rows[3][3] = 1;
+
+	//// after this coordinates are in proj space
+	//for (size_t i = 0; i < vertices.size(); ++i)
+	//{
+	//	vertices[i].pos = orthographicProjMatrix * vertices[i].pos;
+	//	float w = vertices[i].pos[3];
+
+	//	vertices[i].pos[0] /= w;
+	//	vertices[i].pos[1] /= w;
+	//	vertices[i].pos[2] /= w;
+
+	//	vertices[i].pos[3] = 1.0f;
+	//}
+
+	worldViewProj = worldViewProj * orthographicProjMatrix;
+
+	for (size_t i = 0; i < vertices.size(); ++i)
+	{
+		vertices[i].pos = worldViewProj * vertices[i].pos;
+	}
+
+	///////////////////////////////////////////////////////////////////////
 
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
-	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 2, 1 });
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 2, 2, 3, 3, 0, 4, 7, 7, 6, 6, 5, 5, 4, 4, 0, 7, 3, 6, 2, 5, 1 });
 	graphicComponent->SetVertexBuffer(
 		m_Device.Get(),
-		{
-			//			pos							color
-			{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
-			{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
-			{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
-		}
+		vertices
+		//{
+		//	//			pos							color
+		//	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
+		//	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
+		//	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
+		//}
 	);
 
 	//TODO: do tranformation of cude from local coordinates

@@ -17,10 +17,12 @@ public:
     Matrix44f& operator*=(const XMMATRIX& other);
 
 	Vector4f operator*(const Vector4f& v);
+	Matrix44f operator*(const Matrix44f& other);
 
     Matrix44f GetInverseMatrix();
 
     XMMATRIX GetMatrixComponent() const;
+	Vector4f* GetRows();
 
 private:
     union

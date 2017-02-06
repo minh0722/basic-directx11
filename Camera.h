@@ -8,6 +8,7 @@ class Matrix44f;
 class Camera
 {
 public:
+	Camera();
     void SetTranslation(const Vector4f& translation);
     void SetRotation(Axis axis, float degree);
     void SetScale(const Vector4f& scale);
