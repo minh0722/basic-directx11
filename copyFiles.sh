@@ -3,12 +3,20 @@
 
 FOLDER=C:/Users/Minh/Documents/Visual\ Studio\ 2015/Projects/dxProject/dxProject
 
-if [ "$1" == sync ]; then
+if [ "$1" == "--help" ]; then
+	echo "options:"
+	echo "--vstogit: copy from VS project folder to git folder"
+	echo "--gittovs: copy from git folder to VS project folder"
+	exit 0
+elif [ "$1" == "--gittovs" ]; then
 	cp ./*.h "${FOLDER}"
 	cp ./*.cpp "${FOLDER}"
 	cp ./*.hlsl "${FOLDER}"
-else
+elif [ "$1" == "--vstogit" ]; then
 	cp "${FOLDER}"/*.h .
 	cp "${FOLDER}"/*.cpp .
 	cp "${FOLDER}"/*.hlsl .
+else
+	echo "Invalid argument was given"
+	exit 0
 fi
