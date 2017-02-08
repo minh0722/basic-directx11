@@ -312,27 +312,13 @@ void Renderer::SetupCube()
     // rotate then translate
     Matrix44f worldMatrix = translation * rotation;
 
-    //// after this coordinates are in world
-    //for (size_t i = 0; i < vertices.size(); ++i)
-    //{
-    //    vertices[i].pos = transformMatrix * vertices[i].pos;
-    //}
-
-
 	Camera camera;
 	camera.SetTranslation({ 1.0f, 1.0f, 1.0f, 1.0f });
 	camera.SetRotation(Axis::Y, 30.0f);
 
 	Matrix44f viewMatrix = camera.GetViewMatrix();
 
-	//// after this coordinates are in view
-	//for (size_t i = 0; i < vertices.size(); ++i)
-	//{
-	//	vertices[i].pos = viewMatrix * vertices[i].pos;
-	//}
-
 	worldViewProj = worldMatrix * viewMatrix;
-
 
 	float cuboitWidth = 10.0f;
 	float cuboitHeight = 5.0f;
@@ -382,8 +368,6 @@ void Renderer::SetupCube()
 		//	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
 		//}
 	);
-
-	//TODO: do tranformation of cude from local coordinates
-
+    
 	m_Cube.AddComponent(graphicComponent);
 }

@@ -3,7 +3,14 @@
 
 Camera::Camera()
 {
+    m_UpAxis = Vector4f(0.0f, 1.0f, 0.0f);
+}
 
+Camera::Camera(const Vector4f& worldPosition, const Vector4f& lookAt, const Vector4f& upAxis)
+{
+    m_Position = worldPosition;
+    m_LookAtVector = lookAt;
+    m_UpAxis = upAxis;
 }
 
 void Camera::SetTranslation(const Vector4f& translation)
@@ -14,7 +21,7 @@ void Camera::SetTranslation(const Vector4f& translation)
     translationMatrix[2][3] = translation[2];
     translationMatrix[3][3] = translation[3];
 
-    m_WorldMatrix *= translationMatrix;
+    m_ViewMatrix *= translationMatrix;
 }
 
 void Camera::SetRotation(Axis axis, float degree)
@@ -60,7 +67,7 @@ void Camera::SetRotation(Axis axis, float degree)
 		break;
 	}
 
-	m_WorldMatrix *= rotationMatrix;
+	m_ViewMatrix *= rotationMatrix;
 }
 
 void Camera::SetScale(const Vector4f& scale)
@@ -71,10 +78,43 @@ void Camera::SetScale(const Vector4f& scale)
     scaleMatrix[2][2] = scale[2];
     scaleMatrix[3][3] = scale[3];
 
-	m_WorldMatrix *= scaleMatrix;
+	m_ViewMatrix *= scaleMatrix;
+}
+
+void Camera::SetLookAtPosition(const Vector4f& lookAtPosition)
+{
+    Vector4f diff = lookAtPosition - m_Position;
+    float diffLength = diff.GetLength();
+
+    m_LookAtVector = diff / diffLength;
+}
+
+void Camera::SetCameraPosition(const Vector4f& position)
+{
+    m_Position = position;
+}
+
+void Camera::SetUpAxis(const Vector4f& upAxis)
+{
+    m_UpAxis = upAxis;
+}
+
+void Camera::SetFov(const float fov)
+{
+    m_Fov = fov;
+}
+
+void Camera::SetNearPlaneDist(const float nearPlaneDist)
+{
+    m_NearPlaneDist = nearPlaneDist;
+}
+
+void Camera::SetFarPlaneDist(const float farPlaneDist)
+{
+    m_FarPlaneDist = farPlaneDist;
 }
 
 Matrix44f Camera::GetViewMatrix() const
 {
-    return Matrix44f(XMMatrixInverse(nullptr, m_WorldMatrix.GetMatrixComponent()));
+    return Matrix44f(XMMatrixInverse(nullptr, m_ViewMatrix.GetMatrixComponent()));
 }
