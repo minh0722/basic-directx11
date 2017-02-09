@@ -26,8 +26,9 @@ private:
 
     Vector4f m_LookAtVector;
     Vector4f m_Position;
-    Vector4f m_UpAxis;
     float m_Fov;
     float m_NearPlaneDist;
     float m_FarPlaneDist;
+
+    Vector4f m_UpAxis;
 };

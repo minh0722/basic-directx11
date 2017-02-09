@@ -116,5 +116,9 @@ void Camera::SetFarPlaneDist(const float farPlaneDist)
 
 Matrix44f Camera::GetViewMatrix() const
 {
-    return Matrix44f(XMMatrixInverse(nullptr, m_ViewMatrix.GetMatrixComponent()));
+    Vector4f ywCrossProduct = m_UpAxis.CrossProduct(m_LookAtVector);
+
+    Vector4f u = ywCrossProduct / ywCrossProduct.GetLength();
+
+    Vector4f v = m_LookAtVector.CrossProduct(u);
 }

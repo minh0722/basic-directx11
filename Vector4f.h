@@ -11,6 +11,7 @@ public:
 	Vector4f& operator=(const Vector4f& other);
     Vector4f operator-(const Vector4f& other);
     Vector4f operator/(float num);
+    Vector4f CrossProduct(const Vector4f& other);
 
     float& operator[](uint16_t index);
     float operator[](uint16_t index) const;
@@ -23,5 +24,13 @@ private:
     {
         XMVECTOR m_v;
         float fValues[4];
+        struct  
+        {
+            float x, y, z, w;
+        };
+        struct  
+        {
+            float r, g, b, a;
+        };
     };
 };

@@ -52,6 +52,14 @@ Vector4f Vector4f::operator/(float num)
         fValues[3] / num);
 }
 
+Vector4f Vector4f::CrossProduct(const Vector4f& other)
+{
+    return Vector4f(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x);
+}
+
 float& Vector4f::operator[](uint16_t index)
 {
     assert(index < 4);
