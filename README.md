@@ -8,3 +8,6 @@ http://www.idav.ucdavis.edu/education/GraphicsNotes/Camera-Transform/Camera-Tran
 TODO:
 Camera lacks the look at vector. We need to get the look at matrix of the camera, then we can do the rotation (and translation?) of that matrix
 
+for view matrix implementation
+vitosha/test/irradiance/math/math_graphics.h
+vitosha/test/irradiance/win32/window.cpp
