@@ -10,4 +10,4 @@ Camera lacks the look at vector. We need to get the look at matrix of the camera
 
 for view matrix implementation
 vitosha/test/irradiance/math/math_graphics.h
-vitosha/test/irradiance/win32/window.cpp
+vitosha/test/irradiance/win32/window.cpp in render_frame()
