@@ -144,7 +144,7 @@ void SystemClass::Run()
 				done = true;
 			}
 		}
-		m_Renderer.Render();
+		m_Renderer.Render(m_Input);
 	}
 
 	return;

@@ -1,4 +1,5 @@
 #include "Vector4f.h"
+#include "Matrix44f.h"
 
 Vector4f::Vector4f(float x, float y, float z, float w)
 {
@@ -50,6 +51,15 @@ Vector4f Vector4f::operator/(float num) const
         fValues[1] / num,
         fValues[2] / num,
         fValues[3] / num);
+}
+
+Vector4f Vector4f::operator*(const Matrix44f& other) const
+{
+    return Vector4f(
+        x * other[0][0] + y * other[1][0] + z * other[2][0],
+        x * other[0][1] + y * other[1][1] + z * other[2][1],
+        x * other[0][2] + y * other[1][2] + z * other[2][2],
+        1.0f);
 }
 
 Vector4f Vector4f::CrossProduct(const Vector4f& other) const

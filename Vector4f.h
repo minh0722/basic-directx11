@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 
+class Matrix44f;
+
 class Vector4f
 {
 public:
@@ -11,6 +13,7 @@ public:
 	Vector4f& operator=(const Vector4f& other);
     Vector4f operator-(const Vector4f& other) const;
     Vector4f operator/(float num) const;
+    Vector4f operator*(const Matrix44f& other) const;
     Vector4f CrossProduct(const Vector4f& other) const;
 	float DotProduct(const Vector4f& other) const;
 

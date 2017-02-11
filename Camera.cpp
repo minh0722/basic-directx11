@@ -121,4 +121,6 @@ Matrix44f Camera::GetViewMatrix() const
     //Vector4f u = ywCrossProduct / ywCrossProduct.GetLength();
 
     //Vector4f v = m_LookAtVector.CrossProduct(u);
+
+    return Matrix44f();
 }

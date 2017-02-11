@@ -4,6 +4,8 @@
 
 #include "Vector4f.h"
 
+class InputClass;
+
 struct Vertex
 {
 	Vector4f pos;
@@ -42,7 +44,7 @@ public:
 
 	void Initialize(HWND window);
 	
-	void Render();
+	void Render(InputClass* input);
 
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
@@ -57,6 +59,9 @@ private:
 
 	void SetupTriangle();
 	void SetupCube();
+    void SetupCubeForRender(InputClass* input);
+
+    void onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtVector, float& fov);
 private:
 
 	ComPtr<ID3D11Device> m_Device;
