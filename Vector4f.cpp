@@ -34,7 +34,7 @@ Vector4f& Vector4f::operator=(const Vector4f& other)
 	return *this;
 }
 
-Vector4f Vector4f::operator-(const Vector4f& other)
+Vector4f Vector4f::operator-(const Vector4f& other) const
 {
     return Vector4f(
         fValues[0] - other.fValues[0], 
@@ -43,7 +43,7 @@ Vector4f Vector4f::operator-(const Vector4f& other)
         fValues[3] - other.fValues[3]);
 }
 
-Vector4f Vector4f::operator/(float num)
+Vector4f Vector4f::operator/(float num) const
 {
     return Vector4f(
         fValues[0] / num,
@@ -52,12 +52,21 @@ Vector4f Vector4f::operator/(float num)
         fValues[3] / num);
 }
 
-Vector4f Vector4f::CrossProduct(const Vector4f& other)
+Vector4f Vector4f::CrossProduct(const Vector4f& other) const
 {
     return Vector4f(
         y * other.z - z * other.y,
         z * other.x - x * other.z,
-        x * other.y - y * other.x);
+        x * other.y - y * other.x,
+		1.0f);
+}
+
+float Vector4f::DotProduct(const Vector4f& other) const
+{
+	return fValues[0] * other.fValues[0] +
+		fValues[1] * other.fValues[1] +
+		fValues[2] * other.fValues[2] +
+		fValues[3] * other.fValues[3];
 }
 
 float& Vector4f::operator[](uint16_t index)
@@ -70,14 +79,6 @@ float Vector4f::operator[](uint16_t index) const
 {
     assert(index < 4);
     return fValues[index];
-}
-
-float Vector4f::DotProduct(const Vector4f& other)
-{
-	return fValues[0] * other.fValues[0] + 
-		fValues[1] * other.fValues[1] + 
-		fValues[2] * other.fValues[2] + 
-		fValues[3] * other.fValues[3];
 }
 
 float Vector4f::GetLength() const

@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-    m_UpAxis = Vector4f(0.0f, 1.0f, 0.0f);
+    m_UpAxis = Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
 }
 
 Camera::Camera(const Vector4f& worldPosition, const Vector4f& lookAt, const Vector4f& upAxis)
@@ -116,9 +116,9 @@ void Camera::SetFarPlaneDist(const float farPlaneDist)
 
 Matrix44f Camera::GetViewMatrix() const
 {
-    Vector4f ywCrossProduct = m_UpAxis.CrossProduct(m_LookAtVector);
+    //Vector4f ywCrossProduct = m_UpAxis.CrossProduct(m_LookAtVector);
 
-    Vector4f u = ywCrossProduct / ywCrossProduct.GetLength();
+    //Vector4f u = ywCrossProduct / ywCrossProduct.GetLength();
 
-    Vector4f v = m_LookAtVector.CrossProduct(u);
+    //Vector4f v = m_LookAtVector.CrossProduct(u);
 }

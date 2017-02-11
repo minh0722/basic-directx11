@@ -9,14 +9,14 @@ public:
 	Vector4f(const Vector4f& other);
     Vector4f(const XMVECTOR& other);
 	Vector4f& operator=(const Vector4f& other);
-    Vector4f operator-(const Vector4f& other);
-    Vector4f operator/(float num);
-    Vector4f CrossProduct(const Vector4f& other);
+    Vector4f operator-(const Vector4f& other) const;
+    Vector4f operator/(float num) const;
+    Vector4f CrossProduct(const Vector4f& other) const;
+	float DotProduct(const Vector4f& other) const;
 
     float& operator[](uint16_t index);
     float operator[](uint16_t index) const;
 
-	float DotProduct(const Vector4f& other);
 
     float GetLength() const;
 private:
