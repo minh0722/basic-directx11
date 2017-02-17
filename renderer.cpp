@@ -181,7 +181,7 @@ void Renderer::InitRasterizerState()
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
-	desc.FillMode = D3D11_FILL_WIREFRAME;
+	desc.FillMode = D3D11_FILL_SOLID;
 	desc.FrontCounterClockwise = true;
 	desc.MultisampleEnable = false;
 	desc.ScissorEnable = false;
@@ -328,7 +328,7 @@ void Renderer::SetupCube()
     static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     
-    XMMATRIX viewMatrix = XMMatrixLookAtLH({ -10.0f, 0.0f, -9.0f, 1.0f }, {1.0f, 0.0f, 2.0f, 1.0f}, { 0.0f, 1.0f, 0.0f, 1.0f});
+    XMMATRIX viewMatrix = XMMatrixLookToLH({ -10.0f, 0.0f, -9.0f, 1.0f }, {1.0f, 0.0f, 2.0f, 1.0f}, { 0.0f, 1.0f, 0.0f, 1.0f});
 
 	worldViewProj = worldMatrix * viewMatrix;
 
@@ -409,19 +409,17 @@ void Renderer::SetupCubeForRender(InputClass* input)
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static XMVECTOR cameraPos = { -20.0f, -20.0f, -20.0f, 1.0f };
+    static XMVECTOR lookAtPos = { 0.0f, 0.0f, 0.0f, 1.0f };
     static float fov = 120.0f;
     
     onInput(input, cameraPos, lookAtPos, fov);
 
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 
-    worldViewProj = worldMatrix * viewMatrix;
+    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, 1.6f, 40.0f, 1200.0f);
 
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, 1.6f, 10.0f, 300.0f);
-
-    worldViewProj = worldViewProj * orthographicProjMatrix;
+    worldViewProj = worldMatrix * viewMatrix * orthographicProjMatrix;
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
@@ -430,8 +428,10 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
-    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-    graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
+    //graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
+    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 4, 1, 5, 4, 2, 7, 6, 2, 3, 7, 1, 2, 6, 1, 6, 5, 3, 0, 7, 0, 4, 7, 4, 5, 6, 4, 6, 7, 3, 1, 0, 3, 2, 1});
     graphicComponent->SetVertexBuffer(
         m_Device.Get(),
         vertices
@@ -449,7 +449,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
 void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
 {
-    float threshHold = 0.5f;
+    float threshHold = 0.3f;
 
     //// increase far plane dist by 0.1f
     //if (input->IsKeyDown('Q'))
