@@ -199,8 +199,8 @@ void Renderer::InitViewPort()
 	desc.TopLeftY = 0.0f;
 	desc.Width = screenWidth;
 	desc.Height = screenHeight;
-	//desc.MinDepth = 0.0f;
-	//desc.MaxDepth = 1.0f;
+	desc.MinDepth = 0.0f;
+	desc.MaxDepth = 1.0f;
 
 	m_DeviceContext->RSSetViewports(1, &desc);
 }
@@ -409,15 +409,14 @@ void Renderer::SetupCubeForRender(InputClass* input)
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { -20.0f, -20.0f, -20.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 0.0f, 0.0f, 0.0f, 1.0f };
-    static float fov = 120.0f;
+    static XMVECTOR cameraPos = { -20.0f, 5.0f, -20.0f, 1.0f };
+    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static float fov = 100.0f;
     
     onInput(input, cameraPos, lookAtPos, fov);
 
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, 1.6f, 40.0f, 1200.0f);
+    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, 1080.0f / 720.0f, 1.0f, 1200.0f);
 
     worldViewProj = worldMatrix * viewMatrix * orthographicProjMatrix;
 
@@ -431,7 +430,17 @@ void Renderer::SetupCubeForRender(InputClass* input)
     //graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
     //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 4, 1, 5, 4, 2, 7, 6, 2, 3, 7, 1, 2, 6, 1, 6, 5, 3, 0, 7, 0, 4, 7, 4, 5, 6, 4, 6, 7, 3, 1, 0, 3, 2, 1});
+    graphicComponent->SetIndexBuffer(
+        m_Device.Get(), 
+        { 
+            0, 1, 4, 1, 5, 4, 
+            2, 7, 6, 2, 3, 7, 
+            1, 2, 6, 1, 6, 5, 
+            3, 0, 7, 0, 4, 7, 
+            4, 5, 6, 4, 6, 7, 
+            3, 1, 0, 3, 2, 1
+        }
+    );
     graphicComponent->SetVertexBuffer(
         m_Device.Get(),
         vertices
@@ -449,7 +458,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
 void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
 {
-    float threshHold = 0.3f;
+    float threshHold = 0.01f;
 
     //// increase far plane dist by 0.1f
     //if (input->IsKeyDown('Q'))
@@ -463,6 +472,40 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
     //}
 
     float* camPos = reinterpret_cast<float*>(&cameraPos);
+
+    {
+        XMVECTOR lookatNormalized = XMVector3Normalize(lookAtPos);
+
+        if(input->IsKeyDown('W'))
+        {
+            XMVECTOR moveForwardVec = XMVectorScale(lookAtPos, threshHold);
+            cameraPos = XMVectorAdd(cameraPos, moveForwardVec);
+            cameraPos.m128_f32[3] = 1.0f;
+
+            char buf[256];
+            snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
+            OutputDebugStringA(buf);
+        }
+        else if (input->IsKeyDown('S'))
+        {
+            XMVECTOR moveBackwardVec = XMVectorScale(lookAtPos, -threshHold);
+            cameraPos = XMVectorAdd(cameraPos, moveBackwardVec);
+            cameraPos.m128_f32[3] = 1.0f;
+
+            char buf[256];
+            snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
+            OutputDebugStringA(buf);
+        }
+        else if (input->IsKeyDown('D'))
+        {
+
+        }
+        else if (input->IsKeyDown('A'))
+        {
+
+        }
+        return;
+    }
 
     //// increase fov
     //if (input->IsKeyDown('W'))

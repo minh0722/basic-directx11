@@ -48,6 +48,9 @@ enum Axis
     AxisCount
 };
 
+
+
+
 namespace SafetyCheck
 {
 	inline void ThrowIfFailed(HRESULT hr, char* file, int line)
