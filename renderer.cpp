@@ -44,8 +44,8 @@ void Renderer::InitSwapChain(HWND window)
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = 1080;
-	swapChainDesc.BufferDesc.Height = 720;
+	swapChainDesc.BufferDesc.Width = screenWidth;
+	swapChainDesc.BufferDesc.Height = screenHeight;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -133,7 +133,7 @@ void Renderer::InitDepthStencil()
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 
 	depthStencilDesc.StencilEnable = true;
 	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
@@ -180,7 +180,7 @@ void Renderer::InitRasterizerState()
 	desc.CullMode = D3D11_CULL_BACK;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
-	desc.DepthClipEnable = true;
+	desc.DepthClipEnable = false;
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.FrontCounterClockwise = true;
 	desc.MultisampleEnable = false;
@@ -328,7 +328,7 @@ void Renderer::SetupCube()
     static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     
-    XMMATRIX viewMatrix = XMMatrixLookToLH({ -10.0f, 0.0f, -9.0f, 1.0f }, {1.0f, 0.0f, 2.0f, 1.0f}, { 0.0f, 1.0f, 0.0f, 1.0f});
+    XMMATRIX viewMatrix = XMMatrixLookAtLH({ -10.0f, 0.0f, -9.0f, 1.0f }, {1.0f, 0.0f, 2.0f, 1.0f}, { 0.0f, 1.0f, 0.0f, 0.0f});
 
 	worldViewProj = worldMatrix * viewMatrix;
 
@@ -345,7 +345,7 @@ void Renderer::SetupCube()
 	//rows[2][3] = -((zFar + zNear) / (zFar - zNear));
 	//rows[3][3] = 1;
 
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(120.0f * RADIAN, 800.0f / 600.0f, 0.0f, 100.0f);
+    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(120.0f * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
 	worldViewProj = worldViewProj * orthographicProjMatrix;
 
@@ -357,8 +357,9 @@ void Renderer::SetupCube()
 	///////////////////////////////////////////////////////////////////////
 
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
-	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 2, 2, 3, 3, 0, 4, 7, 7, 6, 6, 5, 5, 4, 4, 0, 7, 3, 6, 2, 5, 1 });
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 2, 2, 3, 3, 0, 4, 7, 7, 6, 6, 5, 5, 4, 4, 0, 7, 3, 6, 2, 5, 1 });
+    graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 4, 1, 5, 4, 1, 2, 5, 5, 2, 6, 7, 4, 5, 7, 5, 6, 3, 1, 0, 3, 2, 1, 7, 6, 2, 7, 2, 3, 7, 3, 4, 4, 3, 0 });
 	graphicComponent->SetVertexBuffer(
 		m_Device.Get(),
 		vertices
@@ -409,16 +410,26 @@ void Renderer::SetupCubeForRender(InputClass* input)
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { -20.0f, 5.0f, -20.0f, 1.0f };
+    static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
-    static float fov = 100.0f;
+    static float fov = 120.0f;
     
     onInput(input, cameraPos, lookAtPos, fov);
 
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, 1080.0f / 720.0f, 1.0f, 1200.0f);
+    void* vptr = &cameraPos;
+    float* ptr = reinterpret_cast<float*>(vptr);
+    char debBuf[256];
+    snprintf(debBuf, 256, "Camera pos: %f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);    
+    OutputDebugStringA(debBuf);
 
-    worldViewProj = worldMatrix * viewMatrix * orthographicProjMatrix;
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+    Matrix44f viewM(viewMatrix);
+
+    worldViewProj = worldMatrix * viewMatrix;
+
+    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 1000000.0f);
+
+    worldViewProj = worldViewProj * orthographicProjMatrix;
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
@@ -427,20 +438,16 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
-    //graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-    //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
     graphicComponent->SetIndexBuffer(
         m_Device.Get(), 
-        { 
-            0, 1, 4, 1, 5, 4, 
-            2, 7, 6, 2, 3, 7, 
-            1, 2, 6, 1, 6, 5, 
-            3, 0, 7, 0, 4, 7, 
-            4, 5, 6, 4, 6, 7, 
-            3, 1, 0, 3, 2, 1
-        }
-    );
+        { 0, 1, 4, 1, 5, 4, 
+          1, 2, 5, 5, 2, 6, 
+          7, 4, 5, 7, 5, 6, 
+          3, 1, 0, 3, 2, 1, 
+          7, 6, 2, 7, 2, 3, 
+          7, 3, 4, 4, 3, 0 });
     graphicComponent->SetVertexBuffer(
         m_Device.Get(),
         vertices
@@ -473,15 +480,16 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
 
     float* camPos = reinterpret_cast<float*>(&cameraPos);
 
+    
     {
         XMVECTOR lookatNormalized = XMVector3Normalize(lookAtPos);
-
-        if(input->IsKeyDown('W'))
+        
+        if (input->IsKeyDown('W'))
         {
             XMVECTOR moveForwardVec = XMVectorScale(lookAtPos, threshHold);
             cameraPos = XMVectorAdd(cameraPos, moveForwardVec);
             cameraPos.m128_f32[3] = 1.0f;
-
+            
             char buf[256];
             snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
             OutputDebugStringA(buf);
@@ -491,21 +499,22 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
             XMVECTOR moveBackwardVec = XMVectorScale(lookAtPos, -threshHold);
             cameraPos = XMVectorAdd(cameraPos, moveBackwardVec);
             cameraPos.m128_f32[3] = 1.0f;
-
+            
             char buf[256];
             snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
             OutputDebugStringA(buf);
         }
         else if (input->IsKeyDown('D'))
         {
-
+            
         }
         else if (input->IsKeyDown('A'))
         {
-
+            
         }
         return;
     }
+    
 
     //// increase fov
     //if (input->IsKeyDown('W'))
