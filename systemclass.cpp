@@ -206,7 +206,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 
 	// Get an external pointer to this object.	
-	ApplicationHandle = this;
+	g_ApplicationHandle = this;
 
 	// Get the instance of this application.
 	m_hinstance = GetModuleHandle(NULL);
@@ -264,8 +264,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	//}
 
 	// Create the window with the screen settings and get the handle to it.
-	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName, 
-						    WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
+	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME, m_applicationName, m_applicationName,
+						    WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_CAPTION | WS_MAXIMIZEBOX | WS_SYSMENU,
 						    posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
 
 	// Bring the window up on the screen and set it as main focus.
@@ -274,7 +274,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	SetFocus(m_hwnd);
 
 	// Hide the mouse cursor.
-	ShowCursor(false);
+	ShowCursor(true);
 
 	return;
 }
@@ -300,7 +300,7 @@ void SystemClass::ShutdownWindows()
 	m_hinstance = NULL;
 
 	// Release the pointer to this class.
-	ApplicationHandle = NULL;
+	g_ApplicationHandle = NULL;
 
 	return;
 }
@@ -327,7 +327,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		// All other messages pass to the message handler in the system class.
 		default:
 		{
-			return ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+			return g_ApplicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);
 		}
 	}
 }

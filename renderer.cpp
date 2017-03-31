@@ -481,7 +481,7 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
     float* camPos = reinterpret_cast<float*>(&cameraPos);
 
     
-    {
+    /*{
         XMVECTOR lookatNormalized = XMVector3Normalize(lookAtPos);
         
         if (input->IsKeyDown('W'))
@@ -513,7 +513,7 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
             
         }
         return;
-    }
+    }*/
     
 
     //// increase fov
