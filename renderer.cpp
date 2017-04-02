@@ -19,8 +19,8 @@ void Renderer::Initialize(HWND window)
 	InitRenderTargetView(m_SwapChain.Get());
 	InitViewPort();
 	
-	InitDepthStencilBuffer();
-	InitDepthStencil();
+    InitDepthStencilBufferAndView();
+    InitDepthStencilState();
 	InitRasterizerState();
 	
 	SetupTriangle();
@@ -105,7 +105,7 @@ void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr);
 }
 
-void Renderer::InitDepthStencilBuffer()
+void Renderer::InitDepthStencilBufferAndView()
 {
 	D3D11_TEXTURE2D_DESC depthStencilBufferDesc = {};
 
@@ -126,9 +126,20 @@ void Renderer::InitDepthStencilBuffer()
 			&depthStencilBufferDesc, 
 			nullptr, 
 			m_DepthStencilBuffer.GetAddressOf()));
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+    depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+    THROW_IF_FAILED(
+        m_Device->CreateDepthStencilView(
+            m_DepthStencilBuffer.Get(),
+            &depthStencilViewDesc,
+            m_DepthStencilView.GetAddressOf()));
 }
 
-void Renderer::InitDepthStencil()
+void Renderer::InitDepthStencilState()
 {
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 	depthStencilDesc.DepthEnable = true;
@@ -155,20 +166,6 @@ void Renderer::InitDepthStencil()
 		m_Device->CreateDepthStencilState(
 			&depthStencilDesc,
 			m_DepthStencilState.GetAddressOf()));
-
-	//m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
-
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	THROW_IF_FAILED(
-		m_Device->CreateDepthStencilView(
-			m_DepthStencilBuffer.Get(), 
-			&depthStencilViewDesc, 
-			m_DepthStencilView.GetAddressOf()));
 
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }

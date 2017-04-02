@@ -52,8 +52,8 @@ public:
 private:
 	void InitDeviceSwapChainAndDeviceContext(HWND window);
 	void InitRenderTargetView(IDXGISwapChain* swapChain);
-	void InitDepthStencilBuffer();
-	void InitDepthStencil();
+	void InitDepthStencilBufferAndView();
+	void InitDepthStencilState();
 	void InitRasterizerState();
 	void InitViewPort();
 
