@@ -50,7 +50,7 @@ public:
 	Renderer& operator=(const Renderer&) = delete;
 
 private:
-	void InitSwapChain(HWND window);
+	void InitDeviceSwapChainAndDeviceContext(HWND window);
 	void InitRenderTargetView(IDXGISwapChain* swapChain);
 	void InitDepthStencilBuffer();
 	void InitDepthStencil();

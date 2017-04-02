@@ -10,7 +10,7 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 
 	// TODO: handle exceptions here...
 }
-
+static bool flag = false;
 void GraphicsComponent::Render(ID3D11DeviceContext* context)
 {
 	UINT stride = sizeof(Vertex);
@@ -22,9 +22,12 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 	context->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetInputLayout(m_VertexInputLayout.Get());
 
-	context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-	context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
-		
+    if (!flag)
+    {
+        context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+        context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+        flag = true;
+    }
 	UINT startIndexLocation = 0;
 	UINT baseVertexLocation = 0;
 	context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);

@@ -15,7 +15,7 @@ Renderer::Renderer()
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
-	InitSwapChain(window);
+    InitDeviceSwapChainAndDeviceContext(window);
 	InitRenderTargetView(m_SwapChain.Get());
 	InitViewPort();
 	
@@ -40,7 +40,7 @@ void Renderer::Render(InputClass* input)
 	m_SwapChain->Present(0, 0);
 }
 
-void Renderer::InitSwapChain(HWND window)
+void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	swapChainDesc.BufferCount = 1;
@@ -76,7 +76,7 @@ void Renderer::InitSwapChain(HWND window)
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
-			D3D11_CREATE_DEVICE_SINGLETHREADED,
+            D3D11_CREATE_DEVICE_DEBUG,
 			feature,
 			ARRAYSIZE(feature),
 			D3D11_SDK_VERSION,
