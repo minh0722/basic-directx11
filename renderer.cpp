@@ -4,6 +4,7 @@
 #include "Matrix44f.h"
 #include "Camera.h"
 #include "inputclass.h"
+#include <cmath>
 
 float cos45 = std::cos(PI / 4);
 float sin45 = std::sin(PI / 4);
@@ -379,6 +380,22 @@ void Renderer::SetupCubeForRender(InputClass* input)
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
 
     Matrix44f worldViewProj;
+
+    // color shifting animation
+    {
+        static float count = 0.1f;
+        float transitionColor = 0.5f + 0.5f * sin(count);
+        count += 0.001;
+
+        //red = { 0.5f, 0.3f, transitionColor, 0.0f};
+        //green = { 0.2f, transitionColor, 0.6f, 0.0f};
+        //blue = { transitionColor, 0.3f, 0.5f, 0.0f};
+
+        red = { transitionColor, 0.3f, 0.4f, 0.0f };
+        green = { 0.2f, transitionColor, 0.6f, 0.0f };
+        blue = { 0.5f, 0.3f, transitionColor, 0.0f };
+
+    }
 
     // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =

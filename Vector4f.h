@@ -14,6 +14,8 @@ public:
     Vector4f operator-(const Vector4f& other) const;
     Vector4f operator/(float num) const;
     Vector4f operator*(const Matrix44f& other) const;
+    Vector4f& operator*=(const float num);
+    Vector4f& operator+=(const float num);
     Vector4f CrossProduct(const Vector4f& other) const;
 	float DotProduct(const Vector4f& other) const;
 
@@ -26,7 +28,7 @@ private:
     union
     {
         XMVECTOR m_v;
-        float fValues[4];
+        float m_fValues[4];
         struct  
         {
             float x, y, z, w;
