@@ -24,6 +24,8 @@ public:
 	void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) override;
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
 
+    void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
+    void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
 protected:
 
 	void InitVertexShader(ID3D11Device* device, const LPCWSTR filePath);

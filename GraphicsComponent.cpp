@@ -40,10 +40,10 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<u
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.ByteWidth = m_IndicesCount * sizeof(uint32_t);
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(uint32_t);
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
 
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = indices.data();
@@ -62,10 +62,10 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	desc.ByteWidth = verticesCount * sizeof(Vertex);
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = sizeof(Vertex);
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
 
 	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = vertices.data();
@@ -80,6 +80,41 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 void GraphicsComponent::SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology)
 {
 	context->IASetPrimitiveTopology(topology);
+}
+
+void GraphicsComponent::ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices)
+{
+    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+
+    THROW_IF_FAILED(
+        context->Map(
+            m_VertexBuffer.Get(),
+            0,
+            D3D11_MAP_WRITE_DISCARD,
+            0,
+            &mappedResource));
+
+    memcpy(mappedResource.pData, vertices.data(), sizeof(Vertex) * vertices.size());
+
+    context->Unmap(m_VertexBuffer.Get(), 0);
+}
+
+void GraphicsComponent::ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices)
+{
+    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+
+    THROW_IF_FAILED(
+        context->Map(                       // mapping the resource blocks gpu from accessing it
+            m_IndexBuffer.Get(),            // the resource
+            0,                              // the index of the subresource
+            D3D11_MAP_WRITE_DISCARD,        // Resource is mapped for writing; the previous contents of the resource will be undefined
+            0,                              // specifies what the CPU does when the GPU is busy (Optional)
+            &mappedResource));
+
+    memcpy(mappedResource.pData, indices.data(), sizeof(uint32_t) * indices.size());        // copy the updated data to the mapped subresource
+
+    context->Unmap(m_IndexBuffer.Get(), 0);
+
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

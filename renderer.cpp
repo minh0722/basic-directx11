@@ -450,26 +450,26 @@ void Renderer::SetupCubeForRender(InputClass* input)
         // multiply by world view proj matrix and divide by w
         //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
 
-        Vector4f wrongPos = (vertices[i].pos * worldViewProj);
-        wrongPos = wrongPos / wrongPos.w;
+        Vector4f pos = (vertices[i].pos * worldViewProj);
+        pos = pos / pos.w;
 
-        vertices[i].pos = wrongPos;
+        vertices[i].pos = pos;
     }
 
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
-    graphicComponent->SetIndexBuffer(
-        m_Device.Get(), 
+    graphicComponent->ChangeIndexBufferData(
+        m_DeviceContext.Get(), 
         { 0, 1, 4, 1, 5, 4, 
           1, 2, 5, 5, 2, 6, 
           7, 4, 5, 7, 5, 6, 
           3, 1, 0, 3, 2, 1, 
           7, 6, 2, 7, 2, 3, 
           7, 3, 4, 4, 3, 0 });
-    graphicComponent->SetVertexBuffer(
-        m_Device.Get(),
+    graphicComponent->ChangeVertexBufferData(
+        m_DeviceContext.Get(),
         vertices
         //{
         //	//			pos							color
