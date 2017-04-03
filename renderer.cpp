@@ -481,7 +481,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
 void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
 {
-    float threshHold = 0.01f;
+    float threshHold = 0.001f;
 
     //// increase far plane dist by 0.1f
     //if (input->IsKeyDown('Q'))
