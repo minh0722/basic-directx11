@@ -448,8 +448,12 @@ void Renderer::SetupCubeForRender(InputClass* input)
     for (size_t i = 0; i < vertices.size(); ++i)
     {
         // multiply by world view proj matrix and divide by w
-        XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
-        vertices[i].pos = pos;
+        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+
+        Vector4f wrongPos = (vertices[i].pos * worldViewProj);
+        wrongPos = wrongPos / wrongPos.w;
+
+        vertices[i].pos = wrongPos;
     }
 
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();

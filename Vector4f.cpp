@@ -56,10 +56,10 @@ Vector4f Vector4f::operator/(float num) const
 Vector4f Vector4f::operator*(const Matrix44f& other) const
 {
     return Vector4f(
-        x * other[0][0] + y * other[1][0] + z * other[2][0],
-        x * other[0][1] + y * other[1][1] + z * other[2][1],
-        x * other[0][2] + y * other[1][2] + z * other[2][2],
-        1.0f);
+        x * other[0][0] + y * other[1][0] + z * other[2][0] + w * other[3][0],
+        x * other[0][1] + y * other[1][1] + z * other[2][1] + w * other[3][1],
+        x * other[0][2] + y * other[1][2] + z * other[2][2] + w * other[3][2],
+        x * other[0][3] + y * other[1][3] + z * other[2][3] + w * other[3][3]);
 }
 
 Vector4f& Vector4f::operator*=(const float num)
