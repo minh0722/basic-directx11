@@ -24,7 +24,7 @@ public:
 
 
     float GetLength() const;
-private:
+public:
     union
     {
         XMVECTOR m_v;
@@ -38,4 +38,6 @@ private:
             float r, g, b, a;
         };
     };
+
+
 };

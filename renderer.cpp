@@ -143,11 +143,11 @@ void Renderer::InitDepthStencilBufferAndView()
 void Renderer::InitDepthStencilState()
 {
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-	depthStencilDesc.DepthEnable = true;
+    depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-	depthStencilDesc.StencilEnable = true;
+    depthStencilDesc.StencilEnable = false;//true;
 	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
@@ -178,7 +178,7 @@ void Renderer::InitRasterizerState()
 	desc.CullMode = D3D11_CULL_BACK;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
-	desc.DepthClipEnable = false;
+	desc.DepthClipEnable = true;
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.FrontCounterClockwise = true;
 	desc.MultisampleEnable = false;
@@ -349,7 +349,7 @@ void Renderer::SetupCube()
 
 	for (size_t i = 0; i < vertices.size(); ++i)
 	{
-		vertices[i].pos = vertices[i].pos * worldViewProj;
+        vertices[i].pos = vertices[i].pos * worldViewProj;
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -424,7 +424,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
+    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
@@ -441,13 +441,15 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 1000000.0f);
+    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
     worldViewProj = worldViewProj * orthographicProjMatrix;
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
-        vertices[i].pos = vertices[i].pos * worldViewProj;
+        // multiply by world view proj matrix and divide by w
+        XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+        vertices[i].pos = pos;
     }
 
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();

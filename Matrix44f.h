@@ -24,7 +24,7 @@ public:
     XMMATRIX GetMatrixComponent() const;
 	Vector4f* GetRows();
 
-private:
+public:
     union
     {
         XMMATRIX m_matrix;
