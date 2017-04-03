@@ -26,6 +26,10 @@ void Renderer::Initialize(HWND window)
 	
 	SetupTriangle();
 	SetupCube();
+
+    // first frame render
+    m_Cube.Render(m_DeviceContext.Get());
+    m_SwapChain->Present(0, 0);
 }
 
 void Renderer::Render(InputClass* input)
@@ -274,100 +278,82 @@ void Renderer::SetupCube()
 	};
 
 	///////////////////////////////////////////////////////////////////////
-    Vector4f color = { 1.0f, 0.0f, 0.0f, 0.0f };
+    Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
+    Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
+    Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
 
-	Matrix44f worldViewProj;
+    Matrix44f worldViewProj;
 
     // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =
     {
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 0.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 0.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 0.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 1.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 1.0f, 0.0f, 1.0f }, color },
-        { { 1.0f, 1.0f, 1.0f, 1.0f }, color },
-        { { 0.0f, 1.0f, 1.0f, 1.0f }, color }        
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },
+        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
+        { { 1.0f, 0.0f, 1.0f, 1.0f }, green },
+        { { 0.0f, 0.0f, 1.0f, 1.0f }, red },
+        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
+        { { 1.0f, 1.0f, 0.0f, 1.0f }, green },
+        { { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
+        { { 0.0f, 1.0f, 1.0f, 1.0f }, green },
+
+        { { 3.0f, 0.0f, 0.0f, 1.0f }, green },
+        { { 0.0f, 3.0f, 0.0f, 1.0f }, green },
+        { { 0.0f, 0.0f, 3.0f, 1.0f }, red }
     };
 
     // do transform
     XMMATRIX translation = XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
-    // rotation 45 degrees around y axis
-    //XMMATRIX rotation = XMMatrixRotationY(45);
-
-    //// do transform
-    //XMMATRIX translation1 =
-    //{
-    //    1.0f, 0.0f, 0.0f, 1.0f,
-    //    0.0f, 1.0f, 0.0f, 0.0f,
-    //    0.0f, 0.0f, 1.0f, 2.0f,
-    //    0.0f, 0.0f, 0.0f, 1.0f
-    //};
-
-    //// rotation 45 degrees around y axis
-    //XMMATRIX rotation1 =
-    //{
-    //    cos45, 0.0f, sin45, 0.0f,
-    //    0.0f,  1.0f, 0.0f,  0.0f,
-    //    -sin45, 0.0f, cos45, 0.0f,
-    //    0.0f,  0.0f, 0.0f,  1.0f
-    //};
-
     // rotate then translate
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
 
-	//Camera camera;
-	//camera.SetTranslation({ 1.0f, 1.0f, 1.0f, 1.0f });
-	//camera.SetRotation(Axis::Y, 30.0f);
-
 	//Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { -10.0f, 5.0f, -9.0f, 1.0f };
+    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static float fov = 120.0f;
     
-    XMMATRIX viewMatrix = XMMatrixLookAtLH({ -10.0f, 0.0f, -9.0f, 1.0f }, {1.0f, 0.0f, 2.0f, 1.0f}, { 0.0f, 1.0f, 0.0f, 0.0f});
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 
 	worldViewProj = worldMatrix * viewMatrix;
 
-	//float cuboitWidth = 10.0f;
-	//float cuboitHeight = 5.0f;
-	//float zFar = 10.0f;
-	//float zNear = 0.0f;
-	//Matrix44f orthographicProjMatrix;
-	//Vector4f* rows = orthographicProjMatrix.GetRows();
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
-	//rows[0][0] = 1 / cuboitWidth;
-	//rows[1][0] = 1 / cuboitHeight;
-	//rows[2][2] = -2 / (zFar - zNear);
-	//rows[2][3] = -((zFar + zNear) / (zFar - zNear));
-	//rows[3][3] = 1;
+	worldViewProj = worldViewProj * perspectiveProjMatrix;
 
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(120.0f * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        // multiply by world view proj matrix and divide by w
+        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
 
-	worldViewProj = worldViewProj * orthographicProjMatrix;
+        Vector4f pos = (vertices[i].pos * worldViewProj);
+        pos = pos / pos.w;
 
-	for (size_t i = 0; i < vertices.size(); ++i)
-	{
-        vertices[i].pos = vertices[i].pos * worldViewProj;
-	}
+        vertices[i].pos = pos;
+    }
 
 	///////////////////////////////////////////////////////////////////////
 
 	BaseComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 2, 2, 3, 3, 0, 4, 7, 7, 6, 6, 5, 5, 4, 4, 0, 7, 3, 6, 2, 5, 1 });
-    graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 4, 1, 5, 4, 1, 2, 5, 5, 2, 6, 7, 4, 5, 7, 5, 6, 3, 1, 0, 3, 2, 1, 7, 6, 2, 7, 2, 3, 7, 3, 4, 4, 3, 0 });
-	graphicComponent->SetVertexBuffer(
-		m_Device.Get(),
-		vertices
-		//{
-		//	//			pos							color
-		//	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
-		//	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
-		//	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
-		//}
-	);
+    graphicComponent->SetIndexBuffer(
+        m_Device.Get(),
+        { 0, 1, 4, 1, 5, 4,
+        1, 2, 5, 5, 2, 6,
+        7, 4, 5, 7, 5, 6,
+        3, 1, 0, 3, 2, 1,
+        7, 6, 2, 7, 2, 3,
+        7, 3, 4, 4, 3, 0 });
+    graphicComponent->SetVertexBuffer(
+        m_Device.Get(),
+        vertices
+        //{
+        //	//			pos							color
+        //	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
+        //	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
+        //	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
+        //}
+        );
     
 	m_Cube.AddComponent(graphicComponent);
 }
@@ -381,6 +367,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     Matrix44f worldViewProj;
 
+/*
     // color shifting animation
     {
         static float count = 0.1f;
@@ -396,6 +383,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
         blue = { 0.5f, 0.3f, transitionColor, 0.0f };
 
     }
+*/
 
     // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =
@@ -428,22 +416,21 @@ void Renderer::SetupCubeForRender(InputClass* input)
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
-    onInput(input, cameraPos, lookAtPos, fov);
+    bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
 
-    void* vptr = &cameraPos;
-    float* ptr = reinterpret_cast<float*>(vptr);
-    char debBuf[256];
-    snprintf(debBuf, 256, "Camera pos: %f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);    
-    OutputDebugStringA(debBuf);
+    //void* vptr = &cameraPos;
+    //float* ptr = reinterpret_cast<float*>(vptr);
+    //char debBuf[256];
+    //snprintf(debBuf, 256, "Camera pos: %f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);    
+    //OutputDebugStringA(debBuf);
 
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    Matrix44f viewM(viewMatrix);
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    XMMATRIX orthographicProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
-    worldViewProj = worldViewProj * orthographicProjMatrix;
+    worldViewProj = worldViewProj * perspectiveProjMatrix;
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
@@ -460,31 +447,35 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
-    graphicComponent->ChangeIndexBufferData(
-        m_DeviceContext.Get(), 
-        { 0, 1, 4, 1, 5, 4, 
-          1, 2, 5, 5, 2, 6, 
-          7, 4, 5, 7, 5, 6, 
-          3, 1, 0, 3, 2, 1, 
-          7, 6, 2, 7, 2, 3, 
-          7, 3, 4, 4, 3, 0 });
-    graphicComponent->ChangeVertexBufferData(
-        m_DeviceContext.Get(),
-        vertices
-        //{
-        //	//			pos							color
-        //	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
-        //	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
-        //	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
-        //}
-        );
-
+    
+    if (hasInput)
+    {
+        graphicComponent->ChangeIndexBufferData(
+            m_DeviceContext.Get(),
+            { 0, 1, 4, 1, 5, 4,
+              1, 2, 5, 5, 2, 6,
+              7, 4, 5, 7, 5, 6,
+              3, 1, 0, 3, 2, 1,
+              7, 6, 2, 7, 2, 3,
+              7, 3, 4, 4, 3, 0 });
+        graphicComponent->ChangeVertexBufferData(
+            m_DeviceContext.Get(),
+            vertices
+            //{
+            //	//			pos							color
+            //	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
+            //	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
+            //	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
+            //}
+            );
+    }
 
     ///////////////////////////////////////////////////////////////////////
 }
 
-void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
+bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
 {
+    bool hasInput = false;
     float threshHold = 0.001f;
 
     //// increase far plane dist by 0.1f
@@ -554,31 +545,38 @@ void Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
     if (input->IsKeyDown(unsigned int('E')))
     {
         camPos[0] += threshHold;
+        hasInput = true;
     }
     // derease camera x position
     else if (input->IsKeyDown('D'))
     {
         camPos[0] -= threshHold;
+        hasInput = true;
     }
     // increase camera y position
     else if (input->IsKeyDown('R'))
     {
         camPos[1] += threshHold;
+        hasInput = true;
     }
     // decrease camera y position
     else if (input->IsKeyDown('F'))
     {
         camPos[1] -= threshHold;
+        hasInput = true;
     }
     // increase camera z position
     else if (input->IsKeyDown('T'))
     {
         camPos[2] += threshHold;
+        hasInput = true;
     }
     // decrease camera z position
     else if (input->IsKeyDown('G'))
     {
         camPos[2] -= threshHold;
+        hasInput = true;
     }
 
+    return hasInput;
 }

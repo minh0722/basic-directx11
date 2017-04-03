@@ -61,7 +61,7 @@ private:
 	void SetupCube();
     void SetupCubeForRender(InputClass* input);
 
-    void onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtVector, float& fov);
+    bool onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtVector, float& fov);
 private:
 
 	ComPtr<ID3D11Device> m_Device;
