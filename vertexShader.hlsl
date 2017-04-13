@@ -1,3 +1,9 @@
+cbuffer ConstBuffer : register(b0)
+{
+    matrix world;
+    matrix view;
+    matrix proj;
+};
 
 struct VertexInput
 {
@@ -15,9 +21,10 @@ PixelOutput main(VertexInput inputVertex)
 {
 	PixelOutput output;
 
-	inputVertex.pos.w = 1.0f;
+    output.pos = mul(world, inputVertex.pos);
+    output.pos = mul(view, output.pos);
+    output.pos = mul(proj, output.pos);
 
-	output.pos = inputVertex.pos;
 	output.color = inputVertex.color;
 
 	return output;

@@ -7,6 +7,7 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 	InitVertexShader(desc.device, desc.vertexShaderFilePath);
 	InitPixelShader(desc.device, desc.pixelShaderFilePath);
 	InitVertexInputLayout(desc.device, desc.vertexShaderFilePath, desc.vertexInputLayout);
+    InitWorldViewProjBuffer(desc.device);
 
 	// TODO: handle exceptions here...
 }
@@ -21,6 +22,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 	context->IASetVertexBuffers(startSlot, numBuffers, m_VertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(m_IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetInputLayout(m_VertexInputLayout.Get());
+    context->VSSetConstantBuffers(0, 1, m_WorldViewProjBuffer.GetAddressOf());
 
     if (!flag)
     {
@@ -77,6 +79,23 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 			m_VertexBuffer.GetAddressOf()));
 }
 
+void GraphicsComponent::InitWorldViewProjBuffer(ID3D11Device* device)
+{
+    D3D11_BUFFER_DESC desc = {};
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.ByteWidth = sizeof(WorldViewProj);
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+    desc.StructureByteStride = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+
+    THROW_IF_FAILED(
+        device->CreateBuffer(
+            &desc,
+            nullptr,
+            m_WorldViewProjBuffer.GetAddressOf()));
+}
+
 void GraphicsComponent::SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology)
 {
 	context->IASetPrimitiveTopology(topology);
@@ -115,6 +134,23 @@ void GraphicsComponent::ChangeIndexBufferData(ID3D11DeviceContext* context, cons
 
     context->Unmap(m_IndexBuffer.Get(), 0);
 
+}
+
+void GraphicsComponent::ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj)
+{
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
+    
+    THROW_IF_FAILED(
+        context->Map(
+            m_WorldViewProjBuffer.Get(),
+            0,
+            D3D11_MAP_WRITE_DISCARD,
+            0,
+            &mappedSubresource));
+
+    memcpy(mappedSubresource.pData, &worldViewProj, sizeof(WorldViewProj));
+
+    context->Unmap(m_WorldViewProjBuffer.Get(), 0);
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

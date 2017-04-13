@@ -26,8 +26,10 @@ public:
 
     void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
     void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
+    void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
 protected:
 
+    void InitWorldViewProjBuffer(ID3D11Device* device);
 	void InitVertexShader(ID3D11Device* device, const LPCWSTR filePath);
 	void InitPixelShader(ID3D11Device* device, const LPCWSTR filePath);
 	void InitVertexInputLayout(
@@ -41,6 +43,8 @@ private:
 
 	ComPtr<ID3D11Buffer> m_VertexBuffer;
 	ComPtr<ID3D11Buffer> m_IndexBuffer;
+
+    ComPtr<ID3D11Buffer> m_WorldViewProjBuffer;
 
 	ComPtr<ID3D11InputLayout> m_VertexInputLayout;
 

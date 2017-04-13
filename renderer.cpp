@@ -81,7 +81,7 @@ void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
-            D3D11_CREATE_DEVICE_SINGLETHREADED,
+            D3D11_CREATE_DEVICE_DEBUG,
 			feature,
 			ARRAYSIZE(feature),
 			D3D11_SDK_VERSION,
@@ -282,8 +282,6 @@ void Renderer::SetupCube()
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
 
-    Matrix44f worldViewProj;
-
     // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =
     {
@@ -303,39 +301,19 @@ void Renderer::SetupCube()
 
     // do transform
     XMMATRIX translation = XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-
-    // rotate then translate
-    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
-
+    
 	//Matrix44f viewMatrix = camera.GetViewMatrix();
     static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
+    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-	worldViewProj = worldMatrix * viewMatrix;
-
     XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
-
-	worldViewProj = worldViewProj * perspectiveProjMatrix;
-
-    for (size_t i = 0; i < vertices.size(); ++i)
-    {
-        // multiply by world view proj matrix and divide by w
-        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
-
-        Vector4f pos = (vertices[i].pos * worldViewProj);
-        pos = pos / pos.w;
-
-        vertices[i].pos = pos;
-    }
-
-	///////////////////////////////////////////////////////////////////////
-
-	BaseComponent* graphicComponent = new GraphicsComponent(desc);
+        
+	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 2, 2, 3, 3, 0, 4, 7, 7, 6, 6, 5, 5, 4, 4, 0, 7, 3, 6, 2, 5, 1 });
+
     graphicComponent->SetIndexBuffer(
         m_Device.Get(),
         { 0, 1, 4, 1, 5, 4,
@@ -344,17 +322,16 @@ void Renderer::SetupCube()
         3, 1, 0, 3, 2, 1,
         7, 6, 2, 7, 2, 3,
         7, 3, 4, 4, 3, 0 });
+
     graphicComponent->SetVertexBuffer(
         m_Device.Get(),
         vertices
-        //{
-        //	//			pos							color
-        //	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
-        //	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
-        //	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
-        //}
         );
     
+    graphicComponent->ChangeWorldViewProjBufferData(
+        m_DeviceContext.Get(),
+        {worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix});
+
 	m_Cube.AddComponent(graphicComponent);
 }
 
@@ -407,10 +384,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     // rotation 45 degrees around y axis
     //XMMATRIX rotation = XMMatrixRotationY(45);
-
-    // rotate then translate
-    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
-    
+        
     //Matrix44f viewMatrix = camera.GetViewMatrix();
     static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
@@ -418,35 +392,13 @@ void Renderer::SetupCubeForRender(InputClass* input)
     
     bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
 
-    //void* vptr = &cameraPos;
-    //float* ptr = reinterpret_cast<float*>(vptr);
-    //char debBuf[256];
-    //snprintf(debBuf, 256, "Camera pos: %f %f %f %f\n", ptr[0], ptr[1], ptr[2], ptr[3]);    
-    //OutputDebugStringA(debBuf);
-
+    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-    worldViewProj = worldMatrix * viewMatrix;
-
     XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
-
-    worldViewProj = worldViewProj * perspectiveProjMatrix;
-
-    for (size_t i = 0; i < vertices.size(); ++i)
-    {
-        // multiply by world view proj matrix and divide by w
-        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
-
-        Vector4f pos = (vertices[i].pos * worldViewProj);
-        pos = pos / pos.w;
-
-        vertices[i].pos = pos;
-    }
-
+        
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    //graphicComponent->SetIndexBuffer(m_Device.Get(), { 0, 1, 1, 5, 5, 4, 4, 0, 1, 2, 2, 3, 3, 0, 3, 7, 7, 4, 0, 8, 0, 9, 0, 10 });
     
     if (hasInput)
     {
@@ -458,16 +410,15 @@ void Renderer::SetupCubeForRender(InputClass* input)
               3, 1, 0, 3, 2, 1,
               7, 6, 2, 7, 2, 3,
               7, 3, 4, 4, 3, 0 });
+        
         graphicComponent->ChangeVertexBufferData(
             m_DeviceContext.Get(),
             vertices
-            //{
-            //	//			pos							color
-            //	{ { -1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom left
-            //	{ {  1.0f, -1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// bottom right
-            //	{ {  0.0f,  1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f, 0.0f, 0.0f } },	// top middle
-            //}
             );
+
+        graphicComponent->ChangeWorldViewProjBufferData(
+            m_DeviceContext.Get(),
+            { worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -475,6 +426,11 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
 bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
 {
+    if (!input)
+    {
+        return false;
+    }
+
     bool hasInput = false;
     float threshHold = 0.001f;
 

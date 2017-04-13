@@ -48,6 +48,13 @@ enum Axis
     AxisCount
 };
 
+struct WorldViewProj
+{
+    XMMATRIX world;
+    XMMATRIX view;
+    XMMATRIX proj;
+};
+
 namespace SafetyCheck
 {
 	inline void ThrowIfFailed(HRESULT hr, char* file, int line)
