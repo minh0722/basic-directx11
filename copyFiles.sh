@@ -16,6 +16,10 @@ elif [ "$1" == "--vstogit" ]; then
 	cp "${FOLDER}"/*.h .
 	cp "${FOLDER}"/*.cpp .
 	cp "${FOLDER}"/*.hlsl .
+	cp "${FOLDER}"/../dxProject.sln .
+	cp "${FOLDER}"/dxProject.vcxproj .
+	cp "${FOLDER}"/dxProject.vcxproj.filters .
+	cp "${FOLDER}"/dxProject.vcxproj.user .
 else
 	echo "Invalid argument was given"
 	exit 0
