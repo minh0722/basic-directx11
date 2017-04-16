@@ -15,3 +15,6 @@ vitosha/test/irradiance/win32/window.cpp in render_frame()
 Projective geometry and Oriented projective geometry
     - when w > 0 and w < 0, these are 2 different points.
     - when w < 0, then the point is behind the camera, we have to be careful because this point will be projected on the near plane of the frustum, which is wrong
+
+Note:
+- when the perspective divide is done on the cpu, the cube seems to be drawn on the whole screen when the camera is close to it, but that problem is gone when the perspective divide is done on the gpu
