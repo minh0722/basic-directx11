@@ -18,3 +18,6 @@ Projective geometry and Oriented projective geometry
 
 Note:
 - when the perspective divide is done on the cpu, the cube seems to be drawn on the whole screen when the camera is close to it, but that problem is gone when the perspective divide is done on the gpu
+
+To create the descriptor structs more easily for various directx api methods, use the these CD3D11 structs:
+https://msdn.microsoft.com/en-us/library/windows/desktop/jj151647(v=vs.85).aspx
