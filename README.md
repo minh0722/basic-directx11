@@ -21,3 +21,11 @@ Note:
 
 To create the descriptor structs more easily for various directx api methods, use the these CD3D11 structs:
 https://msdn.microsoft.com/en-us/library/windows/desktop/jj151647(v=vs.85).aspx
+
+rendering schema:
+- a scene with shapes objects. Have them keep only world positions
+- a separate camera class that takes input to update the camera positions
+- the camera should be in renderer, so is the scene
+- the render function of the renderer should update the camera position every frame
+- then the scene is rendered with the camera as parameter to do the view proj transformation to the shape objects
+- then render the objects
