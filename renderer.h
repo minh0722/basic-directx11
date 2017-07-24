@@ -42,9 +42,23 @@ class Renderer
 public:
 	Renderer();
 
+    static Renderer& GetInstance()
+    {
+        // not thread safe
+        if (!ms_Instance)
+        {
+            ms_Instance = new Renderer;
+        }
+
+        return *ms_Instance;
+    }
+
 	void Initialize(HWND window);
 	
 	void Render(InputClass* input);
+
+    ID3D11Device* GetDevice();
+    ID3D11DeviceContext* GetContext();
 
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
@@ -59,10 +73,13 @@ private:
 
 	void SetupTriangle();
 	void SetupCube();
+    void SetupAxis();
+
     void SetupCubeForRender(InputClass* input);
 
     bool onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtVector, float& fov);
 private:
+    static Renderer* ms_Instance;
 
 	ComPtr<ID3D11Device> m_Device;
 	ComPtr<ID3D11DeviceContext> m_DeviceContext;
@@ -77,5 +94,7 @@ private:
 
 	Shape m_Triangle;
 	Shape m_Cube;
+    Shape m_Axis;
 };
 
+#define g_Renderer Renderer::GetInstance()

@@ -146,8 +146,6 @@ void SystemClass::Run()
 		}
 		m_Renderer.Render(m_Input);
 	}
-
-	return;
 }
 
 

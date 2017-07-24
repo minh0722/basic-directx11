@@ -9,6 +9,8 @@
 float cos45 = std::cos(PI / 4);
 float sin45 = std::sin(PI / 4);
 
+Renderer* Renderer::ms_Instance = nullptr;
+
 Renderer::Renderer()
 {
 }
@@ -26,10 +28,7 @@ void Renderer::Initialize(HWND window)
 	
 	SetupTriangle();
 	SetupCube();
-
-    // first frame render
-    m_Cube.Render(m_DeviceContext.Get());
-    m_SwapChain->Present(0, 0);
+    SetupAxis();
 }
 
 void Renderer::Render(InputClass* input)
@@ -41,8 +40,19 @@ void Renderer::Render(InputClass* input)
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupCubeForRender(input);
 	m_Cube.Render(m_DeviceContext.Get());
-		
+    m_Axis.Render(m_DeviceContext.Get());
+
 	m_SwapChain->Present(0, 0);
+}
+
+ID3D11Device* Renderer::GetDevice()
+{
+    return m_Device.Get();
+}
+
+ID3D11DeviceContext* Renderer::GetContext()
+{
+    return m_DeviceContext.Get();
 }
 
 void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
@@ -335,6 +345,95 @@ void Renderer::SetupCube()
 	m_Cube.AddComponent(graphicComponent);
 }
 
+void Renderer::SetupAxis()
+{
+    std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+    vertexShaderInputLayout[0].SemanticName = "POSITION";
+    vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+    vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+    vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+    vertexShaderInputLayout[0].AlignedByteOffset = 0;
+    vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+    vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+    vertexShaderInputLayout[1].SemanticName = "COLOR";
+    vertexShaderInputLayout[1].SemanticIndex = 0;
+    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    vertexShaderInputLayout[1].InputSlot = 0;
+    vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
+    GraphicsComponent::GraphicsComponentDesc desc =
+    {
+        m_Device.Get(),
+        L"vertexShader.cso",
+        L"pixelShader.cso",
+        vertexShaderInputLayout
+    };
+
+    ///////////////////////////////////////////////////////////////////////
+    Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
+    Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
+    Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
+
+    Matrix44f worldViewProj;
+
+    // left handed coordinate system. Same as directx
+    std::vector<Vertex> vertices =
+    {
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
+        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
+        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
+        { { 1.0f, 0.0f, 1.0f, 1.0f }, blue }
+    };
+
+    // do transform
+    XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+    Matrix44f worldMatrix = Matrix44f(translation);
+
+    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static float fov = 120.0f;
+
+    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+
+    worldViewProj = worldMatrix * viewMatrix;
+
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+
+    worldViewProj = worldViewProj * perspectiveProjMatrix;
+
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        // multiply by world view proj matrix and divide by w
+        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+
+        Vector4f pos = (vertices[i].pos * worldViewProj);
+        pos = pos / pos.w;
+
+        vertices[i].pos = pos;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+
+    BaseComponent* graphicComponent = new GraphicsComponent(desc);
+    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+    graphicComponent->SetIndexBuffer(
+        m_Device.Get(),
+        { 0, 1, 2, 3, 4, 5 });
+
+    graphicComponent->SetVertexBuffer(
+        m_Device.Get(),
+        vertices
+    );
+
+    m_Axis.AddComponent(graphicComponent);
+}
+
 void Renderer::SetupCubeForRender(InputClass* input)
 {
     ///////////////////////////////////////////////////////////////////////
@@ -422,6 +521,49 @@ void Renderer::SetupCubeForRender(InputClass* input)
     }
 
     ///////////////////////////////////////////////////////////////////////
+    return;
+    /* NOW UPDATING THE AXIS. IT'S UGLY TO UPDATE HERE, WILL REIMPLEMENT EVERYTHING ONCE THIS WORKS */
+
+    std::vector<Vertex> axisVertices =
+    {
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
+        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
+        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
+        { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
+        { { 0.0f, 0.0f, 1.0f, 1.0f }, blue }
+    };
+    
+    XMMATRIX axisTranslation = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    Matrix44f axisWorldMatrix = Matrix44f(translation);
+    worldViewProj = axisWorldMatrix * viewMatrix;
+    worldViewProj = worldViewProj * perspectiveProjMatrix;
+
+    for (size_t i = 0; i < axisVertices.size(); ++i)
+    {
+        // multiply by world view proj matrix and divide by w
+        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+
+        Vector4f pos = (axisVertices[i].pos * worldViewProj);
+        pos = pos / pos.w;
+
+        axisVertices[i].pos = pos;
+    }
+
+    graphicComponent = m_Axis.GetGraphicsComponent();
+    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+    if (hasInput)
+    {
+        graphicComponent->ChangeIndexBufferData(
+            m_DeviceContext.Get(),
+            { 0, 1, 2, 3, 4, 5 });
+
+        graphicComponent->ChangeVertexBufferData(
+            m_DeviceContext.Get(),
+            vertices
+        );
+    }
 }
 
 bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
@@ -448,7 +590,7 @@ bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
     float* camPos = reinterpret_cast<float*>(&cameraPos);
 
     
-    /*{
+    {
         XMVECTOR lookatNormalized = XMVector3Normalize(lookAtPos);
         
         if (input->IsKeyDown('W'))
@@ -460,6 +602,8 @@ bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
             char buf[256];
             snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
             OutputDebugStringA(buf);
+
+            return true;
         }
         else if (input->IsKeyDown('S'))
         {
@@ -470,17 +614,19 @@ bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
             char buf[256];
             snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
             OutputDebugStringA(buf);
+
+            return true;
         }
-        else if (input->IsKeyDown('D'))
-        {
-            
-        }
-        else if (input->IsKeyDown('A'))
-        {
-            
-        }
-        return;
-    }*/
+        //else if (input->IsKeyDown('D'))
+        //{
+        //    
+        //}
+        //else if (input->IsKeyDown('A'))
+        //{
+        //    
+        //}
+        return false;
+    }
     
 
     //// increase fov
