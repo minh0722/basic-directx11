@@ -112,13 +112,9 @@ void SystemClass::Shutdown()
 
 void SystemClass::Run()
 {
-	MSG msg;
+	MSG msg = {};
 	bool done, result;
-
-
-	// Initialize the message structure.
-	ZeroMemory(&msg, sizeof(MSG));
-	
+			
 	// Loop until there is a quit message from the window or the user.
 	done = false;
 	while(!done)
@@ -225,7 +221,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wc.lpszMenuName  = NULL;
-	wc.lpszClassName = m_applicationName;
+	wc.lpszClassName = (LPCSTR)m_applicationName;
 	wc.cbSize        = sizeof(WNDCLASSEX);
 	
 	// Register the window class.
@@ -264,7 +260,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	//}
 
 	// Create the window with the screen settings and get the handle to it.
-	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME, m_applicationName, m_applicationName,
+	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME, (LPCSTR)m_applicationName, (LPCSTR)m_applicationName,
 						    WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP | WS_CAPTION | WS_MAXIMIZEBOX | WS_SYSMENU,
 						    posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
 
@@ -296,7 +292,7 @@ void SystemClass::ShutdownWindows()
 	m_hwnd = NULL;
 
 	// Remove the application instance.
-	UnregisterClass(m_applicationName, m_hinstance);
+	UnregisterClass((LPCSTR)m_applicationName, m_hinstance);
 	m_hinstance = NULL;
 
 	// Release the pointer to this class.

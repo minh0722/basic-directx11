@@ -309,7 +309,7 @@ void Renderer::SetupCube()
     
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
 	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -394,7 +394,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
     XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
