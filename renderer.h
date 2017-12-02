@@ -41,6 +41,7 @@ class Renderer
 {
 public:
 	Renderer();
+	~Renderer();
 
     static Renderer& GetInstance()
     {

@@ -163,7 +163,7 @@ void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR fil
 			blob->GetBufferPointer(),
 			blob->GetBufferSize(),
 			nullptr,
-			m_VertexShader.GetAddressOf()));
+			m_VertexShader.ReleaseAndGetAddressOf()));
 }
 
 void GraphicsComponent::InitPixelShader(ID3D11Device* device, const LPCWSTR filePath)
@@ -176,7 +176,7 @@ void GraphicsComponent::InitPixelShader(ID3D11Device* device, const LPCWSTR file
 			blob->GetBufferPointer(),
 			blob->GetBufferSize(),
 			nullptr,
-			m_PixelShader.GetAddressOf()));
+			m_PixelShader.ReleaseAndGetAddressOf()));
 }
 
 void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, const LPCWSTR filePath, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc)

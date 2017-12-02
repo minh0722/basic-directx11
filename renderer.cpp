@@ -15,6 +15,10 @@ Renderer::Renderer()
 {
 }
 
+Renderer::~Renderer()
+{
+}
+
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
@@ -115,7 +119,7 @@ void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 		m_Device->CreateRenderTargetView(
 			backBufferTexture.Get(),
 			nullptr,
-			m_RenderTargetView.GetAddressOf()));
+			m_RenderTargetView.ReleaseAndGetAddressOf()));
 
 	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr);
 }
@@ -140,7 +144,7 @@ void Renderer::InitDepthStencilBufferAndView()
 		m_Device->CreateTexture2D(
 			&depthStencilBufferDesc, 
 			nullptr, 
-			m_DepthStencilBuffer.GetAddressOf()));
+			m_DepthStencilBuffer.ReleaseAndGetAddressOf()));
 
     D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
     depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -151,7 +155,7 @@ void Renderer::InitDepthStencilBufferAndView()
         m_Device->CreateDepthStencilView(
             m_DepthStencilBuffer.Get(),
             &depthStencilViewDesc,
-            m_DepthStencilView.GetAddressOf()));
+            m_DepthStencilView.ReleaseAndGetAddressOf()));
 }
 
 void Renderer::InitDepthStencilState()
@@ -180,7 +184,7 @@ void Renderer::InitDepthStencilState()
 	THROW_IF_FAILED(
 		m_Device->CreateDepthStencilState(
 			&depthStencilDesc,
-			m_DepthStencilState.GetAddressOf()));
+			m_DepthStencilState.ReleaseAndGetAddressOf()));
 
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
@@ -199,7 +203,7 @@ void Renderer::InitRasterizerState()
 	desc.ScissorEnable = false;
 	desc.SlopeScaledDepthBias = 0.0f;
 
-	THROW_IF_FAILED(m_Device->CreateRasterizerState(&desc, m_RasterizerState.GetAddressOf()));
+	THROW_IF_FAILED(m_Device->CreateRasterizerState(&desc, m_RasterizerState.ReleaseAndGetAddressOf()));
 
 	m_DeviceContext->RSSetState(m_RasterizerState.Get());
 }
