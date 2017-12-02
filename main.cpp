@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 {
 	SystemClass* system = new SystemClass;
 	system->Run();
-
+	delete system;
 
 
 	return 0;
