@@ -77,19 +77,19 @@ private:
 
     void SetupCubeForRender(InputClass* input);
 
-    bool onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtVector, float& fov);
+    bool onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtVector, float& fov);
 private:
     static Renderer* ms_Instance;
 
-	ComPtr<ID3D11Device> m_Device;
-	ComPtr<ID3D11DeviceContext> m_DeviceContext;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;
 
-	ComPtr<IDXGISwapChain> m_SwapChain;
-	ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
-	ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
-	ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
-	ComPtr<ID3D11RasterizerState> m_RasterizerState;
-	ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_RasterizerState;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_DepthStencilBuffer;
 	HWND m_Window;
 
 	Shape m_Triangle;

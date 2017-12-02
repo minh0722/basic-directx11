@@ -26,9 +26,6 @@
 #include <cmath>
 #include <cassert>
 
-using namespace Microsoft::WRL;
-using namespace DirectX;
-
 static const UINT screenWidth = 1080;
 static const UINT screenHeight = 720;
 
@@ -50,9 +47,9 @@ enum Axis
 
 struct WorldViewProj
 {
-    XMMATRIX world;
-    XMMATRIX view;
-    XMMATRIX proj;
+    DirectX::XMMATRIX world;
+	DirectX::XMMATRIX view;
+	DirectX::XMMATRIX proj;
 };
 
 namespace SafetyCheck

@@ -2,10 +2,10 @@
 
 Matrix44f::Matrix44f()
 {
-    m_matrix = XMMatrixIdentity();
+    m_matrix = DirectX::XMMatrixIdentity();
 }
 
-Matrix44f::Matrix44f(const XMMATRIX& other)
+Matrix44f::Matrix44f(const DirectX::XMMATRIX& other)
 {
     m_matrix = other;
 }
@@ -41,7 +41,7 @@ Matrix44f& Matrix44f::operator*=(const Matrix44f& other)
     return *this;
 }
 
-Matrix44f& Matrix44f::operator*=(const XMMATRIX& other)
+Matrix44f& Matrix44f::operator*=(const DirectX::XMMATRIX& other)
 {
     m_matrix *= other;
 
@@ -60,8 +60,8 @@ Matrix44f Matrix44f::operator*(const Matrix44f& other)
 
 Matrix44f Matrix44f::GetInverseMatrix()
 {
-    XMMATRIX input(&m_elements[0][0]);
-    input = XMMatrixInverse(nullptr, input);
+	DirectX::XMMATRIX input(&m_elements[0][0]);
+    input = DirectX::XMMatrixInverse(nullptr, input);
 
     Matrix44f result;
     memcpy(result.m_elements, &input.r[0], 16 * sizeof(float));
@@ -69,7 +69,7 @@ Matrix44f Matrix44f::GetInverseMatrix()
     return result;
 }
 
-XMMATRIX Matrix44f::GetMatrixComponent() const
+DirectX::XMMATRIX Matrix44f::GetMatrixComponent() const
 {
     return m_matrix;
 }

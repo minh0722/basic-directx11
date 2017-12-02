@@ -4,12 +4,12 @@
 class RenderTarget
 {
 public:
-	RenderTarget(ComPtr<ID3D11Device>& device, ComPtr<IDXGISwapChain>& swapChain);
-	RenderTarget(ComPtr<ID3D11Device>& device, D3D11_RENDER_TARGET_VIEW_DESC desc);
+	RenderTarget(Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain);
+	RenderTarget(Microsoft::WRL::ComPtr<ID3D11Device>& device, D3D11_RENDER_TARGET_VIEW_DESC desc);
 
 private:
-	ComPtr<ID3D11Resource> m_RenderTarget;
-	ComPtr<ID3D11RenderTargetView> m_RTV;
+	Microsoft::WRL::ComPtr<ID3D11Resource> m_RenderTarget;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RTV;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,9 +25,9 @@ public:
 	void CreateRenderTarget();
 	
 private:
-	ComPtr<ID3D11Device> m_Device;
-	ComPtr<ID3D11DeviceContext> m_DeviceContext;
-	ComPtr<IDXGISwapChain> m_SwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -104,7 +104,7 @@ void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 
 void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 {
-	ComPtr<ID3D11Texture2D> backBufferTexture;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBufferTexture;
 	THROW_IF_FAILED(
 		swapChain->GetBuffer(
 			0,
@@ -310,16 +310,16 @@ void Renderer::SetupCube()
     };
 
     // do transform
-    XMMATRIX translation = XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
     
 	//Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
 	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -391,19 +391,19 @@ void Renderer::SetupAxis()
     };
 
     // do transform
-    XMMATRIX translation = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
     Matrix44f worldMatrix = Matrix44f(translation);
 
-    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
 
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
+	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
     worldViewProj = worldViewProj * perspectiveProjMatrix;
 
@@ -479,21 +479,21 @@ void Renderer::SetupCubeForRender(InputClass* input)
     };
 
     // do transform
-    XMMATRIX translation = XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
     // rotation 45 degrees around y axis
     //XMMATRIX rotation = XMMatrixRotationY(45);
         
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
     bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
 
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
     GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
@@ -534,7 +534,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
         { { 0.0f, 0.0f, 1.0f, 1.0f }, blue }
     };
     
-    XMMATRIX axisTranslation = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX axisTranslation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
     Matrix44f axisWorldMatrix = Matrix44f(translation);
     worldViewProj = axisWorldMatrix * viewMatrix;
     worldViewProj = worldViewProj * perspectiveProjMatrix;
@@ -566,7 +566,7 @@ void Renderer::SetupCubeForRender(InputClass* input)
     }
 }
 
-bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtPos, float& fov)
+bool Renderer::onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtPos, float& fov)
 {
     if (!input)
     {
@@ -591,12 +591,12 @@ bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
 
     
     {
-        XMVECTOR lookatNormalized = XMVector3Normalize(lookAtPos);
+		DirectX::XMVECTOR lookatNormalized = DirectX::XMVector3Normalize(lookAtPos);
         
         if (input->IsKeyDown('W'))
         {
-            XMVECTOR moveForwardVec = XMVectorScale(lookAtPos, threshHold);
-            cameraPos = XMVectorAdd(cameraPos, moveForwardVec);
+			DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorScale(lookAtPos, threshHold);
+            cameraPos = DirectX::XMVectorAdd(cameraPos, moveForwardVec);
             cameraPos.m128_f32[3] = 1.0f;
             
             char buf[256];
@@ -607,8 +607,8 @@ bool Renderer::onInput(InputClass* input, XMVECTOR& cameraPos, XMVECTOR& lookAtP
         }
         else if (input->IsKeyDown('S'))
         {
-            XMVECTOR moveBackwardVec = XMVectorScale(lookAtPos, -threshHold);
-            cameraPos = XMVectorAdd(cameraPos, moveBackwardVec);
+			DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorScale(lookAtPos, -threshHold);
+            cameraPos = DirectX::XMVectorAdd(cameraPos, moveBackwardVec);
             cameraPos.m128_f32[3] = 1.0f;
             
             char buf[256];

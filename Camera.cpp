@@ -26,7 +26,7 @@ void Camera::SetTranslation(const Vector4f& translation)
 
 void Camera::SetRotation(Axis axis, float degree)
 {
-	XMMATRIX rotationMatrix;
+	DirectX::XMMATRIX rotationMatrix;
 	float radians = degree * RADIAN;
 	float cosRes = std::cos(radians);
 	float sinRes = std::sin(radians);

@@ -17,7 +17,7 @@ Vector4f::Vector4f(const Vector4f& other)
 	m_fValues[3] = other.m_fValues[3];
 }
 
-Vector4f::Vector4f(const XMVECTOR& other)
+Vector4f::Vector4f(const DirectX::XMVECTOR& other)
 {
     m_v = other;
 }
@@ -113,6 +113,6 @@ float Vector4f::operator[](uint16_t index) const
 
 float Vector4f::GetLength() const
 {
-    Vector4f res(XMVector3Length(m_v));
+    Vector4f res(DirectX::XMVector3Length(m_v));
     return res.m_fValues[0];
 }

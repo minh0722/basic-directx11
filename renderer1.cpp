@@ -1,8 +1,8 @@
 #include "renderer1.h"
 
-RenderTarget::RenderTarget(ComPtr<ID3D11Device>& device, ComPtr<IDXGISwapChain>& swapChain)
+RenderTarget::RenderTarget(Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain)
 {
-	ComPtr<ID3D11Texture2D> backBufferTexture;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBufferTexture;
 	THROW_IF_FAILED(
 		swapChain->GetBuffer(
 			0,
@@ -16,9 +16,9 @@ RenderTarget::RenderTarget(ComPtr<ID3D11Device>& device, ComPtr<IDXGISwapChain>&
 			m_RTV.GetAddressOf()));
 }
 
-RenderTarget::RenderTarget(ComPtr<ID3D11Device>& device, D3D11_RENDER_TARGET_VIEW_DESC desc)
+RenderTarget::RenderTarget(Microsoft::WRL::ComPtr<ID3D11Device>& device, D3D11_RENDER_TARGET_VIEW_DESC desc)
 {
-	ComPtr<ID3D11Resource> renderTarget;
+	Microsoft::WRL::ComPtr<ID3D11Resource> renderTarget;
 	
 	switch (desc.ViewDimension)
 	{
