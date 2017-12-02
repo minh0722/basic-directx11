@@ -403,7 +403,7 @@ void Renderer::SetupAxis()
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
     worldViewProj = worldViewProj * perspectiveProjMatrix;
 
