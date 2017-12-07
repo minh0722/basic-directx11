@@ -76,7 +76,13 @@ private:
 	void SetupCube();
     void SetupAxis();
 
-    void SetupCubeForRender(InputClass* input);
+	enum Primitive
+	{
+		Triangle,
+		Line
+	};
+
+    void SetupCubeForRender(InputClass* input, Primitive prim = Triangle);
 
     bool onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtVector, float& fov);
 private:

@@ -44,6 +44,7 @@ void Renderer::Render(InputClass* input)
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupCubeForRender(input);
 	m_Cube.Render(m_DeviceContext.Get());
+	SetupCubeForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
@@ -438,7 +439,7 @@ void Renderer::SetupAxis()
     m_Axis.AddComponent(graphicComponent);
 }
 
-void Renderer::SetupCubeForRender(InputClass* input)
+void Renderer::SetupCubeForRender(InputClass* input, Primitive prim)
 {
     ///////////////////////////////////////////////////////////////////////
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -447,127 +448,100 @@ void Renderer::SetupCubeForRender(InputClass* input)
 
     Matrix44f worldViewProj;
 
-/*
-    // color shifting animation
-    {
-        static float count = 0.1f;
-        float transitionColor = 0.5f + 0.5f * sin(count);
-        count += 0.001;
-
-        //red = { 0.5f, 0.3f, transitionColor, 0.0f};
-        //green = { 0.2f, transitionColor, 0.6f, 0.0f};
-        //blue = { transitionColor, 0.3f, 0.5f, 0.0f};
-
-        red = { transitionColor, 0.3f, 0.4f, 0.0f };
-        green = { 0.2f, transitionColor, 0.6f, 0.0f };
-        blue = { 0.5f, 0.3f, transitionColor, 0.0f };
-
-    }
-*/
-
-    // left handed coordinate system. Same as directx
-    std::vector<Vertex> vertices =
-    {
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },
-        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
-        { { 1.0f, 0.0f, 1.0f, 1.0f }, green },
-        { { 0.0f, 0.0f, 1.0f, 1.0f }, red },
-        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
-        { { 1.0f, 1.0f, 0.0f, 1.0f }, green },
-        { { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
-        { { 0.0f, 1.0f, 1.0f, 1.0f }, green },
-
-        { { 3.0f, 0.0f, 0.0f, 1.0f }, green },
-        { { 0.0f, 3.0f, 0.0f, 1.0f }, green },
-        { { 0.0f, 0.0f, 3.0f, 1.0f }, red }
-    };
-
-    // do transform
+	// do transform
 	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
-    // rotation 45 degrees around y axis
-    //XMMATRIX rotation = XMMatrixRotationY(45);
-        
-    //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
-    static float fov = 120.0f;
-    
-    bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
+	// rotation 45 degrees around y axis
+	//XMMATRIX rotation = XMMatrixRotationY(45);
 
-    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
+	//Matrix44f viewMatrix = camera.GetViewMatrix();
+	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+	static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+	static float fov = 120.0f;
+
+	bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
+
+	Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
-        
-    GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 
-    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    
-    if (hasInput)
-    {
-        graphicComponent->ChangeIndexBufferData(
-            m_DeviceContext.Get(),
-            { 0, 1, 4, 1, 5, 4,
-              1, 2, 5, 5, 2, 6,
-              7, 4, 5, 7, 5, 6,
-              3, 1, 0, 3, 2, 1,
-              7, 6, 2, 7, 2, 3,
-              7, 3, 4, 4, 3, 0 });
-        
-        graphicComponent->ChangeVertexBufferData(
-            m_DeviceContext.Get(),
-            vertices
-            );
+	if (prim == Triangle)
+	{
+		// left handed coordinate system. Same as directx
+		std::vector<Vertex> vertices =
+		{
+			{ { 0.0f, 0.0f, 0.0f, 1.0f }, blue },
+			{ { 1.0f, 0.0f, 0.0f, 1.0f }, red },
+			{ { 1.0f, 0.0f, 1.0f, 1.0f }, green },
+			{ { 0.0f, 0.0f, 1.0f, 1.0f }, red },
+			{ { 0.0f, 1.0f, 0.0f, 1.0f }, green },
+			{ { 1.0f, 1.0f, 0.0f, 1.0f }, green },
+			{ { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
+			{ { 0.0f, 1.0f, 1.0f, 1.0f }, green },
 
-        graphicComponent->ChangeWorldViewProjBufferData(
-            m_DeviceContext.Get(),
-            { worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
-    }
+			{ { 3.0f, 0.0f, 0.0f, 1.0f }, green },
+			{ { 0.0f, 3.0f, 0.0f, 1.0f }, green },
+			{ { 0.0f, 0.0f, 3.0f, 1.0f }, red }
+		};
+
+		GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
+
+		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		if (hasInput)
+		{
+			graphicComponent->ChangeIndexBufferData(
+				m_DeviceContext.Get(),
+				{ 0, 1, 4, 1, 5, 4,
+				  1, 2, 5, 5, 2, 6,
+				  7, 4, 5, 7, 5, 6,
+				  3, 1, 0, 3, 2, 1,
+				  7, 6, 2, 7, 2, 3,
+				  7, 3, 4, 4, 3, 0 });
+
+			graphicComponent->ChangeVertexBufferData(
+				m_DeviceContext.Get(),
+				vertices
+			);
+
+			graphicComponent->ChangeWorldViewProjBufferData(
+				m_DeviceContext.Get(),
+				{ worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
+		}
+	}
 
     ///////////////////////////////////////////////////////////////////////
-    return;
-    /* NOW UPDATING THE AXIS. IT'S UGLY TO UPDATE HERE, WILL REIMPLEMENT EVERYTHING ONCE THIS WORKS */
-
-    std::vector<Vertex> axisVertices =
-    {
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
-        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
-        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
-        { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
-        { { 0.0f, 0.0f, 1.0f, 1.0f }, blue }
-    };
     
-	DirectX::XMMATRIX axisTranslation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-    Matrix44f axisWorldMatrix = Matrix44f(translation);
-    worldViewProj = axisWorldMatrix * viewMatrix;
-    worldViewProj = worldViewProj * perspectiveProjMatrix;
+    /* NOW UPDATING THE AXIS. IT'S UGLY TO UPDATE HERE, WILL REIMPLEMENT EVERYTHING ONCE THIS WORKS */
+	else
+	{
+		std::vector<Vertex> axisVertices =
+		{
+			{ { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
+			{ { 5.0f, 0.0f, 0.0f, 1.0f }, red },
+			{ { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
+			{ { 0.0f, 5.0f, 0.0f, 1.0f }, green },
+			{ { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
+			{ { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
+		};
 
-    for (size_t i = 0; i < axisVertices.size(); ++i)
-    {
-        // multiply by world view proj matrix and divide by w
-        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+		GraphicsComponent* graphicComponent = m_Axis.GetGraphicsComponent();
+		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-        Vector4f pos = (axisVertices[i].pos * worldViewProj);
-        pos = pos / pos.w;
+		if (hasInput)
+		{
+			graphicComponent->ChangeIndexBufferData(
+				m_DeviceContext.Get(),
+				{ 0, 1, 2, 3, 4, 5 });
 
-        axisVertices[i].pos = pos;
-    }
+			graphicComponent->ChangeVertexBufferData(
+				m_DeviceContext.Get(),
+				axisVertices
+			);
 
-    graphicComponent = m_Axis.GetGraphicsComponent();
-    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-
-    if (hasInput)
-    {
-        graphicComponent->ChangeIndexBufferData(
-            m_DeviceContext.Get(),
-            { 0, 1, 2, 3, 4, 5 });
-
-        graphicComponent->ChangeVertexBufferData(
-            m_DeviceContext.Get(),
-            vertices
-        );
-    }
+			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
+		}
+	}
 }
 
 bool Renderer::onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtPos, float& fov)
