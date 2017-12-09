@@ -17,9 +17,6 @@ Projective geometry and Oriented projective geometry
     - when w < 0, then the point is behind the camera, we have to be careful because this point will be projected on the near plane of the frustum, which is wrong
 
 Note:
-<<<<<<< HEAD
-- when the perspective divide is done on the cpu, the cube seems to be drawn on the whole screen when the camera is close to it (b7d385cb4), but that problem is gone when the perspective divide is done on the gpu
-=======
 - when the perspective divide is done on the cpu, the cube seems to be drawn on the whole screen when the camera is close to it, but that problem is gone when the perspective divide is done on the gpu
 
 To create the descriptor structs more easily for various directx api methods, use the these CD3D11 structs:
@@ -32,4 +29,3 @@ rendering schema:
 - the render function of the renderer should update the camera position every frame
 - then the scene is rendered with the camera as parameter to do the view proj transformation to the shape objects
 - then render the objects
->>>>>>> 0f30b92ece309847022b672737589990bf1fad9c
