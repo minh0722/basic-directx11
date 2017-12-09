@@ -72,27 +72,27 @@ void Scene::AddCube()
     };
 
     // do transform
-    XMMATRIX translation = XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+    DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
     Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
 
     //Matrix44f viewMatrix = camera.GetViewMatrix();
-    static XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
+    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
 
-    XMMATRIX viewMatrix = XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
+    DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    XMMATRIX perspectiveProjMatrix = XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
     worldViewProj = worldViewProj * perspectiveProjMatrix;
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
         // multiply by world view proj matrix and divide by w
-        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+        //DirectX::XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
 
         Vector4f pos = (vertices[i].pos * worldViewProj);
         pos = pos / pos.w;

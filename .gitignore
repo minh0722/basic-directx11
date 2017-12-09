@@ -1,2 +1,6 @@
 # HLSL binary
 *.cso
+VS2015/Debug
+vs2015/Release
+.vs
+.vcxproj.user

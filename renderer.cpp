@@ -415,7 +415,7 @@ void Renderer::SetupAxis()
     for (size_t i = 0; i < vertices.size(); ++i)
     {
         // multiply by world view proj matrix and divide by w
-        //XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+        //DirectX::XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
 
         Vector4f pos = (vertices[i].pos * worldViewProj);
         pos = pos / pos.w;
@@ -452,7 +452,7 @@ void Renderer::SetupCubeForRender(InputClass* input, Primitive prim)
 	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
 	// rotation 45 degrees around y axis
-	//XMMATRIX rotation = XMMatrixRotationY(45);
+	//DirectX::XMMATRIX rotation = DirectX::XMMATRIXRotationY(45);
 
 	//Matrix44f viewMatrix = camera.GetViewMatrix();
 	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };

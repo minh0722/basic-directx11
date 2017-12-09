@@ -54,7 +54,7 @@ struct WorldViewProj
 
 namespace SafetyCheck
 {
-	inline void ThrowIfFailed(HRESULT hr, char* file, int line)
+	inline void ThrowIfFailed(HRESULT hr, const char* file, int line)
 	{
 		if (FAILED(hr))
 		{
@@ -63,7 +63,7 @@ namespace SafetyCheck
 		}
 	}
 
-	inline void ThrowIfNull(void* ptr, char* file, int line)
+	inline void ThrowIfNull(void* ptr, const char* file, int line)
 	{
 		if (!ptr)
 		{
@@ -72,7 +72,7 @@ namespace SafetyCheck
 		}
 	}
 
-	inline void ThrowIfFalse(bool flag, char* file, int line)
+	inline void ThrowIfFalse(bool flag, const char* file, int line)
 	{
 		if (!flag)
 		{
