@@ -8,27 +8,30 @@ class Camera
 {
 public:
 	Camera();
-    Camera(const Vector4f& worldPosition, const Vector4f& lookAt, const Vector4f& upAxis);
-    void SetTranslation(const Vector4f& translation);
+    Camera(const DirectX::XMVECTOR& worldPosition, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upAxis);
+    void MoveCamera(const DirectX::XMVECTOR& direction);
     void SetRotation(Axis axis, float degree);
-    void SetScale(const Vector4f& scale);
-
-    void SetLookAtPosition(const Vector4f& lookAtPosition);
-    void SetCameraPosition(const Vector4f& position);
-    void SetUpAxis(const Vector4f& upAxis);
+    
+    void SetLookAt(const DirectX::XMVECTOR& lookAt);
+    void SetCameraPosition(const DirectX::XMVECTOR& position);
     void SetFov(const float fov);
     void SetNearPlaneDist(const float nearPlaneDist);
     void SetFarPlaneDist(const float farPlaneDist);
 
-	Matrix44f GetViewMatrix() const;
+	DirectX::XMMATRIX GetViewMatrix() const;
 private:
-    Matrix44f m_ViewMatrix;
+	DirectX::XMMATRIX m_ViewMatrix;
+	DirectX::XMMATRIX m_PerspectiveProjectionMatrix;
 
-    Vector4f m_LookAtVector;
-    Vector4f m_Position;
-    float m_Fov;
-    float m_NearPlaneDist;
-    float m_FarPlaneDist;
+	DirectX::XMVECTOR m_Position;
+	DirectX::XMVECTOR m_LookAt;
+	DirectX::XMVECTOR m_UpDirection;
 
-    Vector4f m_UpAxis;
+	DirectX::XMMATRIX m_RotationMatrixX;
+	DirectX::XMMATRIX m_RotationMatrixY;
+	DirectX::XMMATRIX m_RotationMatrixZ;
+
+	float m_Fov;
+	float m_NearPlaneDist;
+	float m_FarPlaneDist;
 };
