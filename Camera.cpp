@@ -2,7 +2,14 @@
 #include "Matrix44f.h"
 
 Camera::Camera()
-	: m_UpDirection({0.0f, 1.0f, 0.0f, 0.0f})
+	: m_ViewMatrix(DirectX::XMMatrixIdentity())
+	, m_PerspectiveProjectionMatrix(DirectX::XMMatrixIdentity())
+	, m_RotationMatrixX(DirectX::XMMatrixIdentity())
+	, m_RotationMatrixY(DirectX::XMMatrixIdentity())
+	, m_RotationMatrixZ(DirectX::XMMatrixIdentity())
+	, m_Position(DirectX::XMVectorZero())
+	, m_LookAt(DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f))
+	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 {
 }
 
