@@ -6,4 +6,5 @@ vs2015/Release
 VS2015/basic-directx11.vcxproj.user
 *.log
 *.db
+*.opendb
 x64
