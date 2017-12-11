@@ -82,7 +82,7 @@ private:
 		Line
 	};
 
-    void SetupCubeForRender(InputClass* input, Primitive prim = Triangle);
+    void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
 
     bool onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtVector, float& fov);
 private:

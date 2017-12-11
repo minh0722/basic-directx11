@@ -42,9 +42,9 @@ void Renderer::Render(InputClass* input)
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	//m_Triangle.Render(m_DeviceContext.Get());
-    SetupCubeForRender(input);
+    SetupPrimitiveForRender(input);
 	m_Cube.Render(m_DeviceContext.Get());
-	SetupCubeForRender(input, Line);
+	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
@@ -439,7 +439,7 @@ void Renderer::SetupAxis()
     m_Axis.AddComponent(graphicComponent);
 }
 
-void Renderer::SetupCubeForRender(InputClass* input, Primitive prim)
+void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 {
     ///////////////////////////////////////////////////////////////////////
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
