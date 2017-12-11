@@ -23,11 +23,11 @@ void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
     InitDeviceSwapChainAndDeviceContext(window);
-	InitRenderTargetView(m_SwapChain.Get());
-	InitViewPort();
-	
     InitDepthStencilBufferAndView();
     InitDepthStencilState();
+	InitRenderTargetView(m_SwapChain.Get());
+	InitViewPort();
+
 	InitRasterizerState();
 	
 	SetupTriangle();
@@ -122,7 +122,7 @@ void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 			nullptr,
 			m_RenderTargetView.ReleaseAndGetAddressOf()));
 
-	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), nullptr);
+	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 }
 
 void Renderer::InitDepthStencilBufferAndView()
