@@ -477,11 +477,7 @@ void Renderer::SetupCubeForRender(InputClass* input, Primitive prim)
 			{ { 0.0f, 1.0f, 0.0f, 1.0f }, green },
 			{ { 1.0f, 1.0f, 0.0f, 1.0f }, green },
 			{ { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
-			{ { 0.0f, 1.0f, 1.0f, 1.0f }, green },
-
-			{ { 3.0f, 0.0f, 0.0f, 1.0f }, green },
-			{ { 0.0f, 3.0f, 0.0f, 1.0f }, green },
-			{ { 0.0f, 0.0f, 3.0f, 1.0f }, red }
+			{ { 0.0f, 1.0f, 1.0f, 1.0f }, green }
 		};
 
 		GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
