@@ -4,3 +4,6 @@ VS2015/Debug
 vs2015/Release
 .vs
 VS2015/basic-directx11.vcxproj.user
+*.log
+*.db
+x64
