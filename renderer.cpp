@@ -377,11 +377,11 @@ void Renderer::SetupAxis()
     std::vector<Vertex> vertices =
     {
         { { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
-        { { 1.0f, 0.0f, 0.0f, 1.0f }, red },
+        { { 5.0f, 0.0f, 0.0f, 1.0f }, red },
         { { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
-        { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
+        { { 0.0f, 5.0f, 0.0f, 1.0f }, green },
         { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
-        { { 1.0f, 0.0f, 1.0f, 1.0f }, blue }
+        { { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
     };
 
     // do transform
@@ -389,12 +389,10 @@ void Renderer::SetupAxis()
     static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 	
-    ///////////////////////////////////////////////////////////////////////
-
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
