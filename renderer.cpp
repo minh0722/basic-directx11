@@ -307,11 +307,7 @@ void Renderer::SetupCube()
         { { 0.0f, 1.0f, 0.0f, 1.0f }, green },
         { { 1.0f, 1.0f, 0.0f, 1.0f }, green },
         { { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
-        { { 0.0f, 1.0f, 1.0f, 1.0f }, green },
-
-        { { 3.0f, 0.0f, 0.0f, 1.0f }, green },
-        { { 0.0f, 3.0f, 0.0f, 1.0f }, green },
-        { { 0.0f, 0.0f, 3.0f, 1.0f }, red }
+        { { 0.0f, 1.0f, 1.0f, 1.0f }, green }
     };
 
     // do transform
@@ -441,27 +437,20 @@ void Renderer::SetupAxis()
 
 void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 {
-    ///////////////////////////////////////////////////////////////////////
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
-
-    Matrix44f worldViewProj;
-
-	// do transform
+		
+	DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(45);
 	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
-	// rotation 45 degrees around y axis
-	//DirectX::XMMATRIX rotation = DirectX::XMMATRIXRotationY(45);
-
-	//Matrix44f viewMatrix = camera.GetViewMatrix();
 	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
 	static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
 	static float fov = 120.0f;
 
 	bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
 
-	Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixMultiply(rotation, translation); //DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
 
@@ -500,15 +489,9 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 				vertices
 			);
 
-			graphicComponent->ChangeWorldViewProjBufferData(
-				m_DeviceContext.Get(),
-				{ worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
+			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix, viewMatrix, perspectiveProjMatrix });
 		}
 	}
-
-    ///////////////////////////////////////////////////////////////////////
-    
-    /* NOW UPDATING THE AXIS. IT'S UGLY TO UPDATE HERE, WILL REIMPLEMENT EVERYTHING ONCE THIS WORKS */
 	else
 	{
 		std::vector<Vertex> axisVertices =
@@ -535,7 +518,7 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 				axisVertices
 			);
 
-			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix });
+			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix, viewMatrix, perspectiveProjMatrix });
 		}
 	}
 }

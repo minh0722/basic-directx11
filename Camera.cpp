@@ -1,5 +1,4 @@
 #include "Camera.h"
-#include "Matrix44f.h"
 
 Camera::Camera()
 	: m_ViewMatrix(DirectX::XMMatrixIdentity())
@@ -70,4 +69,9 @@ void Camera::SetFarPlaneDist(const float farPlaneDist)
 DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
 	return m_ViewMatrix;
+}
+
+void Camera::UpdateCameraMatrices()
+{
+
 }
