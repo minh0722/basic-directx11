@@ -18,6 +18,7 @@ public:
     void SetFarPlaneDist(const float farPlaneDist);
 
 	DirectX::XMMATRIX GetViewMatrix() const;
+	DirectX::XMMATRIX GetProjectionMatrix() const;
 private:
 	void UpdateCameraMatrices();
 

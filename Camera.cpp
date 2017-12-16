@@ -71,7 +71,13 @@ DirectX::XMMATRIX Camera::GetViewMatrix() const
 	return m_ViewMatrix;
 }
 
+DirectX::XMMATRIX Camera::GetProjectionMatrix() const
+{
+	return m_PerspectiveProjectionMatrix;
+}
+
 void Camera::UpdateCameraMatrices()
 {
-
+	m_ViewMatrix = DirectX::XMMatrixLookAtLH(m_Position, m_LookAt, m_UpDirection);
+	m_PerspectiveProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(m_Fov * RADIAN, (float)screenWidth / (float)screenHeight, m_NearPlaneDist, m_FarPlaneDist);
 }

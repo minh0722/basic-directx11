@@ -427,7 +427,7 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 
 	bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixMultiply(rotation, translation); //DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
 
@@ -522,11 +522,8 @@ bool Renderer::onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX:
     //}
 
     float* camPos = reinterpret_cast<float*>(&cameraPos);
-
-    
-    {
-		DirectX::XMVECTOR lookatNormalized = DirectX::XMVector3Normalize(lookAtPos);
-        
+	    
+    {        
         if (input->IsKeyDown('W'))
         {
 			DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorScale(lookAtPos, threshHold);
