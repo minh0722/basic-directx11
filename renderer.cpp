@@ -309,16 +309,12 @@ void Renderer::SetupCube()
         { { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
         { { 0.0f, 1.0f, 1.0f, 1.0f }, green }
     };
-
-    // do transform
-	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-    
-	//Matrix44f viewMatrix = camera.GetViewMatrix();
-    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+	    
+	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
     
-    Matrix44f worldMatrix = Matrix44f(translation /** rotation*/);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
@@ -336,12 +332,11 @@ void Renderer::SetupCube()
 
     graphicComponent->SetVertexBuffer(
         m_Device.Get(),
-        vertices
-        );
+        vertices);
     
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
-        {worldMatrix.m_matrix, viewMatrix, perspectiveProjMatrix});
+        {worldMatrix, viewMatrix, perspectiveProjMatrix});
 
 	m_Cube.AddComponent(graphicComponent);
 }
@@ -378,8 +373,6 @@ void Renderer::SetupAxis()
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
 
-    Matrix44f worldViewProj;
-
     // left handed coordinate system. Same as directx
     std::vector<Vertex> vertices =
     {
@@ -392,26 +385,19 @@ void Renderer::SetupAxis()
     };
 
     // do transform
-	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-
-    Matrix44f worldMatrix = Matrix44f(translation);
-
-    static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
+	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
     static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
     static float fov = 120.0f;
 
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-    worldViewProj = worldMatrix * viewMatrix;
-
 	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-
-    worldViewProj = worldViewProj * perspectiveProjMatrix;
-
+	
     ///////////////////////////////////////////////////////////////////////
 
-    BaseComponent* graphicComponent = new GraphicsComponent(desc);
+    GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
     graphicComponent->SetIndexBuffer(
         m_Device.Get(),
         { 0, 1, 2, 3, 4, 5 });
@@ -420,6 +406,10 @@ void Renderer::SetupAxis()
         m_Device.Get(),
         vertices
     );
+
+	graphicComponent->ChangeWorldViewProjBufferData(
+		m_DeviceContext.Get(),
+		{ worldMatrix, viewMatrix, perspectiveProjMatrix });
 
     m_Axis.AddComponent(graphicComponent);
 }
