@@ -84,8 +84,8 @@ private:
 
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
 
-    bool onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtVector, float& fov);
 	bool onInput(InputClass* input, Camera& camera);
+
 private:
     static Renderer* ms_Instance;
 

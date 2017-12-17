@@ -11,6 +11,11 @@ float sin45 = (float)std::sin(PI / 4);
 Renderer* Renderer::ms_Instance = nullptr;
 
 Renderer::Renderer()
+	: m_Camera(
+		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
+		DirectX::XMVectorSet(1.0f, 0.0f, 2.0f, 1.0f),		// camera lookat
+		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),		// up axis
+		120.0f)												// fov
 {
 }
 
@@ -308,14 +313,8 @@ void Renderer::SetupCube()
         { { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
         { { 0.0f, 1.0f, 1.0f, 1.0f }, green }
     };
-	    
-	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
-    static float fov = 120.0f;
     
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
         
 	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -335,8 +334,8 @@ void Renderer::SetupCube()
     
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
-        {worldMatrix, viewMatrix, perspectiveProjMatrix});
-
+		{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
+	
 	m_Cube.AddComponent(graphicComponent);
 }
 
@@ -366,8 +365,7 @@ void Renderer::SetupAxis()
         L"pixelShader.cso",
         vertexShaderInputLayout
     };
-
-    ///////////////////////////////////////////////////////////////////////
+	    
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
@@ -382,15 +380,8 @@ void Renderer::SetupAxis()
         { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
         { { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
     };
-
-    // do transform
-	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-    static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
-    static float fov = 120.0f;
-
+	    
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 	
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -406,7 +397,7 @@ void Renderer::SetupAxis()
 
 	graphicComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),
-		{ worldMatrix, viewMatrix, perspectiveProjMatrix });
+		{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 
     m_Axis.AddComponent(graphicComponent);
 }
@@ -416,19 +407,12 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
-		
-	DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(45);
-	DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
 
-	static DirectX::XMVECTOR cameraPos = { 0.0f, 3.0f, 0.0f, 1.0f };
-	static DirectX::XMVECTOR lookAtPos = { 1.0f, 0.0f, 2.0f, 1.0f };
-	static float fov = 120.0f;
-
-	bool hasInput = onInput(input, cameraPos, lookAtPos, fov);
+	//DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(45);
+	
+	bool hasInput = onInput(input, m_Camera);
 
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPos, lookAtPos, { 0.0f, 1.0f, 0.0f, 1.0f });
-	DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 1.0f, 100.0f);
 
 	if (prim == Triangle)
 	{
@@ -465,7 +449,9 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 				vertices
 			);
 
-			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix, viewMatrix, perspectiveProjMatrix });
+			graphicComponent->ChangeWorldViewProjBufferData(
+				m_DeviceContext.Get(), 
+				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 		}
 	}
 	else
@@ -494,123 +480,11 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 				axisVertices
 			);
 
-			graphicComponent->ChangeWorldViewProjBufferData(m_DeviceContext.Get(), { worldMatrix, viewMatrix, perspectiveProjMatrix });
+			graphicComponent->ChangeWorldViewProjBufferData(
+				m_DeviceContext.Get(), 
+				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 		}
 	}
-}
-
-bool Renderer::onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtPos, float& fov)
-{
-    if (!input)
-    {
-        return false;
-    }
-
-    bool hasInput = false;
-    float threshHold = 0.001f;
-
-    //// increase far plane dist by 0.1f
-    //if (input->IsKeyDown('Q'))
-    //{
-    //    m_FarPlaneDist == 0.1f;
-    //}
-    //// decrease far plane dist
-    //else if (input->IsKeyDown('A'))
-    //{
-    //    m_FarPlaneDist -= 0.1f;
-    //}
-
-    float* camPos = reinterpret_cast<float*>(&cameraPos);
-	    
-    {        
-        if (input->IsKeyDown('W'))
-        {
-			DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorScale(lookAtPos, threshHold);
-            cameraPos = DirectX::XMVectorAdd(cameraPos, moveForwardVec);
-            cameraPos.m128_f32[3] = 1.0f;
-            
-            char buf[256];
-            snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
-            OutputDebugStringA(buf);
-
-            return true;
-        }
-        else if (input->IsKeyDown('S'))
-        {
-			DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorScale(lookAtPos, -threshHold);
-            cameraPos = DirectX::XMVectorAdd(cameraPos, moveBackwardVec);
-            cameraPos.m128_f32[3] = 1.0f;
-            
-            char buf[256];
-            snprintf(buf, 256, "%f %f %f %f\n", cameraPos.m128_f32[0], cameraPos.m128_f32[1], cameraPos.m128_f32[2], cameraPos.m128_f32[3]);
-            OutputDebugStringA(buf);
-
-            return true;
-        }
-        //else if (input->IsKeyDown('D'))
-        //{
-        //    
-        //}
-        //else if (input->IsKeyDown('A'))
-        //{
-        //    
-        //}
-        return false;
-    }
-    
-
-    //// increase fov
-    //if (input->IsKeyDown('W'))
-    //{
-    //    fov += threshHold;
-    //}
-    //// decrease fov
-    //else if (input->IsKeyDown('S'))
-    //{
-    //    fov -= threshHold;
-    //    if (fov < 0.00001f)
-    //    {
-    //        fov = 0.1f;
-    //    }
-    //}        
-    // increase camera x position
-    if (input->IsKeyDown(unsigned int('E')))
-    {
-        camPos[0] += threshHold;
-        hasInput = true;
-    }
-    // derease camera x position
-    else if (input->IsKeyDown('D'))
-    {
-        camPos[0] -= threshHold;
-        hasInput = true;
-    }
-    // increase camera y position
-    else if (input->IsKeyDown('R'))
-    {
-        camPos[1] += threshHold;
-        hasInput = true;
-    }
-    // decrease camera y position
-    else if (input->IsKeyDown('F'))
-    {
-        camPos[1] -= threshHold;
-        hasInput = true;
-    }
-    // increase camera z position
-    else if (input->IsKeyDown('T'))
-    {
-        camPos[2] += threshHold;
-        hasInput = true;
-    }
-    // decrease camera z position
-    else if (input->IsKeyDown('G'))
-    {
-        camPos[2] -= threshHold;
-        hasInput = true;
-    }
-
-    return hasInput;
 }
 
 bool Renderer::onInput(InputClass* input, Camera& camera)
@@ -644,6 +518,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorScale(lookAtPos, -threshHold);
 		camPos = DirectX::XMVectorAdd(camPos, moveBackwardVec);
 		DirectX::XMVectorSetW(camPos, 1.0f);
+		camera.SetCameraPosition(camPos);
 
 		char buf[256];
 		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
