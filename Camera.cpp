@@ -35,7 +35,7 @@ void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
 	m_NeedToUpdateMatrices = true;
 }
 
-void Camera::SetRotation(Axis axis, float degree)
+void Camera::Rotate(Axis axis, float degree)
 {
 	switch (axis)
 	{

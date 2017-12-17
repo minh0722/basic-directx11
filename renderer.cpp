@@ -381,7 +381,7 @@ void Renderer::SetupAxis()
         { { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
     };
 	    
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 	
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -412,10 +412,23 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 	
 	bool hasInput = onInput(input, m_Camera);
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-
 	if (prim == Triangle)
 	{
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+
+		static float xRotation = 0.0f;
+		static float yRotation = 0.0f;
+		static float zRotation = 0.0f;
+		bool hasInputRotate = TestCubeRotation(input, xRotation, yRotation, zRotation);
+		DirectX::XMMATRIX xRotationMatrix = DirectX::XMMatrixRotationX(xRotation * RADIAN);
+		DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(yRotation * RADIAN);
+		DirectX::XMMATRIX zRotationMatrix = DirectX::XMMatrixRotationZ(zRotation * RADIAN);
+
+		if (hasInputRotate)
+		{
+			worldMatrix = DirectX::XMMatrixMultiply(worldMatrix, xRotationMatrix);
+		}
+
 		// left handed coordinate system. Same as directx
 		std::vector<Vertex> vertices =
 		{
@@ -456,6 +469,8 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 	}
 	else
 	{
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
 		std::vector<Vertex> axisVertices =
 		{
 			{ { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
@@ -494,7 +509,6 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		return false;
 	}
 
-	bool hasInput = false;
 	float threshHold = 0.001f;
 
 	DirectX::XMVECTOR camPos = camera.GetCameraPosition();
@@ -522,6 +536,79 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 		char buf[256];
 		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool Renderer::TestCubeRotation(InputClass* input, float& xRotation, float& yRotation, float& zRotation)
+{
+	if (!input)
+	{
+		return false;
+	}
+
+	float threshhold = 1.0f;
+
+	if (input->IsKeyDown('E'))
+	{
+		xRotation += threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", xRotation);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('D'))
+	{
+		xRotation -= threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", xRotation);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('R'))
+	{
+		yRotation += threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", yRotation);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('F'))
+	{
+		yRotation -= threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", yRotation);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('T'))
+	{
+		zRotation += threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", zRotation);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('G'))
+	{
+		zRotation -= threshhold;
+
+		char buf[256];
+		snprintf(buf, 256, "%f\n", zRotation);
 		OutputDebugStringA(buf);
 
 		return true;

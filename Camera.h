@@ -9,7 +9,7 @@ public:
 	Camera();
     Camera(const DirectX::XMVECTOR& worldPosition, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upAxis, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
-    void SetRotation(Axis axis, float degree);
+    void Rotate(Axis axis, float degree);
     
 	DirectX::XMVECTOR GetCameraPosition() const;
 	DirectX::XMVECTOR GetCameraLookAt() const;

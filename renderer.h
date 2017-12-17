@@ -86,6 +86,8 @@ private:
 
 	bool onInput(InputClass* input, Camera& camera);
 
+	bool TestCubeRotation(InputClass* input, float& xRotation, float& yRotation, float& zRotation);
+
 private:
     static Renderer* ms_Instance;
 
