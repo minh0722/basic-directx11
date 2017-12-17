@@ -7,18 +7,23 @@ class Camera
 {
 public:
 	Camera();
-    Camera(const DirectX::XMVECTOR& worldPosition, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upAxis);
+    Camera(const DirectX::XMVECTOR& worldPosition, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upAxis, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
     void SetRotation(Axis axis, float degree);
     
+	DirectX::XMVECTOR GetCameraPosition() const;
+	DirectX::XMVECTOR GetCameraLookAt() const;
+	float GetFOV() const;
+
     void SetLookAt(const DirectX::XMVECTOR& lookAt);
     void SetCameraPosition(const DirectX::XMVECTOR& position);
     void SetFov(const float fov);
     void SetNearPlaneDist(const float nearPlaneDist);
     void SetFarPlaneDist(const float farPlaneDist);
 
-	DirectX::XMMATRIX GetViewMatrix() const;
-	DirectX::XMMATRIX GetProjectionMatrix() const;
+	DirectX::XMMATRIX GetViewMatrix();
+	DirectX::XMMATRIX GetProjectionMatrix();
+
 private:
 	void UpdateCameraMatrices();
 
@@ -37,4 +42,6 @@ private:
 	float m_Fov;
 	float m_NearPlaneDist;
 	float m_FarPlaneDist;
+
+	bool m_NeedToUpdateMatrices;
 };

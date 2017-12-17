@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Shape.h"
-
+#include "Camera.h"
 #include "Vector4f.h"
 
 class InputClass;
@@ -85,6 +85,7 @@ private:
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
 
     bool onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX::XMVECTOR& lookAtVector, float& fov);
+	bool onInput(InputClass* input, Camera& camera);
 private:
     static Renderer* ms_Instance;
 
@@ -102,6 +103,8 @@ private:
 	Shape m_Triangle;
 	Shape m_Cube;
     Shape m_Axis;
+
+	Camera m_Camera;
 };
 
 #define g_Renderer Renderer::GetInstance()

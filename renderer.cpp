@@ -2,12 +2,11 @@
 #include "renderer.h"
 #include "GraphicsComponent.h"
 #include "Matrix44f.h"
-#include "Camera.h"
 #include "inputclass.h"
 #include <cmath>
 
-float cos45 = std::cos(PI / 4);
-float sin45 = std::sin(PI / 4);
+float cos45 = (float)std::cos(PI / 4);
+float sin45 = (float)std::sin(PI / 4);
 
 Renderer* Renderer::ms_Instance = nullptr;
 
@@ -612,4 +611,46 @@ bool Renderer::onInput(InputClass* input, DirectX::XMVECTOR& cameraPos, DirectX:
     }
 
     return hasInput;
+}
+
+bool Renderer::onInput(InputClass* input, Camera& camera)
+{
+	if (!input)
+	{
+		return false;
+	}
+
+	bool hasInput = false;
+	float threshHold = 0.001f;
+
+	DirectX::XMVECTOR camPos = camera.GetCameraPosition();
+	DirectX::XMVECTOR lookAtPos = camera.GetCameraLookAt();
+
+	if (input->IsKeyDown('W'))
+	{
+		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorScale(lookAtPos, threshHold);
+		camPos = DirectX::XMVectorAdd(camPos, moveForwardVec);
+		DirectX::XMVectorSetW(camPos, 1.0f);
+		camera.SetCameraPosition(camPos);
+
+		char buf[256];
+		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('S'))
+	{
+		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorScale(lookAtPos, -threshHold);
+		camPos = DirectX::XMVectorAdd(camPos, moveBackwardVec);
+		DirectX::XMVectorSetW(camPos, 1.0f);
+
+		char buf[256];
+		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		OutputDebugStringA(buf);
+
+		return true;
+	}
+
+	return false;
 }
