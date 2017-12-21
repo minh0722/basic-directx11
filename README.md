@@ -29,3 +29,5 @@ rendering schema:
 - the render function of the renderer should update the camera position every frame
 - then the scene is rendered with the camera as parameter to do the view proj transformation to the shape objects
 - then render the objects
+
+ID3D11Query
