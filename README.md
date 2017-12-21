@@ -31,3 +31,4 @@ rendering schema:
 - then render the objects
 
 ID3D11Query
+IDXGIFactory
