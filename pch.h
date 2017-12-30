@@ -36,12 +36,11 @@ static const UINT screenHeight = 720;
 #define PI 3.14159265359
 #define RADIAN 0.01745329252
 
-enum Axis
+enum RotationAxis
 {
-    X,
-    Y,
-    Z,
-    W,
+    Roll,
+	Pitch,
+	Yaw,
     AxisCount
 };
 

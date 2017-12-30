@@ -419,15 +419,6 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 		static float xRotation = 0.0f;
 		static float yRotation = 0.0f;
 		static float zRotation = 0.0f;
-		bool hasInputRotate = TestCubeRotation(input, xRotation, yRotation, zRotation);
-		DirectX::XMMATRIX xRotationMatrix = DirectX::XMMatrixRotationX(xRotation * RADIAN);
-		DirectX::XMMATRIX yRotationMatrix = DirectX::XMMatrixRotationY(yRotation * RADIAN);
-		DirectX::XMMATRIX zRotationMatrix = DirectX::XMMatrixRotationZ(zRotation * RADIAN);
-
-		if (hasInputRotate)
-		{
-			worldMatrix = DirectX::XMMatrixMultiply(worldMatrix, xRotationMatrix);
-		}
 
 		// left handed coordinate system. Same as directx
 		std::vector<Vertex> vertices =
@@ -521,9 +512,9 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		DirectX::XMVectorSetW(camPos, 1.0f);
 		camera.SetCameraPosition(camPos);
 
-		char buf[256];
-		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
-		OutputDebugStringA(buf);
+		//char buf[256];
+		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		//OutputDebugStringA(buf);
 
 		return true;
 	}
@@ -534,9 +525,21 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		DirectX::XMVectorSetW(camPos, 1.0f);
 		camera.SetCameraPosition(camPos);
 
-		char buf[256];
-		snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
-		OutputDebugStringA(buf);
+		//char buf[256];
+		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		//OutputDebugStringA(buf);
+
+		return true;
+	}
+	else if (input->IsKeyDown('Q'))
+	{
+		camera.Rotate(RotationAxis::Yaw, 0.1f);
+
+		return true;
+	}
+	else if (input->IsKeyDown('E'))
+	{
+		camera.Rotate(RotationAxis::Yaw, -0.1f);
 
 		return true;
 	}
