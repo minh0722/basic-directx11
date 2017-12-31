@@ -543,6 +543,30 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 		return true;
 	}
+	else if (input->IsKeyDown('R'))
+	{
+		camera.Rotate(RotationAxis::Pitch, 0.1f);
+		
+		return true;
+	}
+	else if (input->IsKeyDown('F'))
+	{
+		camera.Rotate(RotationAxis::Pitch, -0.1f);
+
+		return true;
+	}
+	else if (input->IsKeyDown('T'))
+	{
+		camera.Rotate(RotationAxis::Roll, 0.1f);
+
+		return true;
+	}
+	else if (input->IsKeyDown('G'))
+	{
+		camera.Rotate(RotationAxis::Roll, -0.1f);
+
+		return true;
+	}
 
 	return false;
 }
