@@ -1,33 +1,44 @@
 #include "Camera.h"
 
 Camera::Camera()
-	: m_ViewMatrix(DirectX::XMMatrixIdentity())
+	: m_ForwardDirection(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
+	, m_RightDirection(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
+	, m_ViewMatrix(DirectX::XMMatrixIdentity())
 	, m_PerspectiveProjectionMatrix(DirectX::XMMatrixIdentity())
 	, m_RollPitchYawRotationMatrix(DirectX::XMMatrixIdentity())
 	, m_Position(DirectX::XMVectorZero())
-	, m_LookAt(DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f))
-	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
+	, m_LookAt(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
 	, m_NeedToUpdateMatrices(true)
 {
 	UpdateCameraMatrices();
 }
 
-Camera::Camera(const DirectX::XMVECTOR& position, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upDirection, const float fov)
-	: m_Position(position)
-	, m_LookAt(lookAt)
-	, m_UpDirection(upDirection)
+Camera::Camera(const DirectX::XMVECTOR& position, const float fov)
+	: m_ForwardDirection(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
+	, m_RightDirection(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 	, m_Fov(fov)
 	, m_NearPlaneDist(0.1f)
 	, m_FarPlaneDist(100.0f)
+	, m_Position(position)
 	, m_RollPitchYawRotationMatrix(DirectX::XMMatrixIdentity())
 	, m_NeedToUpdateMatrices(true)
 {
+	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
 	UpdateCameraMatrices();
 }
 
 void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
 {
-	m_Position = DirectX::XMVectorAdd(m_Position, moveVector);
+	float xDirectionAmount = DirectX::XMVectorGetX(moveVector);		// left right
+	float yDirectionAmount = DirectX::XMVectorGetY(moveVector);		// up down
+	float zDirectionAmount = DirectX::XMVectorGetZ(moveVector);		// forward backward
+
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_RightDirection, xDirectionAmount));
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_UpDirection, yDirectionAmount));
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_ForwardDirection, zDirectionAmount));
+	
 	m_NeedToUpdateMatrices = true;
 }
 
@@ -136,6 +147,8 @@ void Camera::UpdateCameraMatrices()
 {
 	if (m_NeedToUpdateMatrices)
 	{
+		m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
+
 		m_ViewMatrix = DirectX::XMMatrixLookAtLH(m_Position, m_LookAt, m_UpDirection);
 		m_PerspectiveProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(m_Fov * RADIAN, (float)screenWidth / (float)screenHeight, m_NearPlaneDist, m_FarPlaneDist);
 

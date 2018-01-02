@@ -13,8 +13,6 @@ Renderer* Renderer::ms_Instance = nullptr;
 Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
-		DirectX::XMVectorSet(1.0f, 0.0f, 2.0f, 1.0f),		// camera lookat
-		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),		// up axis
 		120.0f)												// fov
 {
 }
@@ -507,10 +505,8 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 	if (input->IsKeyDown('W'))
 	{
-		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorScale(lookAtPos, threshHold);
-		camPos = DirectX::XMVectorAdd(camPos, moveForwardVec);
-		DirectX::XMVectorSetW(camPos, 1.0f);
-		camera.SetCameraPosition(camPos);
+		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, threshHold, 0.0f);
+		camera.MoveCamera(moveForwardVec);
 
 		//char buf[256];
 		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
@@ -520,10 +516,8 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	else if (input->IsKeyDown('S'))
 	{
-		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorScale(lookAtPos, -threshHold);
-		camPos = DirectX::XMVectorAdd(camPos, moveBackwardVec);
-		DirectX::XMVectorSetW(camPos, 1.0f);
-		camera.SetCameraPosition(camPos);
+		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
+		camera.MoveCamera(moveForwardVec);
 
 		//char buf[256];
 		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);

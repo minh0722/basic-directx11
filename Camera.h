@@ -7,7 +7,7 @@ class Camera
 {
 public:
 	Camera();
-    Camera(const DirectX::XMVECTOR& worldPosition, const DirectX::XMVECTOR& lookAt, const DirectX::XMVECTOR& upAxis, const float fov);
+    Camera(const DirectX::XMVECTOR& worldPosition, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
     void Rotate(RotationAxis axis, float degree);
     
@@ -28,12 +28,15 @@ private:
 	void UpdateCameraMatrices();
 
 private:
+	DirectX::XMVECTOR m_ForwardDirection;
+	DirectX::XMVECTOR m_RightDirection;
+	DirectX::XMVECTOR m_UpDirection;
+
 	DirectX::XMMATRIX m_ViewMatrix;
 	DirectX::XMMATRIX m_PerspectiveProjectionMatrix;
 
 	DirectX::XMVECTOR m_Position;
 	DirectX::XMVECTOR m_LookAt;
-	DirectX::XMVECTOR m_UpDirection;
 
 	DirectX::XMMATRIX m_RollPitchYawRotationMatrix;
 
