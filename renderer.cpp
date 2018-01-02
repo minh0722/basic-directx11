@@ -549,13 +549,13 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	else if (input->IsKeyDown('R'))
 	{
-		camera.Rotate(RotationAxis::Pitch, 0.1f);
+		camera.Rotate(RotationAxis::Pitch, -0.1f);
 		
 		return true;
 	}
 	else if (input->IsKeyDown('F'))
 	{
-		camera.Rotate(RotationAxis::Pitch, -0.1f);
+		camera.Rotate(RotationAxis::Pitch, 0.1f);
 
 		return true;
 	}
