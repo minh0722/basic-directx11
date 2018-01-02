@@ -79,10 +79,8 @@ void Camera::Rotate(RotationAxis axis, float degree)
 		break;
 	}
 
-	char buf[256];
-	snprintf(buf, 256, "Lookat = %f %f %f %f\n", m_LookAt.m128_f32[0], m_LookAt.m128_f32[1], m_LookAt.m128_f32[2], m_LookAt.m128_f32[3]);
-	OutputDebugStringA(buf);
-
+	OUTPUT_DEBUG("Lookat = %f %f %f %f\n", m_LookAt.m128_f32[0], m_LookAt.m128_f32[1], m_LookAt.m128_f32[2], m_LookAt.m128_f32[3]);
+	
 	m_NeedToUpdateMatrices = true;
 }
 

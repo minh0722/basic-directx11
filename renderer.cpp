@@ -507,11 +507,9 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	{
 		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, threshHold, 0.0f);
 		camera.MoveCamera(moveForwardVec);
-
-		//char buf[256];
-		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
-		//OutputDebugStringA(buf);
-
+				
+		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+		
 		return true;
 	}
 	else if (input->IsKeyDown('S'))
@@ -519,9 +517,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
 		camera.MoveCamera(moveForwardVec);
 
-		//char buf[256];
-		//snprintf(buf, 256, "%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
-		//OutputDebugStringA(buf);
+		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
 
 		return true;
 	}
@@ -578,9 +574,8 @@ bool Renderer::TestCubeRotation(InputClass* input, float& xRotation, float& yRot
 	{
 		xRotation += threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", xRotation);
-		OutputDebugStringA(buf);
+		OUTPUT_DEBUG("%f\n", xRotation);
+
 
 		return true;
 	}
@@ -588,50 +583,40 @@ bool Renderer::TestCubeRotation(InputClass* input, float& xRotation, float& yRot
 	{
 		xRotation -= threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", xRotation);
-		OutputDebugStringA(buf);
-
+		OUTPUT_DEBUG("%f\n", xRotation);
+		
 		return true;
 	}
 	else if (input->IsKeyDown('R'))
 	{
 		yRotation += threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", yRotation);
-		OutputDebugStringA(buf);
-
+		OUTPUT_DEBUG("%f\n", yRotation);
+		
 		return true;
 	}
 	else if (input->IsKeyDown('F'))
 	{
 		yRotation -= threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", yRotation);
-		OutputDebugStringA(buf);
-
+		OUTPUT_DEBUG("%f\n", yRotation);
+		
 		return true;
 	}
 	else if (input->IsKeyDown('T'))
 	{
 		zRotation += threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", zRotation);
-		OutputDebugStringA(buf);
-
+		OUTPUT_DEBUG("%f\n", zRotation);
+		
 		return true;
 	}
 	else if (input->IsKeyDown('G'))
 	{
 		zRotation -= threshhold;
 
-		char buf[256];
-		snprintf(buf, 256, "%f\n", zRotation);
-		OutputDebugStringA(buf);
-
+		OUTPUT_DEBUG("%f\n", zRotation);
+		
 		return true;
 	}
 
