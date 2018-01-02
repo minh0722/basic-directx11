@@ -514,10 +514,24 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	else if (input->IsKeyDown('S'))
 	{
-		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
-		camera.MoveCamera(moveForwardVec);
+		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
+		camera.MoveCamera(moveBackwardVec);
 
 		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
+
+		return true;
+	}
+	else if (input->IsKeyDown('A'))
+	{
+		DirectX::XMVECTOR moveLeftVec = DirectX::XMVectorSet(-threshHold, 0.0f, 0.0f, 0.0f);
+		camera.MoveCamera(moveLeftVec);
+
+		return true;
+	}
+	else if (input->IsKeyDown('D'))
+	{
+		DirectX::XMVECTOR moveRightVec = DirectX::XMVectorSet(threshHold, 0.0f, 0.0f, 0.0f);
+		camera.MoveCamera(moveRightVec);
 
 		return true;
 	}
