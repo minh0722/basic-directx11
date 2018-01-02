@@ -537,13 +537,13 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	else if (input->IsKeyDown('Q'))
 	{
-		camera.Rotate(RotationAxis::Yaw, 0.1f);
+		camera.Rotate(RotationAxis::Yaw, -0.1f);
 
 		return true;
 	}
 	else if (input->IsKeyDown('E'))
 	{
-		camera.Rotate(RotationAxis::Yaw, -0.1f);
+		camera.Rotate(RotationAxis::Yaw, 0.1f);
 
 		return true;
 	}
