@@ -566,6 +566,20 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 		return true;
 	}
+	else if (input->IsKeyDown(VK_UP))
+	{
+		DirectX::XMVECTOR moveUpVec = DirectX::XMVectorSet(0.0, threshHold, 0.0f, 0.0f);
+		camera.MoveCamera(moveUpVec);
+
+		return true;
+	}
+	else if (input->IsKeyDown(VK_DOWN))
+	{
+		DirectX::XMVECTOR moveDownVec = DirectX::XMVectorSet(0.0f, -threshHold, 0.0f, 0.0f);
+		camera.MoveCamera(moveDownVec);
+
+		return true;
+	}
 
 	return false;
 }
