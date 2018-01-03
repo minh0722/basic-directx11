@@ -13,7 +13,7 @@ Renderer* Renderer::ms_Instance = nullptr;
 Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
-		45.0f)												// fov
+		60.0f)												// fov
 {
 }
 
@@ -532,37 +532,37 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	else if (input->IsKeyDown('Q'))
 	{
-		camera.Rotate(RotationAxis::Yaw, -0.1f);
+		camera.Rotate(RotationAxis::Yaw, -0.01f);
 
 		return true;
 	}
 	else if (input->IsKeyDown('E'))
 	{
-		camera.Rotate(RotationAxis::Yaw, 0.1f);
+		camera.Rotate(RotationAxis::Yaw, 0.01f);
 
 		return true;
 	}
 	else if (input->IsKeyDown('R'))
 	{
-		camera.Rotate(RotationAxis::Pitch, -0.1f);
+		camera.Rotate(RotationAxis::Pitch, -0.01f);
 		
 		return true;
 	}
 	else if (input->IsKeyDown('F'))
 	{
-		camera.Rotate(RotationAxis::Pitch, 0.1f);
+		camera.Rotate(RotationAxis::Pitch, 0.01f);
 
 		return true;
 	}
 	else if (input->IsKeyDown('T'))
 	{
-		camera.Rotate(RotationAxis::Roll, 0.1f);
+		camera.Rotate(RotationAxis::Roll, 0.01f);
 
 		return true;
 	}
 	else if (input->IsKeyDown('G'))
 	{
-		camera.Rotate(RotationAxis::Roll, -0.1f);
+		camera.Rotate(RotationAxis::Roll, -0.01f);
 
 		return true;
 	}

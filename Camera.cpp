@@ -44,27 +44,35 @@ void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
 
 void Camera::Rotate(RotationAxis axis, float degree)
 {
-			// calculate the roll pitch yaw matrix
 	switch (axis)
 	{
 	case Roll:
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0.0, 0.0, degree * RADIAN);
+		// calculate the roll pitch yaw matrix
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_ForwardDirection, degree * RADIAN);
+
+		// rotate the directional vectors
+		m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
+		m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
+
 		break;
 	case Yaw:
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(0.0, degree * RADIAN, 0.0f);
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_UpDirection, degree * RADIAN);
+
+		m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
+		m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
+
 		break;
 	case Pitch:
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(degree * RADIAN, 0.0f, 0.0f);
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_RightDirection, degree * RADIAN);
+
+		m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
+		m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
+
 		break;
 	default:
 		THROW_IF_FAILED(E_FAIL);
 		break;
 	}
-
-	// rotate the directional vectors
-	m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
-	m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
-	m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
 
 	// update the lookat position by adding the current position with the directional vector
 	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
