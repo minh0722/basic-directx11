@@ -13,7 +13,7 @@ Renderer* Renderer::ms_Instance = nullptr;
 Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
-		120.0f)												// fov
+		45.0f)												// fov
 {
 }
 
@@ -405,9 +405,7 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
     Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
     Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
-
-	//DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationY(45);
-	
+		
 	bool hasInput = onInput(input, m_Camera);
 
 	if (prim == Triangle)
@@ -499,10 +497,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 
 	float threshHold = 0.001f;
-
-	DirectX::XMVECTOR camPos = camera.GetCameraPosition();
-	DirectX::XMVECTOR lookAtPos = camera.GetCameraLookAt();
-
+	
 	if (input->IsKeyDown('W'))
 	{
 		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, threshHold, 0.0f);
