@@ -56,10 +56,11 @@ void Camera::Rotate(RotationAxis axis, float degree)
 
 		break;
 	case Yaw:
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_UpDirection, degree * RADIAN);
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(DirectX::XMVectorSet(0.0, 1.0f, 0.0f, 0.0f), degree * RADIAN);
 
 		m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
 		m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
+        m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
 
 		break;
 	case Pitch:
