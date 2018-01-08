@@ -232,7 +232,7 @@ void Renderer::SetupTriangle()
 	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
 	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
 	vertexShaderInputLayout[0].AlignedByteOffset = 0;
-	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each geometry)
 	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
 
 	vertexShaderInputLayout[1].SemanticName = "COLOR";
@@ -496,7 +496,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		return false;
 	}
 
-	float threshHold = 0.001f;
+	float threshHold = 0.005f;
 	
 	if (input->IsKeyDown('W'))
 	{
