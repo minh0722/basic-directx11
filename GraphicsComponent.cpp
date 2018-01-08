@@ -29,7 +29,18 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 
 	UINT startIndexLocation = 0;
 	UINT baseVertexLocation = 0;
+
+#if INSTANCING_RENDER
+    context->DrawIndexedInstanced(
+        m_IndicesCount,         // Number of indices read from the index buffer for each instance. 
+        10000,                  // Number of instances to draw
+        0,                      // The location of the first index read by the GPU from the index buffer
+        0,                      // A value added to each index before reading a vertex from the vertex buffer
+        0);                     // A value added to each index before reading per-instance data from a vertex buffer
+#else
 	context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
+#endif
+
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)

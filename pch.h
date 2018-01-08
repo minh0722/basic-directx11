@@ -26,6 +26,8 @@
 #include <cmath>
 #include <cassert>
 
+#include "common.h"
+
 static const UINT screenWidth = 1080;
 static const UINT screenHeight = 720;
 
@@ -36,10 +38,14 @@ static const UINT screenHeight = 720;
 #define PI 3.14159265359
 #define RADIAN 0.01745329252
 
+#if 0
 #define OUTPUT_DEBUG(format, ...) \
 	char buf[256];	\
 	snprintf(buf, 256, format, __VA_ARGS__); \
 	OutputDebugStringA(buf);
+#else
+#define OUTPUT_DEBUG(format, ...)
+#endif
 
 enum RotationAxis
 {
