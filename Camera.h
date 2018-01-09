@@ -28,9 +28,9 @@ private:
 	void UpdateCameraMatrices();
 
 private:
-	DirectX::XMVECTOR m_ForwardDirection;
-	DirectX::XMVECTOR m_RightDirection;
-	DirectX::XMVECTOR m_UpDirection;
+	DirectX::XMVECTOR m_ForwardOrientation;
+	DirectX::XMVECTOR m_RightOrientation;
+	DirectX::XMVECTOR m_UpOrientation;
 
 	DirectX::XMMATRIX m_ViewMatrix;
 	DirectX::XMMATRIX m_PerspectiveProjectionMatrix;

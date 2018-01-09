@@ -1,9 +1,9 @@
 #include "Camera.h"
 
 Camera::Camera()
-	: m_ForwardDirection(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
-	, m_RightDirection(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
-	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
+	: m_ForwardOrientation(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
+	, m_RightOrientation(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+	, m_UpOrientation(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 	, m_ViewMatrix(DirectX::XMMatrixIdentity())
 	, m_PerspectiveProjectionMatrix(DirectX::XMMatrixIdentity())
 	, m_RollPitchYawRotationMatrix(DirectX::XMMatrixIdentity())
@@ -15,9 +15,9 @@ Camera::Camera()
 }
 
 Camera::Camera(const DirectX::XMVECTOR& position, const float fov)
-	: m_ForwardDirection(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
-	, m_RightDirection(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
-	, m_UpDirection(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
+	: m_ForwardOrientation(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f))
+	, m_RightOrientation(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+	, m_UpOrientation(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))
 	, m_Fov(fov)
 	, m_NearPlaneDist(0.1f)
 	, m_FarPlaneDist(1000.0f)
@@ -25,7 +25,7 @@ Camera::Camera(const DirectX::XMVECTOR& position, const float fov)
 	, m_RollPitchYawRotationMatrix(DirectX::XMMatrixIdentity())
 	, m_NeedToUpdateMatrices(true)
 {
-	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
+	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardOrientation);
 	UpdateCameraMatrices();
 }
 
@@ -35,9 +35,9 @@ void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
 	float yDirectionAmount = DirectX::XMVectorGetY(moveVector);		// up down
 	float zDirectionAmount = DirectX::XMVectorGetZ(moveVector);		// forward backward
 
-	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_RightDirection, xDirectionAmount));
-	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_UpDirection, yDirectionAmount));
-	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_ForwardDirection, zDirectionAmount));
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_RightOrientation, xDirectionAmount));
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_UpOrientation, yDirectionAmount));
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_ForwardOrientation, zDirectionAmount));
 	
 	m_NeedToUpdateMatrices = true;
 }
@@ -48,26 +48,26 @@ void Camera::Rotate(RotationAxis axis, float degree)
 	{
 	case Roll:
 		// calculate the roll pitch yaw matrix
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_ForwardDirection, degree * RADIAN);
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_ForwardOrientation, degree * RADIAN);
 
 		// rotate the directional vectors
-		m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
-		m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
+		m_RightOrientation = DirectX::XMVector3Transform(m_RightOrientation, m_RollPitchYawRotationMatrix);
+		m_UpOrientation = DirectX::XMVector3Transform(m_UpOrientation, m_RollPitchYawRotationMatrix);
 
 		break;
 	case Yaw:
 		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(DirectX::XMVectorSet(0.0, 1.0f, 0.0f, 0.0f), degree * RADIAN);
 
-		m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
-		m_RightDirection = DirectX::XMVector3Transform(m_RightDirection, m_RollPitchYawRotationMatrix);
-        m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
+		m_ForwardOrientation = DirectX::XMVector3Transform(m_ForwardOrientation, m_RollPitchYawRotationMatrix);
+		m_RightOrientation = DirectX::XMVector3Transform(m_RightOrientation, m_RollPitchYawRotationMatrix);
+        m_UpOrientation = DirectX::XMVector3Transform(m_UpOrientation, m_RollPitchYawRotationMatrix);
 
 		break;
 	case Pitch:
-		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_RightDirection, degree * RADIAN);
+		m_RollPitchYawRotationMatrix = DirectX::XMMatrixRotationAxis(m_RightOrientation, degree * RADIAN);
 
-		m_ForwardDirection = DirectX::XMVector3Transform(m_ForwardDirection, m_RollPitchYawRotationMatrix);
-		m_UpDirection = DirectX::XMVector3Transform(m_UpDirection, m_RollPitchYawRotationMatrix);
+		m_ForwardOrientation = DirectX::XMVector3Transform(m_ForwardOrientation, m_RollPitchYawRotationMatrix);
+		m_UpOrientation = DirectX::XMVector3Transform(m_UpOrientation, m_RollPitchYawRotationMatrix);
 
 		break;
 	default:
@@ -76,9 +76,9 @@ void Camera::Rotate(RotationAxis axis, float degree)
 	}
 
 	// update the lookat position by adding the current position with the directional vector
-	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
+	m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardOrientation);
 
-	OUTPUT_DEBUG("Lookat = %f %f %f %f\n", m_ForwardDirection.m128_f32[0], m_ForwardDirection.m128_f32[1], m_ForwardDirection.m128_f32[2], m_ForwardDirection.m128_f32[3]);
+	OUTPUT_DEBUG("Lookat = %f %f %f %f\n", m_ForwardOrientation.m128_f32[0], m_ForwardOrientation.m128_f32[1], m_ForwardOrientation.m128_f32[2], m_ForwardOrientation.m128_f32[3]);
 	
 	m_NeedToUpdateMatrices = true;
 }
@@ -144,9 +144,9 @@ void Camera::UpdateCameraMatrices()
 {
 	if (m_NeedToUpdateMatrices)
 	{
-		m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardDirection);
+		m_LookAt = DirectX::XMVectorAdd(m_Position, m_ForwardOrientation);
 
-		m_ViewMatrix = DirectX::XMMatrixLookAtLH(m_Position, m_LookAt, m_UpDirection);
+		m_ViewMatrix = DirectX::XMMatrixLookAtLH(m_Position, m_LookAt, m_UpOrientation);
 		m_PerspectiveProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH(m_Fov * RADIAN, (float)screenWidth / (float)screenHeight, m_NearPlaneDist, m_FarPlaneDist);
 
 		m_NeedToUpdateMatrices = false;
