@@ -18,9 +18,16 @@ private:
 	void UpdateCameraMatrices();
 
 private:
-	DirectX::XMVECTOR m_ForwardOrientation;
-	DirectX::XMVECTOR m_RightOrientation;
-	DirectX::XMVECTOR m_UpOrientation;
+    // used for pitch and roll rotation
+    // orientation of the camera changes in all rotations (roll, pitch, yaw)
+	DirectX::XMVECTOR m_CurrentOrientationForwardDirection;
+	DirectX::XMVECTOR m_CurrentOrientationRightDirection;
+	DirectX::XMVECTOR m_CurrentOrientationUpDirection;
+
+    // used for camera movement and yaw rotation
+    DirectX::XMVECTOR m_ForwardMovementDirection;
+    DirectX::XMVECTOR m_RightMovementDirection;
+    DirectX::XMVECTOR m_UpMovementDirection;
 
 	DirectX::XMMATRIX m_ViewMatrix;
 	DirectX::XMMATRIX m_PerspectiveProjectionMatrix;
