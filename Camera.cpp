@@ -83,51 +83,6 @@ void Camera::Rotate(RotationAxis axis, float degree)
 	m_NeedToUpdateMatrices = true;
 }
 
-DirectX::XMVECTOR Camera::GetCameraPosition() const
-{
-	return m_Position;
-}
-
-DirectX::XMVECTOR Camera::GetCameraLookAt() const
-{
-	return m_LookAt;
-}
-
-float Camera::GetFOV() const
-{
-	return m_Fov;
-}
-
-void Camera::SetLookAt(const DirectX::XMVECTOR& lookAt)
-{
-	m_LookAt = lookAt;
-	m_NeedToUpdateMatrices = true;
-}
-
-void Camera::SetCameraPosition(const DirectX::XMVECTOR& position)
-{
-    m_Position = position;
-	m_NeedToUpdateMatrices = true;
-}
-
-void Camera::SetFov(const float fov)
-{
-    m_Fov = fov;
-	m_NeedToUpdateMatrices = true;
-}
-
-void Camera::SetNearPlaneDist(const float nearPlaneDist)
-{
-    m_NearPlaneDist = nearPlaneDist;
-	m_NeedToUpdateMatrices = true;
-}
-
-void Camera::SetFarPlaneDist(const float farPlaneDist)
-{
-    m_FarPlaneDist = farPlaneDist;
-	m_NeedToUpdateMatrices = true;
-}
-
 DirectX::XMMATRIX Camera::GetViewMatrix()
 {
 	UpdateCameraMatrices();

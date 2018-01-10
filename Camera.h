@@ -10,18 +10,8 @@ public:
     Camera(const DirectX::XMVECTOR& worldPosition, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
     void Rotate(RotationAxis axis, float degree);
-    
-	DirectX::XMVECTOR GetCameraPosition() const;
-	DirectX::XMVECTOR GetCameraLookAt() const;
-	float GetFOV() const;
-
-    void SetLookAt(const DirectX::XMVECTOR& lookAt);
-    void SetCameraPosition(const DirectX::XMVECTOR& position);
-    void SetFov(const float fov);
-    void SetNearPlaneDist(const float nearPlaneDist);
-    void SetFarPlaneDist(const float farPlaneDist);
-
-	DirectX::XMMATRIX GetViewMatrix();
+    	
+    DirectX::XMMATRIX GetViewMatrix();
 	DirectX::XMMATRIX GetProjectionMatrix();
 
 private:
