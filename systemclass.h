@@ -41,7 +41,7 @@ public:
 
 private:
 	bool Frame();
-	void InitializeWindows(int&, int&);
+	void InitializeWindows(int, int);
 	void ShutdownWindows();
 
 private:
