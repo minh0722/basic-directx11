@@ -20,7 +20,7 @@ void Shape::AddComponent(BaseComponent* newComponent)
 	m_Components.push_back(newComponent);
 }
 
-void Shape::Render(ID3D11DeviceContext* context, bool isInstancing /*= false*/, size_t instanceCount /*= 1*/)
+void Shape::Render(ID3D11DeviceContext* context, bool isInstancing /*= false*/, uint32_t instanceCount /*= 1*/)
 {
 	for (auto& component : m_Components)
 	{

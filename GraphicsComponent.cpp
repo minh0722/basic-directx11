@@ -12,7 +12,7 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 	// TODO: handle exceptions here...
 }
 
-void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRendering /*= false*/, size_t instanceCount /*= 1*/)
+void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRendering /*= false*/, uint32_t instanceCount /*= 1*/)
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -47,7 +47,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
 {
-	m_IndicesCount = indices.size();
+	m_IndicesCount = (uint32_t)indices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -69,7 +69,7 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<u
 
 void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices)
 {
-	size_t verticesCount = vertices.size();
+	uint32_t verticesCount = (uint32_t)vertices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -197,7 +197,7 @@ void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, const LPCWST
 	THROW_IF_FAILED(
 		device->CreateInputLayout(
 			inputLayoutDesc.data(),
-			inputLayoutDesc.size(),
+			(uint32_t)inputLayoutDesc.size(),
 			vertexBlob->GetBufferPointer(),
 			vertexBlob->GetBufferSize(),
 			m_VertexInputLayout.GetAddressOf()));
