@@ -13,7 +13,7 @@ public:
 	~Shape();
 
 	void AddComponent(BaseComponent* newComponent);
-	void Render(ID3D11DeviceContext* context);
+	void Render(ID3D11DeviceContext* context, bool isInstancing = false, size_t instanceCount = 1);
 
     GraphicsComponent* GetGraphicsComponent();
 

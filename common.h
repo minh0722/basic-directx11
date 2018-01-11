@@ -1,4 +1,3 @@
-#pragma once
 /*
     This contains all common defines for both source and shader files
 */

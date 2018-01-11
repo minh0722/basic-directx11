@@ -85,7 +85,7 @@ void Scene::AddCube()
 
     worldViewProj = worldMatrix * viewMatrix;
 
-    DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH(fov * RADIAN, (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
+    DirectX::XMMATRIX perspectiveProjMatrix = DirectX::XMMatrixPerspectiveFovLH((float)(fov * RADIAN), (float)screenWidth / (float)screenHeight, 0.0f, 100.0f);
 
     worldViewProj = worldViewProj * perspectiveProjMatrix;
 

@@ -45,7 +45,7 @@ void Renderer::Render(InputClass* input)
 
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupPrimitiveForRender(input);
-	m_Cube.Render(m_DeviceContext.Get());
+	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
 	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 
@@ -289,7 +289,7 @@ void Renderer::SetupCube()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"vertexShader.cso",
+		L"CubeInstancing_Vs.cso",
 		L"pixelShader.cso",
 		vertexShaderInputLayout
 	};
