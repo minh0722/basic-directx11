@@ -48,5 +48,5 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout;
 
-	size_t m_IndicesCount;
+	UINT m_IndicesCount;
 };

@@ -33,8 +33,8 @@ static const UINT screenHeight = 720;
 #define THROW_IF_NULL(ptr) SafetyCheck::ThrowIfNull(ptr, __FILE__, __LINE__)
 #define THROW_IF_FALSE(flag) SafetyCheck::ThrowIfFalse(flag, __FILE__, __LINE__)
 
-#define PI 3.14159265359
-#define RADIAN 0.01745329252
+static const float PI = 3.14159265359f;
+static const float RADIAN = 0.01745329252f;
 
 #define OUTPUT_DEBUG(format, ...) \
 	char buf[256];	\

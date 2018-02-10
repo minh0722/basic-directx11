@@ -34,7 +34,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
 {
-	m_IndicesCount = indices.size();
+	m_IndicesCount = (UINT)indices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -56,7 +56,7 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<u
 
 void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices)
 {
-	size_t verticesCount = vertices.size();
+	UINT verticesCount = (UINT)vertices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -184,7 +184,7 @@ void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, const LPCWST
 	THROW_IF_FAILED(
 		device->CreateInputLayout(
 			inputLayoutDesc.data(),
-			inputLayoutDesc.size(),
+			(UINT)inputLayoutDesc.size(),
 			vertexBlob->GetBufferPointer(),
 			vertexBlob->GetBufferSize(),
 			m_VertexInputLayout.GetAddressOf()));
