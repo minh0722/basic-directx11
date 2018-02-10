@@ -19,7 +19,7 @@ public:
 
 	GraphicsComponent(const GraphicsComponentDesc& desc);
 
-	void Render(ID3D11DeviceContext* context) override;
+	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1) override;
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
 	void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) override;
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;

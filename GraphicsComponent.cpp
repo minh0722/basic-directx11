@@ -12,7 +12,7 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 	// TODO: handle exceptions here...
 }
 
-void GraphicsComponent::Render(ID3D11DeviceContext* context)
+void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRendering /*= false*/, uint32_t instanceCount /*= 1*/)
 {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
@@ -29,7 +29,20 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context)
 
 	UINT startIndexLocation = 0;
 	UINT baseVertexLocation = 0;
-	context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
+
+    if(isInstanceRendering)
+    {
+        context->DrawIndexedInstanced(
+            m_IndicesCount,         // Number of indices read from the index buffer for each instance. 
+            instanceCount,                  // Number of instances to draw
+            0,                      // The location of the first index read by the GPU from the index buffer
+            0,                      // A value added to each index before reading a vertex from the vertex buffer
+            0);                     // A value added to each index before reading per-instance data from a vertex buffer
+    }
+    else
+    {
+        context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
+    }
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)

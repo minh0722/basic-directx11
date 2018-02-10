@@ -1,6 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: systemclass.cpp
-////////////////////////////////////////////////////////////////////////////////
+#include "pch.h"
 #include "systemclass.h"
 
 
@@ -8,13 +6,6 @@ SystemClass::SystemClass()
 {
 	m_Input = 0;
 	//m_Graphics = 0;
-
-	int screenWidth, screenHeight;
-
-
-	// Initialize the width and height of the screen to zero before sending the variables into the function.
-	screenWidth = 0;
-	screenHeight = 0;
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
@@ -45,13 +36,7 @@ SystemClass::~SystemClass()
 
 bool SystemClass::Initialize()
 {
-	int screenWidth, screenHeight;
-
-
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
-	screenWidth = 0;
-	screenHeight = 0;
-
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
@@ -193,7 +178,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 }
 
 
-void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
+void SystemClass::InitializeWindows(int screenWidth, int screenHeight)
 {
 	WNDCLASSEX wc;
 	int posX, posY;
@@ -225,10 +210,6 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	// Register the window class.
 	RegisterClassEx(&wc);
 
-	// Determine the resolution of the clients desktop screen.
-	screenWidth  = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
 	//// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 	//if(FULL_SCREEN)
 	//{
@@ -249,8 +230,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	//else
 	//{
 		// If windowed then set it to 800x600 resolution.
-		screenWidth  = 800;
-		screenHeight = 600;
+		//screenWidth  = 1080;
+		//screenHeight = 720;
 
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;

@@ -51,6 +51,9 @@
     <ClInclude Include="..\Vector4f.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -93,5 +96,8 @@
   <ItemGroup>
     <FxCompile Include="..\pixelShader.hlsl" />
     <FxCompile Include="..\vertexShader.hlsl" />
+    <FxCompile Include="..\CubeInstancing_Vs.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

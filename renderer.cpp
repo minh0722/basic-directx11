@@ -45,7 +45,7 @@ void Renderer::Render(InputClass* input)
 
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupPrimitiveForRender(input);
-	m_Cube.Render(m_DeviceContext.Get());
+	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
 	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 
@@ -232,7 +232,7 @@ void Renderer::SetupTriangle()
 	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
 	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
 	vertexShaderInputLayout[0].AlignedByteOffset = 0;
-	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each geometry)
 	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
 
 	vertexShaderInputLayout[1].SemanticName = "COLOR";
@@ -289,7 +289,7 @@ void Renderer::SetupCube()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"vertexShader.cso",
+		L"CubeInstancing_Vs.cso",
 		L"pixelShader.cso",
 		vertexShaderInputLayout
 	};
@@ -496,7 +496,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		return false;
 	}
 
-	float threshHold = 0.001f;
+	float threshHold = 0.005f;
 	
 	if (input->IsKeyDown('W'))
 	{

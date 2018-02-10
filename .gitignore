@@ -8,3 +8,4 @@ VS2015/basic-directx11.vcxproj.user
 *.db
 *.opendb
 x64
+*.ipch

@@ -10,27 +10,24 @@ public:
     Camera(const DirectX::XMVECTOR& worldPosition, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
     void Rotate(RotationAxis axis, float degree);
-    
-	DirectX::XMVECTOR GetCameraPosition() const;
-	DirectX::XMVECTOR GetCameraLookAt() const;
-	float GetFOV() const;
-
-    void SetLookAt(const DirectX::XMVECTOR& lookAt);
-    void SetCameraPosition(const DirectX::XMVECTOR& position);
-    void SetFov(const float fov);
-    void SetNearPlaneDist(const float nearPlaneDist);
-    void SetFarPlaneDist(const float farPlaneDist);
-
-	DirectX::XMMATRIX GetViewMatrix();
+    	
+    DirectX::XMMATRIX GetViewMatrix();
 	DirectX::XMMATRIX GetProjectionMatrix();
 
 private:
 	void UpdateCameraMatrices();
 
 private:
-	DirectX::XMVECTOR m_ForwardDirection;
-	DirectX::XMVECTOR m_RightDirection;
-	DirectX::XMVECTOR m_UpDirection;
+    // used for pitch and roll rotation
+    // orientation of the camera changes in all rotations (roll, pitch, yaw)
+	DirectX::XMVECTOR m_CurrentOrientationForwardDirection;
+	DirectX::XMVECTOR m_CurrentOrientationRightDirection;
+	DirectX::XMVECTOR m_CurrentOrientationUpDirection;
+
+    // used for camera movement and yaw rotation
+    DirectX::XMVECTOR m_ForwardMovementDirection;
+    DirectX::XMVECTOR m_RightMovementDirection;
+    DirectX::XMVECTOR m_UpMovementDirection;
 
 	DirectX::XMMATRIX m_ViewMatrix;
 	DirectX::XMMATRIX m_PerspectiveProjectionMatrix;

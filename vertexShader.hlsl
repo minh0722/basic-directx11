@@ -1,3 +1,5 @@
+#include "common.h"
+
 cbuffer ConstBuffer : register(b0)
 {
     matrix world;

@@ -106,7 +106,7 @@ private:
 	Shape m_Cube;
     Shape m_Axis;
 
-	Camera m_Camera;
+    Camera m_Camera;
 };
 
 #define g_Renderer Renderer::GetInstance()
