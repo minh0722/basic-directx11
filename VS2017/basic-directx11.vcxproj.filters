@@ -93,5 +93,6 @@
   <ItemGroup>
     <FxCompile Include="..\pixelShader.hlsl" />
     <FxCompile Include="..\vertexShader.hlsl" />
+    <FxCompile Include="..\CubeInstancing_Vs.hlsl" />
   </ItemGroup>
 </Project>
