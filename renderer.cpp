@@ -35,6 +35,8 @@ void Renderer::Initialize(HWND window)
 	SetupTriangle();
 	SetupCube();
     SetupAxis();
+
+	InitRasterizerState(D3D11_FILL_WIREFRAME);
 	SetupSphereMesh();
 }
 
@@ -51,7 +53,7 @@ void Renderer::Render(InputClass* input)
 	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 	
-	InitRasterizerState(D3D11_FILL_WIREFRAME);
+	InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
 	SetupPrimitiveForRender(input, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
 
@@ -198,11 +200,11 @@ void Renderer::InitDepthStencilState()
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
-void Renderer::InitRasterizerState(D3D11_FILL_MODE mode/* = D3D11_FILL_SOLID*/)
+void Renderer::InitRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, D3D11_CULL_MODE cullMode /*= D3D11_CULL_BACK*/)
 {
 	D3D11_RASTERIZER_DESC desc = {};
 	desc.AntialiasedLineEnable = false;
-	desc.CullMode = D3D11_CULL_BACK;
+	desc.CullMode = cullMode;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
@@ -459,8 +461,8 @@ void Renderer::SetupSphereMesh()
 
 			float cosPhi1 = std::cosf(phi1);
 			float cosPhi2 = std::cosf(phi2);
-			float sinPhi1 = std::sin(phi1);
-			float sinPhi2 = std::sin(phi2);
+			float sinPhi1 = std::sinf(phi1);
+			float sinPhi2 = std::sinf(phi2);
 
 			//phi2   phi1
 			// |      |
@@ -687,8 +689,8 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 
 				float cosPhi1 = std::cosf(phi1);
 				float cosPhi2 = std::cosf(phi2);
-				float sinPhi1 = std::sin(phi1);
-				float sinPhi2 = std::sin(phi2);
+				float sinPhi1 = std::sinf(phi1);
+				float sinPhi2 = std::sinf(phi2);
 
 				//phi2   phi1
 				// |      |
