@@ -35,6 +35,7 @@ void Renderer::Initialize(HWND window)
 	SetupTriangle();
 	SetupCube();
     SetupAxis();
+	SetupSphereMesh();
 }
 
 void Renderer::Render(InputClass* input)
@@ -43,11 +44,16 @@ void Renderer::Render(InputClass* input)
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
+	InitRasterizerState(D3D11_FILL_SOLID);
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupPrimitiveForRender(input);
 	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
 	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
+	
+	InitRasterizerState(D3D11_FILL_WIREFRAME);
+	SetupPrimitiveForRender(input, Sphere);
+	m_SphereMesh.Render(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
 }
@@ -192,7 +198,7 @@ void Renderer::InitDepthStencilState()
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
-void Renderer::InitRasterizerState()
+void Renderer::InitRasterizerState(D3D11_FILL_MODE mode/* = D3D11_FILL_SOLID*/)
 {
 	D3D11_RASTERIZER_DESC desc = {};
 	desc.AntialiasedLineEnable = false;
@@ -200,7 +206,7 @@ void Renderer::InitRasterizerState()
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
-	desc.FillMode = D3D11_FILL_SOLID;
+	desc.FillMode = mode;
 	desc.FrontCounterClockwise = true;
 	desc.MultisampleEnable = false;
 	desc.ScissorEnable = false;
@@ -400,6 +406,167 @@ void Renderer::SetupAxis()
     m_Axis.AddComponent(graphicComponent);
 }
 
+void Renderer::SetupSphereMesh()
+{
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+	vertexShaderInputLayout[0].SemanticName = "POSITION";
+	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+	vertexShaderInputLayout[0].AlignedByteOffset = 0;
+	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+	vertexShaderInputLayout[1].SemanticName = "COLOR";
+	vertexShaderInputLayout[1].SemanticIndex = 0;
+	vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	vertexShaderInputLayout[1].InputSlot = 0;
+	vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
+	GraphicsComponent::GraphicsComponentDesc desc =
+	{
+		m_Device.Get(),
+		L"vertexShader.cso",
+		L"pixelShader.cso",
+		vertexShaderInputLayout
+	};
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
+	// calculate vertices for the sphere mesh
+	float radius = 7.0f;
+	Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
+	int latitudeCount = 7;
+	int longtitudeCount = 9;
+
+	for (int i = 0; i < latitudeCount; ++i)
+	{
+		float theta1 = (float)i / (float)latitudeCount * PI;
+		float theta2 = (float)((i + 1)) / (float)latitudeCount * PI;
+
+		float sinTheta1 = std::sinf(theta1);
+		float sinTheta2 = std::sinf(theta2);
+		float cosTheta1 = std::cosf(theta1);
+		float cosTheta2 = std::cosf(theta2);
+
+		for (int j = 0; j < longtitudeCount; ++j)
+		{
+			float phi1 = (float)j / (float)longtitudeCount * 2.0f * PI;			// azimuth goes around 0...2*PI
+			float phi2 = (float)((j + 1) % longtitudeCount) / (float)longtitudeCount * 2.0f * PI;
+
+			float cosPhi1 = std::cosf(phi1);
+			float cosPhi2 = std::cosf(phi2);
+			float sinPhi1 = std::sin(phi1);
+			float sinPhi2 = std::sin(phi2);
+
+			//phi2   phi1
+			// |      |
+			// 2------1 -- theta1
+			// | \    |
+			// |  \   |
+			// |   \  |
+			// |    \ |
+			// 3------4 -- theta2
+
+			// x = r * sin(theta) * cos(phi)
+			// y = r * sin(theta) * sin(phi)
+			// z = r * cos(phi)
+
+			// phi1 theta1
+			float x11 = radius * sinTheta1 * cosPhi1;
+			float y11 = radius * sinTheta1 * sinPhi1;
+			float z11 = radius * cosTheta1;
+
+			// phi1 theta2
+			float x12 = radius * sinTheta2 * cosPhi1;
+			float y12 = radius * sinTheta2 * sinPhi1;
+			float z12 = radius * cosTheta2;
+
+			// phi2 theta1
+			float x21 = radius * sinTheta1 * cosPhi2;
+			float y21 = radius * sinTheta1 * sinPhi2;
+			float z21 = radius * cosTheta1;
+
+			// phi2 theta2
+			float x22 = radius * sinTheta2 * cosPhi2;
+			float y22 = radius * sinTheta2 * sinPhi2;
+			float z22 = radius * cosTheta2;
+
+			if (i == 0)		// upper cap
+			{
+				uint32_t v1Index = (uint32_t)vertices.size();
+				uint32_t v3Index = (uint32_t)vertices.size() + 1;
+				uint32_t v4Index = (uint32_t)vertices.size() + 2;
+
+				vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+				vertices.push_back({ { x22, z22, y22, 1.0f }, green });
+				vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+
+				indices.push_back(v1Index);
+				indices.push_back(v3Index);
+				indices.push_back(v4Index);
+			}
+			else if (i + 1 == latitudeCount)		// lower cap
+			{
+				uint32_t v1Index = (uint32_t)vertices.size();
+				uint32_t v2Index = (uint32_t)vertices.size() + 1;
+				uint32_t v4Index = (uint32_t)vertices.size() + 2;
+
+				vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+				vertices.push_back({ { x21, z21, y21, 1.0f }, green });
+				vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+
+				indices.push_back(v1Index);
+				indices.push_back(v2Index);
+				indices.push_back(v4Index);
+			}
+			else
+			{
+				uint32_t v1Index = (uint32_t)vertices.size();
+				uint32_t v4Index = (uint32_t)vertices.size() + 1;
+				uint32_t v2Index = (uint32_t)vertices.size() + 2;
+				uint32_t v3Index = (uint32_t)vertices.size() + 3;
+
+				vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+				vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+				vertices.push_back({ { x21, z21, y21, 1.0f }, green });
+				vertices.push_back({ { x22, z22, y22, 1.0f }, green });
+
+				indices.push_back(v1Index);
+				indices.push_back(v2Index);
+				indices.push_back(v4Index);
+
+				indices.push_back(v2Index);
+				indices.push_back(v3Index);
+				indices.push_back(v4Index);
+			}
+		}
+	}
+
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	graphicComponent->SetIndexBuffer(
+		m_Device.Get(),
+		indices);
+
+	graphicComponent->SetVertexBuffer(
+		m_Device.Get(),
+		vertices
+	);
+
+	graphicComponent->ChangeWorldViewProjBufferData(
+		m_DeviceContext.Get(),
+		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
+
+	m_SphereMesh.AddComponent(graphicComponent);
+}
+
 void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 {
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -454,7 +621,7 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 		}
 	}
-	else
+	else if(prim == Line)
 	{
 		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
 
@@ -485,6 +652,145 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 			graphicComponent->ChangeWorldViewProjBufferData(
 				m_DeviceContext.Get(), 
 				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
+		}
+	}
+	else
+	{
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+
+		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
+
+		vertices.reserve(200);
+		indices.reserve(200);
+
+		// calculate vertices for the sphere mesh
+		float radius = 7.0f;
+		Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
+		int latitudeCount = 7;
+		int longtitudeCount = 9;
+
+		for (int i = 0; i < latitudeCount; ++i)
+		{
+			float theta1 = (float)i / (float)latitudeCount * PI;
+			float theta2 = (float)((i + 1)) / (float)latitudeCount * PI;
+
+			float sinTheta1 = std::sinf(theta1);
+			float sinTheta2 = std::sinf(theta2);
+			float cosTheta1 = std::cosf(theta1);
+			float cosTheta2 = std::cosf(theta2);
+
+			for (int j = 0; j < longtitudeCount; ++j)
+			{
+				float phi1 = (float)j / (float)longtitudeCount * 2.0f * PI;			// azimuth goes around 0...2*PI
+				float phi2 = (float)((j + 1) % longtitudeCount) / (float)longtitudeCount * 2.0f * PI;
+
+				float cosPhi1 = std::cosf(phi1);
+				float cosPhi2 = std::cosf(phi2);
+				float sinPhi1 = std::sin(phi1);
+				float sinPhi2 = std::sin(phi2);
+
+				//phi2   phi1
+				// |      |
+				// 2------1 -- theta1
+				// | \    |
+				// |  \   |
+				// |   \  |
+				// |    \ |
+				// 3------4 -- theta2
+
+				// x = r * sin(theta) * cos(phi)
+				// y = r * sin(theta) * sin(phi)
+				// z = r * cos(phi)
+
+				// phi1 theta1
+				float x11 = radius * sinTheta1 * cosPhi1;
+				float y11 = radius * sinTheta1 * sinPhi1;
+				float z11 = radius * cosTheta1;
+
+				// phi1 theta2
+				float x12 = radius * sinTheta2 * cosPhi1;
+				float y12 = radius * sinTheta2 * sinPhi1;
+				float z12 = radius * cosTheta2;
+
+				// phi2 theta1
+				float x21 = radius * sinTheta1 * cosPhi2;
+				float y21 = radius * sinTheta1 * sinPhi2;
+				float z21 = radius * cosTheta1;
+
+				// phi2 theta2
+				float x22 = radius * sinTheta2 * cosPhi2;
+				float y22 = radius * sinTheta2 * sinPhi2;
+				float z22 = radius * cosTheta2;
+
+				if (i == 0)		// upper cap
+				{
+					uint32_t v1Index = (uint32_t)vertices.size();
+					uint32_t v3Index = (uint32_t)vertices.size() + 1;
+					uint32_t v4Index = (uint32_t)vertices.size() + 2;
+
+					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+					vertices.push_back({ { x22, z22, y22, 1.0f }, green });
+					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+
+					indices.push_back(v1Index);
+					indices.push_back(v3Index);
+					indices.push_back(v4Index);
+				}
+				else if (i + 1 == latitudeCount)		// lower cap
+				{
+					uint32_t v1Index = (uint32_t)vertices.size();
+					uint32_t v2Index = (uint32_t)vertices.size() + 1;
+					uint32_t v4Index = (uint32_t)vertices.size() + 2;
+
+					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+					vertices.push_back({ { x21, z21, y21, 1.0f }, green });
+					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+
+					indices.push_back(v1Index);
+					indices.push_back(v2Index);
+					indices.push_back(v4Index);
+				}
+				else
+				{
+					uint32_t v1Index = (uint32_t)vertices.size();
+					uint32_t v4Index = (uint32_t)vertices.size() + 1;
+					uint32_t v2Index = (uint32_t)vertices.size() + 2;
+					uint32_t v3Index = (uint32_t)vertices.size() + 3;
+
+					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
+					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
+					vertices.push_back({ { x21, z21, y21, 1.0f }, green });
+					vertices.push_back({ { x22, z22, y22, 1.0f }, green });
+
+					indices.push_back(v1Index);
+					indices.push_back(v2Index);
+					indices.push_back(v4Index);
+
+					indices.push_back(v2Index);
+					indices.push_back(v3Index);
+					indices.push_back(v4Index);
+				}
+			}
+		}
+
+		GraphicsComponent* graphicComponent = m_SphereMesh.GetGraphicsComponent();
+		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		if (hasInput)
+		{
+			graphicComponent->ChangeIndexBufferData(
+				m_DeviceContext.Get(),
+				indices);
+
+			graphicComponent->ChangeVertexBufferData(
+				m_DeviceContext.Get(),
+				vertices
+			);
+
+			graphicComponent->ChangeWorldViewProjBufferData(
+				m_DeviceContext.Get(),
+				{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 		}
 	}
 }

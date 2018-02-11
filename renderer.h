@@ -69,17 +69,19 @@ private:
 	void InitRenderTargetView(IDXGISwapChain* swapChain);
 	void InitDepthStencilBufferAndView();
 	void InitDepthStencilState();
-	void InitRasterizerState();
+	void InitRasterizerState(D3D11_FILL_MODE mode = D3D11_FILL_SOLID);
 	void InitViewPort();
 
 	void SetupTriangle();
 	void SetupCube();
     void SetupAxis();
+	void SetupSphereMesh();
 
 	enum Primitive
 	{
 		Triangle,
-		Line
+		Line,
+		Sphere
 	};
 
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
@@ -105,6 +107,7 @@ private:
 	Shape m_Triangle;
 	Shape m_Cube;
     Shape m_Axis;
+	Shape m_SphereMesh;
 
     Camera m_Camera;
 };
