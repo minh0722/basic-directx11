@@ -642,6 +642,7 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 
 		if (hasInput)
 		{
+			// TODO: is it necessary to change the index and vertex buffer here when they stay the same?
 			graphicComponent->ChangeIndexBufferData(
 				m_DeviceContext.Get(),
 				{ 0, 1, 2, 3, 4, 5 });
