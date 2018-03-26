@@ -130,6 +130,7 @@
     <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Shape.h" />
     <ClInclude Include="..\systemclass.h" />
+    <ClInclude Include="..\TaskScheduler.h" />
     <ClInclude Include="..\Vector4f.h" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +154,7 @@
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Shape.cpp" />
     <ClCompile Include="..\systemclass.cpp" />
+    <ClCompile Include="..\TaskScheduler.cpp" />
     <ClCompile Include="..\Vector4f.cpp" />
   </ItemGroup>
   <ItemGroup>
