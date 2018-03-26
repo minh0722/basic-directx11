@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 		char buf[256];
 		char c = is.peek();
 
-		if (CharEqual(c, '#') || CharEqual(c, '\n'))
+		if (CharEqual(c, '#') || CharEqual(c, '\n') || CharEqual(c, '\r'))
 		{
 			IgnoreLine(is);
 			continue;
