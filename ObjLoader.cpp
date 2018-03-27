@@ -2,6 +2,7 @@
 #include <cassert>
 #include <tuple>
 #include <limits>	// numeric_limits
+#include <cstring>
 
 namespace wavefront
 {
@@ -18,6 +19,17 @@ namespace wavefront
     void IgnoreLine(std::ifstream& is)
     {
         is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    std::string GetFileDirectory(const char* file)
+    {
+        std::string fileStr(file);
+
+        size_t lastDash = fileStr.find_last_of('/');
+        fileStr.erase(fileStr.begin() + lastDash, fileStr.end());
+        fileStr.append("/");
+
+        return fileStr;
     }
 
     Obj ObjLoader::Parse(const char* file)
@@ -78,6 +90,11 @@ namespace wavefront
             }
             else if (StringEqual(buf, "mtllib"))
             {
+                std::string str = GetFileDirectory(file);
+                is.get();
+                is.get(buf, 256, ' ');
+                str.append(buf);
+
                 IgnoreLine(is);
             }
         }
