@@ -32,3 +32,5 @@ rendering schema:
 
 ID3D11Query
 IDXGIFactory
+
+http://aecobjects.com/2014/10/which_format_is_better/
