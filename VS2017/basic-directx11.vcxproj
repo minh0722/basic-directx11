@@ -127,6 +127,7 @@
     <ClInclude Include="..\Camera.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
     <ClInclude Include="..\inputclass.h" />
+    <ClInclude Include="..\MaterialLoader.h" />
     <ClInclude Include="..\Matrix44f.h" />
     <ClInclude Include="..\ObjLoader.h" />
     <ClInclude Include="..\pch.h" />
@@ -143,6 +144,7 @@
     <ClCompile Include="..\GraphicsComponent.cpp" />
     <ClCompile Include="..\inputclass.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\MaterialLoader.cpp" />
     <ClCompile Include="..\Matrix44f.cpp" />
     <ClCompile Include="..\ObjLoader.cpp" />
     <ClCompile Include="..\pch.cpp">
