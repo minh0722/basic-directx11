@@ -129,6 +129,10 @@ namespace wavefront
 
                 IgnoreLine(is);
             }
+			else
+			{
+				IgnoreLine(is);
+			}
         }
 
         char buf[256];
