@@ -3,6 +3,7 @@
 #include "GraphicsComponent.h"
 #include "Matrix44f.h"
 #include "inputclass.h"
+#include "ObjLoader.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
@@ -56,6 +57,12 @@ void Renderer::Render(InputClass* input)
 	InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
 	SetupPrimitiveForRender(input, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
+
+	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
+	// to set define in the shader to not use color when we are rendering the spaceship
+	//InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
+	//SetupSapceShipForRender(input);
+	//m_SpaceShip.Render(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
 }
@@ -567,6 +574,47 @@ void Renderer::SetupSphereMesh()
 		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 
 	m_SphereMesh.AddComponent(graphicComponent);
+}
+
+void Renderer::SetupSpaceShip()
+{
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+	vertexShaderInputLayout[0].SemanticName = "POSITION";
+	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+	vertexShaderInputLayout[0].AlignedByteOffset = 0;
+	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+	GraphicsComponent::GraphicsComponentDesc desc =
+	{
+		m_Device.Get(),
+		L"vertexShader.cso",
+		L"pixelShader.cso",
+		vertexShaderInputLayout
+	};
+
+	GraphicsComponent* graphicsComponent = new GraphicsComponent(desc);
+	graphicsComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
+
+	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
+	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.vertexIndices.data(), result.vertexIndices.size());
+
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+
+	graphicsComponent->ChangeWorldViewProjBufferData(
+		m_DeviceContext.Get(),
+		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
+
+	m_SpaceShip.AddComponent(graphicsComponent);
+}
+
+void Renderer::SetupSapceShipForRender(InputClass* input)
+{
+
 }
 
 void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)

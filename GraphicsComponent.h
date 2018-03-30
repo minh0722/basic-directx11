@@ -21,7 +21,9 @@ public:
 
 	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1) override;
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
+	void SetIndexBuffer(ID3D11Device* device, const void* indices, uint32_t indicesCount) override;
 	void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) override;
+	void SetVertexBuffer(ID3D11Device* device, const std::vector<std::tuple<float, float, float>>& vertices) override;
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
 
     void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);

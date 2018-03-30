@@ -76,6 +76,7 @@ private:
 	void SetupCube();
     void SetupAxis();
 	void SetupSphereMesh();
+	void SetupSpaceShip();
 
 	enum Primitive
 	{
@@ -85,6 +86,7 @@ private:
 	};
 
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
+	void SetupSapceShipForRender(InputClass* input);
 
 	bool onInput(InputClass* input, Camera& camera);
 
@@ -108,6 +110,7 @@ private:
 	Shape m_Cube;
     Shape m_Axis;
 	Shape m_SphereMesh;
+	Shape m_SpaceShip;
 
     Camera m_Camera;
 };
