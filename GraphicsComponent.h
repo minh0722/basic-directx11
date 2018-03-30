@@ -38,15 +38,15 @@ protected:
 		const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_IndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_IndexBuffer = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_WorldViewProjBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_WorldViewProjBuffer = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout = nullptr;
 
-	UINT m_IndicesCount;
+	UINT m_IndicesCount = 0;
 };
