@@ -1,41 +1,11 @@
+#include "pch.h"
 #include "ObjLoader.h"
+#include "MaterialLoader.h"
+
 #include <cassert>
-#include <limits>	// numeric_limits
-#include <cstring>
 
 namespace wavefront
 {
-    bool StringEqual(const char* c1, const char* c2)
-    {
-        return strcmp(c1, c2) == 0;
-    }
-
-    bool CharEqual(const char c1, const char c2)
-    {
-        return c1 == c2;
-    }
-
-    std::istream& IgnoreLine(std::ifstream& is)
-    {
-        return is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-	std::istream& IgnoreUntilSlash(std::ifstream& is)
-	{
-		return is.ignore(std::numeric_limits<std::streamsize>::max(), '/');
-	}
-
-    std::string GetFileDirectory(const char* file)
-    {
-        std::string fileStr(file);
-
-        size_t lastDash = fileStr.find_last_of('/');
-        fileStr.erase(fileStr.begin() + lastDash, fileStr.end());
-        fileStr.append("/");
-
-        return fileStr;
-    }
-
     Obj ObjLoader::Parse(const char* file)
     {
         std::ifstream is(file, std::ios::in | std::ios::binary);
@@ -125,6 +95,8 @@ namespace wavefront
                 is.get();
                 is.get(buf, 256, ' ');
                 str.append(buf);
+
+				Material mat = MaterialLoader::Parse(str.c_str());
 
                 IgnoreLine(is);
             }

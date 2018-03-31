@@ -24,7 +24,10 @@
 #include <ppl.h>
 #include <random>
 #include <cmath>
+#include <fstream>
 #include <cassert>
+#include <limits>	// numeric_limits
+#include <cstring>
 
 #include "common.h"
 
@@ -92,3 +95,37 @@ namespace SafetyCheck
 	}
 }
 
+
+namespace wavefront
+{
+	inline bool StringEqual(const char* c1, const char* c2)
+	{
+		return strcmp(c1, c2) == 0;
+	}
+
+	inline bool CharEqual(const char c1, const char c2)
+	{
+		return c1 == c2;
+	}
+
+	inline std::istream& IgnoreLine(std::ifstream& is)
+	{
+		return is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	}
+
+	inline std::istream& IgnoreUntilSlash(std::ifstream& is)
+	{
+		return is.ignore(std::numeric_limits<std::streamsize>::max(), '/');
+	}
+
+	inline std::string GetFileDirectory(const char* file)
+	{
+		std::string fileStr(file);
+
+		size_t lastDash = fileStr.find_last_of('/');
+		fileStr.erase(fileStr.begin() + lastDash, fileStr.end());
+		fileStr.append("/");
+
+		return fileStr;
+	}
+}
