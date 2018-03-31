@@ -59,7 +59,7 @@ void Renderer::Render(InputClass* input)
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
-	InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
+	InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
 	SetupSpaceShipForRender(input);
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
@@ -600,7 +600,7 @@ void Renderer::SetupSpaceShip()
 	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
 
 	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
-	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.vertexIndices.data(), result.vertexIndices.size());
+	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.vertexIndices.data(), result.vertexIndices.size() * 3);
 
 	uint32_t* m = (uint32_t*)result.vertexIndices.data();
 	
@@ -617,9 +617,13 @@ void Renderer::SetupSpaceShipForRender(InputClass* input)
 {
 	bool hasInput = onInput(input, m_Camera);
 
+
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, -20.0f);
 
 	GraphicsComponent* graphicComponent = m_SpaceShip.GetGraphicsComponent();
+
+	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	if (hasInput)
 	{
 		graphicComponent->ChangeWorldViewProjBufferData(
