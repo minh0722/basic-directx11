@@ -1,6 +1,5 @@
 #include "ObjLoader.h"
 #include <cassert>
-#include <tuple>
 #include <limits>	// numeric_limits
 #include <cstring>
 
@@ -78,14 +77,14 @@ namespace wavefront
             {
                 is.get();
                 is >> x >> y >> z;
-                result.vertices.push_back(std::make_tuple(x, y, z));
+                result.vertices.push_back(Vector3<float>(x, y, z));
                 continue;
             }
             else if (StringEqual(buf, "vn"))
             {
                 is.get();
                 is >> x >> y >> z;
-                result.vertexNormals.push_back(std::make_tuple(x, y, z));
+                result.vertexNormals.push_back(Vector3<float>(x, y, z));
                 continue;
             }
             else if (StringEqual(buf, "vt"))
@@ -94,7 +93,7 @@ namespace wavefront
                 is >> x >> y;
                 IgnoreLine(is);     // ignore z if there is z
 
-                result.texCoord.push_back(std::make_tuple(x, y));
+                result.texCoord.push_back(Vector2<float>(x, y));
             }
 			else if (StringEqual(buf, "f"))
 			{
@@ -112,9 +111,9 @@ namespace wavefront
 				IgnoreUntilSlash(is); is >> texCoordIdx3;
 				IgnoreLine(is);
 
-				result.vertexIndices.push_back(std::make_tuple(vertexIdx1, vertexIdx2, vertexIdx3));
-				result.vertexNormalIndices.push_back(std::make_tuple(vertexNormalIdx1, vertexNormalIdx2, vertexNormalIdx3));
-				result.texCoordIndices.push_back(std::make_tuple(texCoordIdx1, texCoordIdx2, texCoordIdx3));
+				result.vertexIndices.push_back(Vector3<uint32_t>(vertexIdx1 - 1, vertexIdx2 - 1, vertexIdx3 - 1));
+				result.vertexNormalIndices.push_back(Vector3<uint32_t>(vertexNormalIdx1 - 1, vertexNormalIdx2 - 1, vertexNormalIdx3 - 1));
+				result.texCoordIndices.push_back(Vector3<uint32_t>(texCoordIdx1 - 1, texCoordIdx2 - 1, texCoordIdx3 - 1));
 			}
 			else if (StringEqual(buf, "usemtl") || StringEqual(buf, "usemap"))
 			{

@@ -86,7 +86,7 @@ private:
 	};
 
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
-	void SetupSapceShipForRender(InputClass* input);
+	void SetupSpaceShipForRender(InputClass* input);
 
 	bool onInput(InputClass* input, Camera& camera);
 

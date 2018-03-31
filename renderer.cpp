@@ -36,6 +36,8 @@ void Renderer::Initialize(HWND window)
     SetupAxis();
 
 	SetupSphereMesh();
+
+	SetupSpaceShip();
 }
 
 void Renderer::Render(InputClass* input)
@@ -57,9 +59,9 @@ void Renderer::Render(InputClass* input)
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
-	//InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_BACK);
-	//SetupSapceShipForRender(input);
-	//m_SpaceShip.Render(m_DeviceContext.Get());
+	InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
+	SetupSpaceShipForRender(input);
+	m_SpaceShip.Render(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
 }
@@ -575,10 +577,10 @@ void Renderer::SetupSphereMesh()
 
 void Renderer::SetupSpaceShip()
 {
-	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(1);
 	vertexShaderInputLayout[0].SemanticName = "POSITION";
 	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
-	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			// format of the input vertex
 	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
 	vertexShaderInputLayout[0].AlignedByteOffset = 0;
 	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
@@ -587,7 +589,7 @@ void Renderer::SetupSpaceShip()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"vertexShader.cso",
+		L"SpaceshipVertexShader.cso",
 		L"pixelShader.cso",
 		vertexShaderInputLayout
 	};
@@ -600,6 +602,8 @@ void Renderer::SetupSpaceShip()
 	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
 	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.vertexIndices.data(), result.vertexIndices.size());
 
+	uint32_t* m = (uint32_t*)result.vertexIndices.data();
+	
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 
 	graphicsComponent->ChangeWorldViewProjBufferData(
@@ -609,9 +613,19 @@ void Renderer::SetupSpaceShip()
 	m_SpaceShip.AddComponent(graphicsComponent);
 }
 
-void Renderer::SetupSapceShipForRender(InputClass* input)
+void Renderer::SetupSpaceShipForRender(InputClass* input)
 {
+	bool hasInput = onInput(input, m_Camera);
 
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, -20.0f);
+
+	GraphicsComponent* graphicComponent = m_SpaceShip.GetGraphicsComponent();
+	if (hasInput)
+	{
+		graphicComponent->ChangeWorldViewProjBufferData(
+			m_DeviceContext.Get(),
+			{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
+	}
 }
 
 void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)

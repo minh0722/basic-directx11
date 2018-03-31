@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Vector3.h"
 
 struct Vertex;
 
@@ -12,9 +13,9 @@ public:
 
 	// TODO: might make these template
 	virtual void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) {};
-	virtual void SetIndexBuffer(ID3D11Device* device, const void* indices, uint32_t indicesCount) {};
+	virtual void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount) {};
 	virtual void SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices) {};
-	virtual void SetVertexBuffer(ID3D11Device* device, const std::vector<std::tuple<float, float, float>>& vertices) {};
+	virtual void SetVertexBuffer(ID3D11Device* device, const std::vector<Vector3<float>>& vertices) {};
 	virtual void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) {};
 };
 

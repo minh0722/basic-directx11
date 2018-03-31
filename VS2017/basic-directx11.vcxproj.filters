@@ -60,6 +60,12 @@
     <ClInclude Include="..\MaterialLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Vector2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vector3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -112,5 +118,6 @@
     <FxCompile Include="..\pixelShader.hlsl" />
     <FxCompile Include="..\vertexShader.hlsl" />
     <FxCompile Include="..\CubeInstancing_Vs.hlsl" />
+    <FxCompile Include="..\SpaceshipVertexShader.hlsl" />
   </ItemGroup>
 </Project>

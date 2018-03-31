@@ -14,7 +14,7 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 
 void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRendering /*= false*/, uint32_t instanceCount /*= 1*/)
 {
-	UINT stride = sizeof(Vertex);
+	UINT stride = m_VertexBufferStride;
 	UINT offset = 0;
 	UINT startSlot = 0;
 	UINT numBuffers = 1;
@@ -67,7 +67,7 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<u
 			m_IndexBuffer.GetAddressOf()));
 }
 
-void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const void* indices, uint32_t indicesCount)
+void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount)
 {
 	m_IndicesCount = (UINT)indicesCount;
 
@@ -91,6 +91,7 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const void* indices
 
 void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices)
 {
+	m_VertexBufferStride = sizeof(Vertex);
 	UINT verticesCount = (UINT)vertices.size();
 
 	D3D11_BUFFER_DESC desc = {};
@@ -111,16 +112,17 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 			m_VertexBuffer.GetAddressOf()));
 }
 
-void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<std::tuple<float, float, float>>& vertices)
+void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vector3<float>>& vertices)
 {
+	m_VertexBufferStride = sizeof(Vector3<float>);
 	UINT verticesCount = (UINT)vertices.size();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.ByteWidth = verticesCount * sizeof(float) * 3;
+	desc.ByteWidth = verticesCount * sizeof(Vector3<float>);
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.MiscFlags = 0;
-	desc.StructureByteStride = sizeof(float) * 3;
+	desc.StructureByteStride = sizeof(Vector3<float>);
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 
 	D3D11_SUBRESOURCE_DATA initData = {};

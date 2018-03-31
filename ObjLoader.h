@@ -1,17 +1,19 @@
 #pragma once
 #include <fstream>
 #include <vector>
+#include "Vector2.h"
+#include "Vector3.h"
 
 namespace wavefront
 {
     struct Obj
     {
-        std::vector<std::tuple<float, float, float>> vertices;
-        std::vector<std::tuple<float, float, float>> vertexNormals;
-        std::vector<std::tuple<float, float>> texCoord;
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t>> vertexIndices;
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t>> vertexNormalIndices;
-		std::vector<std::tuple<uint32_t, uint32_t, uint32_t>> texCoordIndices;
+        std::vector<Vector3<float>> vertices;
+        std::vector<Vector3<float>> vertexNormals;
+        std::vector<Vector2<float>> texCoord;
+		std::vector<Vector3<uint32_t>> vertexIndices;
+		std::vector<Vector3<uint32_t>> vertexNormalIndices;
+		std::vector<Vector3<uint32_t>> texCoordIndices;
     };
 
     class ObjLoader final
