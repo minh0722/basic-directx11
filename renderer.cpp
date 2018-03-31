@@ -30,14 +30,11 @@ void Renderer::Initialize(HWND window)
     InitDepthStencilState();
 	InitRenderTargetView(m_SwapChain.Get());
 	InitViewPort();
-
-	InitRasterizerState();
-	
+		
 	SetupTriangle();
 	SetupCube();
     SetupAxis();
 
-	InitRasterizerState(D3D11_FILL_WIREFRAME);
 	SetupSphereMesh();
 }
 
