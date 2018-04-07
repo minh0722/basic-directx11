@@ -19,15 +19,6 @@ namespace wavefront
 		static Material Parse(const char* file);
 
 	private:
-
-		struct StringComparer
-		{
-			bool operator()(const std::string& l, const std::string& r) const
-			{
-				return strcmp(l.c_str(), r.c_str()) == 0;
-			}
-		};
-
-		static std::map<std::string, size_t, StringComparer> gs_MaterialIndexer;
+		static std::map<std::string, size_t> gs_MaterialIndexer;
 	};
 }

@@ -4,7 +4,7 @@
 
 namespace wavefront
 {
-	std::map<std::string, size_t, MaterialLoader::StringComparer> MaterialLoader::gs_MaterialIndexer = {};
+	std::map<std::string, size_t> MaterialLoader::gs_MaterialIndexer = {};
 
 	Material MaterialLoader::Parse(const char* file)
 	{
