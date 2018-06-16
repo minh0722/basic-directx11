@@ -169,6 +169,42 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			return 0;
 		}
 
+		case WM_LBUTTONDOWN:
+		{
+			OutputDebugString("Left mouse down\n");
+			return 0;
+		}
+
+		case WM_LBUTTONUP:
+		{
+			OutputDebugString("Left mouse up\n");
+			return 0;
+		}
+
+		case WM_RBUTTONDOWN:
+		{
+			OutputDebugString("Right mouse down\n");
+			return 0;
+		}
+
+		case WM_RBUTTONUP:
+		{
+			OutputDebugString("Right mouse up\n");
+			return 0;
+		}
+
+		case WM_MBUTTONDOWN:
+		{
+			OutputDebugString("Scroller mouse down\n");
+			return 0;
+		}
+
+		case WM_MBUTTONUP:
+		{
+			OutputDebugString("Scroller mouse up\n");
+			return 0;
+		}
+
 		// Any other messages send to the default message handler as our application won't make use of them.
 		default:
 		{
