@@ -94,6 +94,16 @@ void Camera::Rotate(RotationAxis axis, float degree)
 	m_NeedToUpdateMatrices = true;
 }
 
+void Camera::ZoomCamera(ZoomType zoom, int zoomThreshHold)
+{
+	float zoomCoeff = zoom == ZoomType::ZoomIn ? 1.0f : -1.0f;
+
+	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_CurrentOrientationForwardDirection, zoomCoeff * 1.0f));
+	m_NeedToUpdateMatrices = true;
+
+	//OUTPUT_DEBUG("Camera position: %f %f %f %f\n", m_Position.m128_f32[0], m_Position.m128_f32[1], m_Position.m128_f32[2], m_Position.m128_f32[3]);
+}
+
 DirectX::XMMATRIX Camera::GetViewMatrix()
 {
 	UpdateCameraMatrices();

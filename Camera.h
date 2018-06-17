@@ -2,6 +2,11 @@
 #include "pch.h"
 #include "Vector4f.h"
 
+enum ZoomType
+{
+	ZoomIn,
+	ZoomOut
+};
 
 class Camera
 {
@@ -10,6 +15,7 @@ public:
     Camera(const DirectX::XMVECTOR& worldPosition, const float fov);
     void MoveCamera(const DirectX::XMVECTOR& direction);
     void Rotate(RotationAxis axis, float degree);
+	void ZoomCamera(ZoomType zoom, int zoomThreshHold = 1);
     	
     DirectX::XMMATRIX GetViewMatrix();
 	DirectX::XMMATRIX GetProjectionMatrix();

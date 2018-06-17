@@ -21,9 +21,15 @@ public:
 	void KeyUp(unsigned int);
 
 	bool IsKeyDown(unsigned int);
+	
+	void SetMouseWheelDelta(int value);
+	int GetMouseWheelDelta() const;
+	void ResetMouseWheel();
+	bool MouseWheelMoved() const;
 
 private:
 	bool m_keys[256];
+	int m_mouseWheelDelta;
 };
 
 #endif

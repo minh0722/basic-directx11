@@ -952,6 +952,13 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 		return true;
 	}
+	else if (input->MouseWheelMoved())
+	{
+		camera.ZoomCamera(input->GetMouseWheelDelta() < 0 ? ZoomType::ZoomOut : ZoomType::ZoomIn);
+		input->ResetMouseWheel();
+		//OUTPUT_DEBUG("Mouse wheel moved - %d\n", input->GetMouseWheelDelta());
+		return true;
+	}
 
 	return false;
 }

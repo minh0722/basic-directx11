@@ -55,3 +55,23 @@ bool InputClass::IsKeyDown(unsigned int key)
 	// Return what state the key is in (pressed/not pressed).
 	return m_keys[key];
 }
+
+void InputClass::SetMouseWheelDelta(int value)
+{
+	m_mouseWheelDelta = value;
+}
+
+int InputClass::GetMouseWheelDelta() const
+{
+	return m_mouseWheelDelta;
+}
+
+void InputClass::ResetMouseWheel()
+{
+	m_mouseWheelDelta = 0;
+}
+
+bool InputClass::MouseWheelMoved() const
+{
+	return m_mouseWheelDelta != 0;
+}

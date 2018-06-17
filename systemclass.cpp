@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "systemclass.h"
+#include <Windowsx.h>
 
 
 SystemClass::SystemClass()
@@ -171,37 +172,54 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 		case WM_LBUTTONDOWN:
 		{
-			OutputDebugString("Left mouse down\n");
+			OUTPUT_DEBUG("Left mouse down\n");
 			return 0;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			OutputDebugString("Left mouse up\n");
+			OUTPUT_DEBUG("Left mouse up\n");
 			return 0;
 		}
 
 		case WM_RBUTTONDOWN:
 		{
-			OutputDebugString("Right mouse down\n");
+			OUTPUT_DEBUG("Right mouse down\n");
 			return 0;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			OutputDebugString("Right mouse up\n");
+			OUTPUT_DEBUG("Right mouse up\n");
 			return 0;
 		}
 
 		case WM_MBUTTONDOWN:
 		{
-			OutputDebugString("Scroller mouse down\n");
+			OUTPUT_DEBUG("Scroller mouse down\n");
 			return 0;
 		}
 
 		case WM_MBUTTONUP:
 		{
-			OutputDebugString("Scroller mouse up\n");
+			OUTPUT_DEBUG("Scroller mouse up\n");
+			return 0;
+		}
+
+		case WM_MOUSEMOVE:
+		{
+			int xpos = GET_X_LPARAM(lparam);
+			int ypos = GET_Y_LPARAM(lparam);
+			//OUTPUT_DEBUG("x: %d, y: %d\n", xpos, ypos);
+			return 0;
+		}
+
+		case WM_MOUSEWHEEL:
+		{
+			int roll = GET_KEYSTATE_WPARAM(wparam);
+			int zdelta = GET_WHEEL_DELTA_WPARAM(wparam);
+			m_Input->SetMouseWheelDelta(zdelta);
+			//OUTPUT_DEBUG("WM_MOUSEWHEEL - %d\n", zdelta);
 			return 0;
 		}
 
