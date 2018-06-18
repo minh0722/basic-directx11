@@ -955,9 +955,15 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	else if (input->MouseWheelMoved())
 	{
 		camera.ZoomCamera(input->GetMouseWheelDelta() < 0 ? ZoomType::ZoomOut : ZoomType::ZoomIn);
-		//OUTPUT_DEBUG("Mouse wheel moved - %d\n", input->GetMouseWheelDelta());
 		return true;
 	}
+    else if (input->IsPanning())
+    {
+        Vector2<float> panDir = input->GetPanningDirection().ToFloatVec() * 0.01f;
+        DirectX::XMVECTOR panningVec = DirectX::XMVectorSet((float)panDir[0], (float)panDir[1], 0.0f, 0.0f);
+        camera.MoveCamera(panningVec);
+        return true;
+    }
 
 	return false;
 }

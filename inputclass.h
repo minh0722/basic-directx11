@@ -4,6 +4,7 @@
 #ifndef _INPUTCLASS_H_
 #define _INPUTCLASS_H_
 
+#include "Vector2.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: InputClass
@@ -26,10 +27,22 @@ public:
 	int GetMouseWheelDelta() const;
 	void ResetMouseWheel();
 	bool MouseWheelMoved() const;
+    bool IsPanning() const;
+
+    void SetPanningPosition(const Vector2<int>& pos);
+    Vector2<int> GetPanningPosition() const;
+    
+    void SetPanningDirection(const Vector2<int>& panDir);
+    Vector2<int> GetPanningDirection() const;
+
+    void ResetPanning();
+    void ResetPanningPosition();
 
 private:
 	bool m_keys[256];
-	int m_mouseWheelDelta;
+	int m_mouseWheelDelta = 0;
+    Vector2<int> m_panningDirection = {};
+    Vector2<int> m_panningPosition = {};
 };
 
 #endif

@@ -128,6 +128,7 @@ void SystemClass::Run()
 		}
 		m_Renderer.Render(m_Input);
         m_Input->ResetMouseWheel();
+        m_Input->ResetPanning();
 	}
 }
 
@@ -153,6 +154,8 @@ bool SystemClass::Frame()
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
+    static bool isPanning = false;
+
 	switch(umsg)
 	{
 		// Check if a key has been pressed on the keyboard.
@@ -173,45 +176,59 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 		case WM_LBUTTONDOWN:
 		{
-			OUTPUT_DEBUG("Left mouse down\n");
+			//OUTPUT_DEBUG("Left mouse down\n");
 			return 0;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			OUTPUT_DEBUG("Left mouse up\n");
+			//OUTPUT_DEBUG("Left mouse up\n");
 			return 0;
 		}
 
 		case WM_RBUTTONDOWN:
 		{
-			OUTPUT_DEBUG("Right mouse down\n");
+			//OUTPUT_DEBUG("Right mouse down\n");
 			return 0;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			OUTPUT_DEBUG("Right mouse up\n");
+			//OUTPUT_DEBUG("Right mouse up\n");
 			return 0;
 		}
 
 		case WM_MBUTTONDOWN:
 		{
-			OUTPUT_DEBUG("Scroller mouse down\n");
+            isPanning = true;
+			//OUTPUT_DEBUG("Scroller mouse down\n");
 			return 0;
 		}
 
 		case WM_MBUTTONUP:
 		{
-			OUTPUT_DEBUG("Scroller mouse up\n");
+            isPanning = false;
+            m_Input->ResetPanningPosition();
+			//OUTPUT_DEBUG("Scroller mouse up\n");
 			return 0;
 		}
 
 		case WM_MOUSEMOVE:
 		{
-			int xpos = GET_X_LPARAM(lparam);
-			int ypos = GET_Y_LPARAM(lparam);
-			//OUTPUT_DEBUG("x: %d, y: %d\n", xpos, ypos);
+            int xpos = GET_X_LPARAM(lparam);
+            int ypos = GET_Y_LPARAM(lparam);
+			
+            if (isPanning)
+            {
+                const Vector2<int> lastPanningPos = m_Input->GetPanningPosition();
+                const Vector2<int> panDir = lastPanningPos - Vector2<int>(xpos, ypos);
+
+                m_Input->SetPanningDirection(panDir);
+                m_Input->SetPanningPosition(Vector2<int>(xpos, ypos));
+
+                OUTPUT_DEBUG("last moude pos: %d, %d\n", lastPanningPos[0], lastPanningPos[1]);
+            }
+
 			return 0;
 		}
 
@@ -220,7 +237,6 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			int roll = GET_KEYSTATE_WPARAM(wparam);
 			int zdelta = GET_WHEEL_DELTA_WPARAM(wparam);
 			m_Input->SetMouseWheelDelta(zdelta);
-			//OUTPUT_DEBUG("WM_MOUSEWHEEL - %d\n", zdelta);
 			return 0;
 		}
 

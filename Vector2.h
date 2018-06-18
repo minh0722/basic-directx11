@@ -14,6 +14,7 @@ public:
 	Vector2& operator=(const Vector2& other);
 	Vector2 operator-(const Vector2& other) const;
 	Vector2 operator/(T num) const;
+    Vector2 operator*(T num) const;
 	Vector2& operator*=(const T num);
 	Vector2& operator+=(const T num);
 
@@ -21,6 +22,12 @@ public:
 
 	T& operator[](uint16_t index);
 	T operator[](uint16_t index) const;
+
+    bool operator==(const Vector2& other) const;
+    bool operator!=(const Vector2& other) const;
+    
+    Vector2<float> ToFloatVec() const;
+
 private:
 	union
 	{
@@ -76,6 +83,14 @@ Vector2<T> Vector2<T>::operator/(T num) const
 }
 
 template <typename T>
+Vector2<T> Vector2<T>::operator*(T num) const
+{
+    return Vector2<T>(
+        m_Values[0] * num,
+        m_Values[1] * num);
+}
+
+template <typename T>
 Vector2<T>& Vector2<T>::operator*=(const T num)
 {
 	m_Values[0] *= num;
@@ -112,4 +127,23 @@ T Vector2<T>::operator[](uint16_t index) const
 {
 	assert(index < 2);
 	return m_Values[index];
+}
+
+template <typename T>
+bool Vector2<T>::operator==(const Vector2& other) const
+{
+    return m_Values[0] == other.m_Values[0] && 
+           m_Values[1] == other.m_Values[1];
+}
+
+template <typename T>
+bool Vector2<T>::operator!=(const Vector2& other) const
+{
+    return !(this->operator==(other));
+}
+
+template <typename T>
+Vector2<float> Vector2<T>::ToFloatVec() const
+{    
+    return Vector2<float>((float)m_Values[0], (float)m_Values[1]);
 }
