@@ -127,6 +127,7 @@ void SystemClass::Run()
 			}
 		}
 		m_Renderer.Render(m_Input);
+        m_Input->ResetMouseWheel();
 	}
 }
 
