@@ -201,6 +201,10 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		case WM_MBUTTONDOWN:
 		{
             isPanning = true;
+			int xpos = GET_X_LPARAM(lparam);
+			int ypos = GET_Y_LPARAM(lparam);
+			m_Input->SetPanningPosition(Vector2<int>(xpos, ypos));
+
 			//OUTPUT_DEBUG("Scroller mouse down\n");
 			return 0;
 		}
@@ -221,12 +225,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
             if (isPanning)
             {
                 const Vector2<int> lastPanningPos = m_Input->GetPanningPosition();
-                const Vector2<int> panDir = lastPanningPos - Vector2<int>(xpos, ypos);
-
+                Vector2<int> panDir = lastPanningPos - Vector2<int>(xpos, ypos);
+				panDir[1] = -panDir[1];
+				
                 m_Input->SetPanningDirection(panDir);
                 m_Input->SetPanningPosition(Vector2<int>(xpos, ypos));
-
-                OUTPUT_DEBUG("last moude pos: %d, %d\n", lastPanningPos[0], lastPanningPos[1]);
             }
 
 			return 0;
