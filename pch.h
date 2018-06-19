@@ -43,9 +43,12 @@ static const float RADIAN = 0.01745329252f;
 
 #if _DEBUG
 #define OUTPUT_DEBUG(format, ...) \
-	char buf[256];	\
-	snprintf(buf, 256, format, __VA_ARGS__); \
-	OutputDebugStringA(buf);
+    {                                               \
+        char buf[256];	                            \
+	    snprintf(buf, 256, format, __VA_ARGS__);    \
+	    OutputDebugStringA(buf);                    \
+    }
+
 #else
 #define OUTPUT_DEBUG(format, ...)
 #endif
