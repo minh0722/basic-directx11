@@ -82,6 +82,11 @@ bool InputClass::IsPanning() const
     return m_panningDirection != Vector2<int>(0, 0);
 }
 
+bool InputClass::IsRotating() const
+{
+    return m_rotatingDirection != Vector2<int>(0, 0);
+}
+
 void InputClass::SetPanningPosition(const Vector2<int>& pos)
 {
     m_panningPosition = pos;
@@ -103,7 +108,7 @@ Vector2<int> InputClass::GetPanningDirection() const
     return m_panningDirection;
 }
 
-void InputClass::ResetPanning()
+void InputClass::ResetPanningDirection()
 {
     m_panningDirection = { 0, 0 };
 }
@@ -111,4 +116,34 @@ void InputClass::ResetPanning()
 void InputClass::ResetPanningPosition()
 {
     m_panningPosition = { 0, 0 };
+}
+
+void InputClass::SetRotatingPosition(const Vector2<int>& pos)
+{
+    m_rotatingPosition = pos;
+}
+
+Vector2<int> InputClass::GetRotatingPosition() const
+{
+    return m_rotatingPosition;
+}
+
+void InputClass::SetRotatingDirection(const Vector2<int>& rotDir)
+{
+    m_rotatingDirection = rotDir;
+}
+
+Vector2<int> InputClass::GetRotatingDirection() const
+{
+    return m_rotatingDirection;
+}
+
+void InputClass::ResetRotatingDirection()
+{
+    m_rotatingDirection = { 0, 0 };
+}
+
+void InputClass::ResetRotatingPosition()
+{
+    m_rotatingPosition = { 0, 0 };
 }

@@ -964,6 +964,13 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
         camera.MoveCamera(panningVec);
         return true;
     }
+    else if (input->IsRotating())
+    {
+        Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.01f;
+        camera.Rotate(RotationAxis::Yaw, rotDir[0]);
+        camera.Rotate(RotationAxis::Pitch, rotDir[1]);
+        return true;
+    }
 
 	return false;
 }

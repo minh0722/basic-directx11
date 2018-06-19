@@ -128,7 +128,8 @@ void SystemClass::Run()
 		}
 		m_Renderer.Render(m_Input);
         m_Input->ResetMouseWheel();
-        m_Input->ResetPanning();
+        m_Input->ResetPanningDirection();
+        m_Input->ResetRotatingDirection();
 	}
 }
 
@@ -155,6 +156,8 @@ bool SystemClass::Frame()
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
     static bool isPanning = false;
+    static bool isCtrl = false;
+    static bool isRotating = false;
 
 	switch(umsg)
 	{
@@ -163,6 +166,12 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		{
 			// If a key is pressed send it to the input object so it can record that state.
 			m_Input->KeyDown((unsigned int)wparam);
+
+            if ((unsigned int)wparam == VK_CONTROL)
+            {
+                isCtrl = true;
+            }
+
 			return 0;
 		}
 
@@ -171,6 +180,14 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 		{
 			// If a key is released then send it to the input object so it can unset the state for that key.
 			m_Input->KeyUp((unsigned int)wparam);
+
+            if ((unsigned int)wparam == VK_CONTROL)
+            {
+                isCtrl = false;
+                isRotating = false;
+                OUTPUT_DEBUG("Rotating = false\n");
+            }
+
 			return 0;
 		}
 
@@ -200,10 +217,21 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 		case WM_MBUTTONDOWN:
 		{
-            isPanning = true;
-			int xpos = GET_X_LPARAM(lparam);
-			int ypos = GET_Y_LPARAM(lparam);
-			m_Input->SetPanningPosition(Vector2<int>(xpos, ypos));
+            int xpos = GET_X_LPARAM(lparam);
+            int ypos = GET_Y_LPARAM(lparam);
+            Vector2<int> pos(xpos, ypos);
+
+            if(!isCtrl)
+            {
+                isPanning = true;
+                m_Input->SetPanningPosition(pos);
+            }
+            else
+            {
+                isRotating = true;
+                m_Input->SetRotatingPosition(pos);
+                OUTPUT_DEBUG("Rotating = true\n");
+            }
 
 			//OUTPUT_DEBUG("Scroller mouse down\n");
 			return 0;
@@ -211,25 +239,45 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 
 		case WM_MBUTTONUP:
 		{
-            isPanning = false;
-            m_Input->ResetPanningPosition();
-			//OUTPUT_DEBUG("Scroller mouse up\n");
-			return 0;
+            if(!isCtrl)
+            {
+                isPanning = false;
+                m_Input->ResetPanningPosition();
+            }
+            else
+            {
+                isRotating = false;
+                m_Input->ResetRotatingPosition();
+            }
+
+            //OUTPUT_DEBUG("Scroller mouse up\n");
+            return 0;
 		}
 
 		case WM_MOUSEMOVE:
 		{
             int xpos = GET_X_LPARAM(lparam);
             int ypos = GET_Y_LPARAM(lparam);
+            Vector2<int> currPos(xpos, ypos);
 			
             if (isPanning)
             {
                 const Vector2<int> lastPanningPos = m_Input->GetPanningPosition();
-                Vector2<int> panDir = lastPanningPos - Vector2<int>(xpos, ypos);
+                Vector2<int> panDir = lastPanningPos - currPos;
 				panDir[1] = -panDir[1];
 				
                 m_Input->SetPanningDirection(panDir);
-                m_Input->SetPanningPosition(Vector2<int>(xpos, ypos));
+                m_Input->SetPanningPosition(currPos);
+            }
+            else if (isRotating)
+            {
+                const Vector2<int> lastRotatingPos = m_Input->GetRotatingPosition();
+                Vector2<int> rotDir = lastRotatingPos - currPos;
+                rotDir[0] = -rotDir[0];
+                rotDir[1] = -rotDir[1];
+
+                m_Input->SetRotatingDirection(rotDir);
+                m_Input->SetRotatingPosition(currPos);
             }
 
 			return 0;
