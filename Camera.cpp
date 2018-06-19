@@ -35,7 +35,7 @@ Camera::Camera(const DirectX::XMVECTOR& position, const float fov)
 	UpdateCameraMatrices();
 }
 
-void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
+void Camera::MoveCameraWorldAxisAligned(const DirectX::XMVECTOR& moveVector)
 {
 	float xDirectionAmount = DirectX::XMVectorGetX(moveVector);		// left right
 	float yDirectionAmount = DirectX::XMVectorGetY(moveVector);		// up down
@@ -47,6 +47,20 @@ void Camera::MoveCamera(const DirectX::XMVECTOR& moveVector)
 	m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_ForwardMovementDirection, zDirectionAmount));
 	
 	m_NeedToUpdateMatrices = true;
+}
+
+void Camera::MoveCameraOrientationAxisAligned(const DirectX::XMVECTOR& direction)
+{
+    float xDirectionAmount = DirectX::XMVectorGetX(direction);		// left right
+    float yDirectionAmount = DirectX::XMVectorGetY(direction);		// up down
+    float zDirectionAmount = DirectX::XMVectorGetZ(direction);		// forward backward
+
+                                                                    // only move the camera in the movement directional vectors
+    m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_CurrentOrientationRightDirection, xDirectionAmount));
+    m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_CurrentOrientationUpDirection, yDirectionAmount));
+    m_Position = DirectX::XMVectorAdd(m_Position, DirectX::XMVectorScale(m_CurrentOrientationForwardDirection, zDirectionAmount));
+
+    m_NeedToUpdateMatrices = true;
 }
 
 void Camera::Rotate(RotationAxis axis, float degree)

@@ -873,7 +873,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	if (input->IsKeyDown('W'))
 	{
 		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, threshHold, 0.0f);
-		camera.MoveCamera(moveForwardVec);
+		camera.MoveCameraWorldAxisAligned(moveForwardVec);
 				
 		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
 		
@@ -882,7 +882,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	else if (input->IsKeyDown('S'))
 	{
 		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
-		camera.MoveCamera(moveBackwardVec);
+		camera.MoveCameraWorldAxisAligned(moveBackwardVec);
 
 		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
 
@@ -891,14 +891,14 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	else if (input->IsKeyDown('A'))
 	{
 		DirectX::XMVECTOR moveLeftVec = DirectX::XMVectorSet(-threshHold, 0.0f, 0.0f, 0.0f);
-		camera.MoveCamera(moveLeftVec);
+		camera.MoveCameraWorldAxisAligned(moveLeftVec);
 
 		return true;
 	}
 	else if (input->IsKeyDown('D'))
 	{
 		DirectX::XMVECTOR moveRightVec = DirectX::XMVectorSet(threshHold, 0.0f, 0.0f, 0.0f);
-		camera.MoveCamera(moveRightVec);
+		camera.MoveCameraWorldAxisAligned(moveRightVec);
 
 		return true;
 	}
@@ -941,14 +941,14 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	else if (input->IsKeyDown(VK_UP))
 	{
 		DirectX::XMVECTOR moveUpVec = DirectX::XMVectorSet(0.0, threshHold, 0.0f, 0.0f);
-		camera.MoveCamera(moveUpVec);
+		camera.MoveCameraWorldAxisAligned(moveUpVec);
 
 		return true;
 	}
 	else if (input->IsKeyDown(VK_DOWN))
 	{
 		DirectX::XMVECTOR moveDownVec = DirectX::XMVectorSet(0.0f, -threshHold, 0.0f, 0.0f);
-		camera.MoveCamera(moveDownVec);
+		camera.MoveCameraWorldAxisAligned(moveDownVec);
 
 		return true;
 	}
@@ -961,7 +961,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
     {
         Vector2<float> panDir = input->GetPanningDirection().ToFloatVec() * 0.01f;
         DirectX::XMVECTOR panningVec = DirectX::XMVectorSet((float)panDir[0], (float)panDir[1], 0.0f, 0.0f);
-        camera.MoveCamera(panningVec);
+        camera.MoveCameraOrientationAxisAligned(panningVec);
         return true;
     }
     else if (input->IsRotating())

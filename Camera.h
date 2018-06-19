@@ -13,7 +13,8 @@ class Camera
 public:
 	Camera();
     Camera(const DirectX::XMVECTOR& worldPosition, const float fov);
-    void MoveCamera(const DirectX::XMVECTOR& direction);
+    void MoveCameraWorldAxisAligned(const DirectX::XMVECTOR& direction);
+    void MoveCameraOrientationAxisAligned(const DirectX::XMVECTOR& direction);
     void Rotate(RotationAxis axis, float degree);
 	void ZoomCamera(ZoomType zoom, int zoomThreshHold = 1);
     	
