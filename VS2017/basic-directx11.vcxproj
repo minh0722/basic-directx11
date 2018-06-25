@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="..\BaseComponent.h" />
     <ClInclude Include="..\Camera.h" />
+    <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
     <ClInclude Include="..\inputclass.h" />
     <ClInclude Include="..\MaterialLoader.h" />
@@ -136,7 +137,6 @@
     <ClInclude Include="..\ObjLoader.h" />
     <ClInclude Include="..\pch.h" />
     <ClInclude Include="..\renderer.h" />
-    <ClInclude Include="..\renderer1.h" />
     <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Shape.h" />
     <ClInclude Include="..\systemclass.h" />
@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp" />
+    <ClCompile Include="..\experimental\renderer1.cpp" />
     <ClCompile Include="..\GraphicsComponent.cpp" />
     <ClCompile Include="..\inputclass.cpp" />
     <ClCompile Include="..\main.cpp" />
@@ -164,7 +165,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\renderer.cpp" />
-    <ClCompile Include="..\renderer1.cpp" />
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Shape.cpp" />
     <ClCompile Include="..\systemclass.cpp" />

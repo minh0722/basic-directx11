@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="experimental">
+      <UniqueIdentifier>{cb9c7fe5-cd6c-4493-92b7-9ce0bdb3aedf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\BaseComponent.h">
@@ -34,9 +37,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\renderer1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Scene.h">
@@ -66,6 +66,9 @@
     <ClInclude Include="..\Vector3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\experimental\renderer1.h">
+      <Filter>experimental</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -89,9 +92,6 @@
     <ClCompile Include="..\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\renderer1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -112,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="..\MaterialLoader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\experimental\renderer1.cpp">
+      <Filter>experimental</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
