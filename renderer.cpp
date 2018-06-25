@@ -959,14 +959,14 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
     else if (input->IsPanning())
     {
-        Vector2<float> panDir = input->GetPanningDirection().ToFloatVec() * 0.01f;
+        Vector2<float> panDir = input->GetPanningDirection().ToFloatVec() * 0.05f;
         DirectX::XMVECTOR panningVec = DirectX::XMVectorSet((float)panDir[0], (float)panDir[1], 0.0f, 0.0f);
         camera.MoveCameraOrientationAxisAligned(panningVec);
         return true;
     }
     else if (input->IsRotating())
     {
-        Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.01f;
+        Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.05f;
         camera.Rotate(RotationAxis::Yaw, rotDir[0]);
         camera.Rotate(RotationAxis::Pitch, rotDir[1]);
         return true;
