@@ -632,55 +632,18 @@ void Renderer::SetupSpaceShipForRender(InputClass* input)
 	}
 }
 
-void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
-{
-    Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
-    Vector4f green = { 0.0f, 1.0f, 0.0f, 0.0f };
-    Vector4f blue = { 0.0f, 0.0f, 1.0f, 0.0f };
-		
+void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Triangle*/)
+{		
 	bool hasInput = onInput(input, m_Camera);
 
 	if (prim == Triangle)
 	{
 		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-
-		static float xRotation = 0.0f;
-		static float yRotation = 0.0f;
-		static float zRotation = 0.0f;
-
-		// left handed coordinate system. Same as directx
-		std::vector<Vertex> vertices =
-		{
-			{ { 0.0f, 0.0f, 0.0f, 1.0f }, blue },
-			{ { 1.0f, 0.0f, 0.0f, 1.0f }, red },
-			{ { 1.0f, 0.0f, 1.0f, 1.0f }, green },
-			{ { 0.0f, 0.0f, 1.0f, 1.0f }, red },
-			{ { 0.0f, 1.0f, 0.0f, 1.0f }, green },
-			{ { 1.0f, 1.0f, 0.0f, 1.0f }, green },
-			{ { 1.0f, 1.0f, 1.0f, 1.0f }, blue },
-			{ { 0.0f, 1.0f, 1.0f, 1.0f }, green }
-		};
-
 		GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
-
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if (hasInput)
 		{
-			graphicComponent->ChangeIndexBufferData(
-				m_DeviceContext.Get(),
-				{ 0, 1, 4, 1, 5, 4,
-				  1, 2, 5, 5, 2, 6,
-				  7, 4, 5, 7, 5, 6,
-				  3, 1, 0, 3, 2, 1,
-				  7, 6, 2, 7, 2, 3,
-				  7, 3, 4, 4, 3, 0 });
-
-			graphicComponent->ChangeVertexBufferData(
-				m_DeviceContext.Get(),
-				vertices
-			);
-
 			graphicComponent->ChangeWorldViewProjBufferData(
 				m_DeviceContext.Get(), 
 				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
@@ -689,32 +652,11 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 	else if(prim == Line)
 	{
 		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-
-		std::vector<Vertex> axisVertices =
-		{
-			{ { 0.0f, 0.0f, 0.0f, 1.0f }, red },        // x
-			{ { 5.0f, 0.0f, 0.0f, 1.0f }, red },
-			{ { 0.0f, 0.0f, 0.0f, 1.0f }, green },      // y
-			{ { 0.0f, 5.0f, 0.0f, 1.0f }, green },
-			{ { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
-			{ { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
-		};
-
 		GraphicsComponent* graphicComponent = m_Axis.GetGraphicsComponent();
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		if (hasInput)
 		{
-			// TODO: is it necessary to change the index and vertex buffer here when they stay the same?
-			graphicComponent->ChangeIndexBufferData(
-				m_DeviceContext.Get(),
-				{ 0, 1, 2, 3, 4, 5 });
-
-			graphicComponent->ChangeVertexBufferData(
-				m_DeviceContext.Get(),
-				axisVertices
-			);
-
 			graphicComponent->ChangeWorldViewProjBufferData(
 				m_DeviceContext.Get(), 
 				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
@@ -723,137 +665,11 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim)
 	else
 	{
 		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-
-		std::vector<Vertex> vertices;
-		std::vector<uint32_t> indices;
-
-		vertices.reserve(200);
-		indices.reserve(200);
-
-		// calculate vertices for the sphere mesh
-		float radius = 7.0f;
-		Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
-		int latitudeCount = 7;
-		int longtitudeCount = 9;
-
-		for (int i = 0; i < latitudeCount; ++i)
-		{
-			float theta1 = (float)i / (float)latitudeCount * PI;
-			float theta2 = (float)((i + 1)) / (float)latitudeCount * PI;
-
-			float sinTheta1 = std::sinf(theta1);
-			float sinTheta2 = std::sinf(theta2);
-			float cosTheta1 = std::cosf(theta1);
-			float cosTheta2 = std::cosf(theta2);
-
-			for (int j = 0; j < longtitudeCount; ++j)
-			{
-				float phi1 = (float)j / (float)longtitudeCount * 2.0f * PI;			// azimuth goes around 0...2*PI
-				float phi2 = (float)((j + 1) % longtitudeCount) / (float)longtitudeCount * 2.0f * PI;
-
-				float cosPhi1 = std::cosf(phi1);
-				float cosPhi2 = std::cosf(phi2);
-				float sinPhi1 = std::sinf(phi1);
-				float sinPhi2 = std::sinf(phi2);
-
-				//phi2   phi1
-				// |      |
-				// 2------1 -- theta1
-				// | \    |
-				// |  \   |
-				// |   \  |
-				// |    \ |
-				// 3------4 -- theta2
-
-				// x = r * sin(theta) * cos(phi)
-				// y = r * sin(theta) * sin(phi)
-				// z = r * cos(phi)
-
-				// phi1 theta1
-				float x11 = radius * sinTheta1 * cosPhi1;
-				float y11 = radius * sinTheta1 * sinPhi1;
-				float z11 = radius * cosTheta1;
-
-				// phi1 theta2
-				float x12 = radius * sinTheta2 * cosPhi1;
-				float y12 = radius * sinTheta2 * sinPhi1;
-				float z12 = radius * cosTheta2;
-
-				// phi2 theta1
-				float x21 = radius * sinTheta1 * cosPhi2;
-				float y21 = radius * sinTheta1 * sinPhi2;
-				float z21 = radius * cosTheta1;
-
-				// phi2 theta2
-				float x22 = radius * sinTheta2 * cosPhi2;
-				float y22 = radius * sinTheta2 * sinPhi2;
-				float z22 = radius * cosTheta2;
-
-				if (i == 0)		// upper cap
-				{
-					uint32_t v1Index = (uint32_t)vertices.size();
-					uint32_t v3Index = (uint32_t)vertices.size() + 1;
-					uint32_t v4Index = (uint32_t)vertices.size() + 2;
-
-					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
-					vertices.push_back({ { x22, z22, y22, 1.0f }, green });
-					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
-
-					indices.push_back(v1Index);
-					indices.push_back(v3Index);
-					indices.push_back(v4Index);
-				}
-				else if (i + 1 == latitudeCount)		// lower cap
-				{
-					uint32_t v1Index = (uint32_t)vertices.size();
-					uint32_t v2Index = (uint32_t)vertices.size() + 1;
-					uint32_t v4Index = (uint32_t)vertices.size() + 2;
-
-					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
-					vertices.push_back({ { x21, z21, y21, 1.0f }, green });
-					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
-
-					indices.push_back(v1Index);
-					indices.push_back(v2Index);
-					indices.push_back(v4Index);
-				}
-				else
-				{
-					uint32_t v1Index = (uint32_t)vertices.size();
-					uint32_t v4Index = (uint32_t)vertices.size() + 1;
-					uint32_t v2Index = (uint32_t)vertices.size() + 2;
-					uint32_t v3Index = (uint32_t)vertices.size() + 3;
-
-					vertices.push_back({ { x11, z11, y11, 1.0f }, green });
-					vertices.push_back({ { x12, z12, y12, 1.0f }, green });
-					vertices.push_back({ { x21, z21, y21, 1.0f }, green });
-					vertices.push_back({ { x22, z22, y22, 1.0f }, green });
-
-					indices.push_back(v1Index);
-					indices.push_back(v2Index);
-					indices.push_back(v4Index);
-
-					indices.push_back(v2Index);
-					indices.push_back(v3Index);
-					indices.push_back(v4Index);
-				}
-			}
-		}
-
 		GraphicsComponent* graphicComponent = m_SphereMesh.GetGraphicsComponent();
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if (hasInput)
 		{
-			graphicComponent->ChangeIndexBufferData(
-				m_DeviceContext.Get(),
-				indices);
-
-			graphicComponent->ChangeVertexBufferData(
-				m_DeviceContext.Get(),
-				vertices
-			);
-
 			graphicComponent->ChangeWorldViewProjBufferData(
 				m_DeviceContext.Get(),
 				{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
