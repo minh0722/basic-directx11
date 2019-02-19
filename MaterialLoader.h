@@ -5,20 +5,21 @@
 
 namespace wavefront
 {
+	struct Obj;
+
 	struct Material
 	{
 		Vector3<float> ambient;
 		Vector3<float> diffuse;
 		Vector3<float> specular;
-		size_t materialID;
 	};
 
 	class MaterialLoader final
 	{
 	public:
-		static Material Parse(const char* file);
+		static void Parse(const char* file, Obj& obj);
 
 	private:
-		static std::map<std::string, size_t> gs_MaterialIndexer;
+		static void ParseMaterialInformation(std::ifstream& is, Material& obj);
 	};
 }

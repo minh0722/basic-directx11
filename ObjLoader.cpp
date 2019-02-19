@@ -10,13 +10,17 @@ namespace wavefront
     {
         std::ifstream is(file, std::ios::in | std::ios::binary);
         assert(is.good());
-        
+
         float x, y, z;
         std::streampos pos;
         Obj result;
 		uint32_t vertexIdx1, vertexIdx2, vertexIdx3;
 		uint32_t vertexNormalIdx1, vertexNormalIdx2, vertexNormalIdx3;
 		uint32_t texCoordIdx1, texCoordIdx2, texCoordIdx3;
+
+		pos = is.tellg();
+		PrepareParse(is, result);
+		is.seekg(0, is.beg);
 
         while (!is.eof() && !is.fail())
         {
@@ -68,22 +72,22 @@ namespace wavefront
 			else if (StringEqual(buf, "f"))
 			{
 				is.get();
-				is >> vertexIdx1; 
-				IgnoreUntilSlash(is); is >> vertexNormalIdx1;
-				IgnoreUntilSlash(is); is >> texCoordIdx1 >> std::ws;
+				is >> vertexIdx1;					IgnoreUntilSlash(is); 
+				is >> texCoordIdx1;					IgnoreUntilSlash(is);
+				is >> vertexNormalIdx1 >> std::ws;
 				//is.get();
-				is >> vertexIdx2;
-				IgnoreUntilSlash(is); is >> vertexNormalIdx2;
-				IgnoreUntilSlash(is); is >> texCoordIdx2 >> std::ws;
+				is >> vertexIdx2;					IgnoreUntilSlash(is); 
+				is >> texCoordIdx2;					IgnoreUntilSlash(is);
+				is >> vertexNormalIdx2 >> std::ws;
 				//is.get();
-				is >> vertexIdx3;
-				IgnoreUntilSlash(is); is >> vertexNormalIdx3;
-				IgnoreUntilSlash(is); is >> texCoordIdx3;
+				is >> vertexIdx3;				IgnoreUntilSlash(is); 
+				is >> texCoordIdx3;				IgnoreUntilSlash(is);
+				is >> vertexNormalIdx3;
 				IgnoreLine(is);
 
-				result.vertexIndices.push_back(Vector3<uint32_t>(vertexIdx1 - 1, vertexIdx2 - 1, vertexIdx3 - 1));
-				result.vertexNormalIndices.push_back(Vector3<uint32_t>(vertexNormalIdx1 - 1, vertexNormalIdx2 - 1, vertexNormalIdx3 - 1));
-				result.texCoordIndices.push_back(Vector3<uint32_t>(texCoordIdx1 - 1, texCoordIdx2 - 1, texCoordIdx3 - 1));
+				result.verticesFaces.vertexIndices.push_back(Vector3<uint32_t>(vertexIdx1 - 1, vertexIdx2 - 1, vertexIdx3 - 1));
+				result.normalsFaces.vertexIndices.push_back(Vector3<uint32_t>(vertexNormalIdx1 - 1, vertexNormalIdx2 - 1, vertexNormalIdx3 - 1));
+				result.texCoordFaces.vertexIndices.push_back(Vector3<uint32_t>(texCoordIdx1 - 1, texCoordIdx2 - 1, texCoordIdx3 - 1));
 			}
 			else if (StringEqual(buf, "usemtl") || StringEqual(buf, "usemap"))
 			{
@@ -96,7 +100,7 @@ namespace wavefront
                 is.get(buf, 256, ' ');
                 str.append(buf);
 
-				Material mat = MaterialLoader::Parse(str.c_str());
+				MaterialLoader::Parse(str.c_str(), result);
 
                 IgnoreLine(is);
             }
@@ -111,4 +115,83 @@ namespace wavefront
 
         return result;
     }
+
+	void ObjLoader::PrepareParse(std::ifstream& is, Obj& obj)
+	{
+		assert(is.good());
+
+		std::streampos pos = is.tellg();
+		int vertexPosCount = 0;
+		int vertexNormalCount = 0;
+		int uvCoordCount = 0;
+		int faceCount = 0;
+
+		while (!is.eof() && !is.fail())
+		{
+			pos = is.tellg();
+
+			char buf[256];
+			char c = is.peek();
+
+			if (CharEqual(c, '#') || CharEqual(c, '\n') || CharEqual(c, '\r'))
+			{
+				IgnoreLine(is);
+				continue;
+			}
+			else if (CharEqual(c, ' '))
+			{
+				is.get();
+				continue;
+			}
+
+			is.get(buf, 256, ' ');
+
+			if (StringEqual(buf, "v"))
+			{
+				++vertexPosCount;
+				IgnoreLine(is);
+				continue;
+			}
+			else if (StringEqual(buf, "vn"))
+			{
+				++vertexNormalCount;
+				is.get();
+				continue;
+			}
+			else if (StringEqual(buf, "vt"))
+			{
+				++uvCoordCount;
+				is.get();
+			}
+			else if (StringEqual(buf, "f"))
+			{
+				++faceCount;
+				is.get();
+			}
+			else if (StringEqual(buf, "usemtl") || StringEqual(buf, "usemap"))
+			{
+				IgnoreLine(is);
+			}
+			else if (StringEqual(buf, "mtllib"))
+			{
+				is.get();
+				is.get(buf, 256, '\n');
+				obj.materialFileName = buf;
+			}
+			else
+			{
+				IgnoreLine(is);
+			}
+		}
+
+		obj.vertices.reserve(vertexPosCount);
+		obj.texCoord.reserve(uvCoordCount);
+		obj.vertexNormals.reserve(vertexNormalCount);
+		obj.verticesFaces.vertexIndices.reserve(faceCount);
+		obj.normalsFaces.vertexIndices.reserve(faceCount);
+		obj.texCoordFaces.vertexIndices.reserve(faceCount);
+
+		// clear eof bit so we can work with the input stream again
+		is.clear();
+	}
 }
