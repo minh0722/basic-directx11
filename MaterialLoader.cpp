@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "MaterialLoader.h"
 #include "ObjLoader.h"
-#include <atomic>
+#include "extern\fastcrc32\Crc32.h"
 
 namespace wavefront
 {
-	void MaterialLoader::Parse(const char* file, Obj& obj)
+	void MaterialLoader::Parse(Obj& obj)
 	{
-		std::ifstream is(file, std::ios::in | std::ios::binary);
+		std::ifstream is(obj.materialFileName, std::ios::in | std::ios::binary);
 		assert(is.good());
 
 		while (!is.eof() && !is.fail())
@@ -31,11 +31,12 @@ namespace wavefront
 			if (StringEqual(buf, "newmtl"))
 			{
 				is.get();
-				std::string materialName;
-				is.get(materialName.data(), '\r\n');
+				char buf[256];
+				is.get(buf, '\r\n');
+				std::string materialName = buf;
 				c = is.get();
 
-				Material& newMaterial = obj.materials[materialName.c_str()];
+				Material& newMaterial = obj.materials[crc32_fast(materialName.c_str(), materialName.length())];
 				ParseMaterialInformation(is, newMaterial);
 			}
 			else
@@ -43,6 +44,8 @@ namespace wavefront
 				IgnoreLine(is);
 			}
 		}
+
+		is.close();
 	}
 
 	void MaterialLoader::ParseMaterialInformation(std::ifstream& is, Material& obj)

@@ -130,6 +130,7 @@
     <ClInclude Include="..\BaseComponent.h" />
     <ClInclude Include="..\Camera.h" />
     <ClInclude Include="..\experimental\renderer1.h" />
+    <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
     <ClInclude Include="..\inputclass.h" />
     <ClInclude Include="..\MaterialLoader.h" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp" />
     <ClCompile Include="..\experimental\renderer1.cpp" />
+    <ClCompile Include="..\extern\fastcrc32\Crc32.cpp" />
     <ClCompile Include="..\GraphicsComponent.cpp" />
     <ClCompile Include="..\inputclass.cpp" />
     <ClCompile Include="..\main.cpp" />

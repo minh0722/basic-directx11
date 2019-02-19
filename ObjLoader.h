@@ -22,8 +22,7 @@ namespace wavefront
 		Faces texCoordFaces;
 		std::string materialFileName;
 
-		// TODO: dont map by const char* as key. Use some crc instead
-		std::map<const char*, Material> materials;
+		std::map<uint32_t, Material> materials;
     };
 
     class ObjLoader final

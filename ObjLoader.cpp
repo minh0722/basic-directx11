@@ -22,6 +22,8 @@ namespace wavefront
 		PrepareParse(is, result);
 		is.seekg(0, is.beg);
 
+		MaterialLoader::Parse(result);
+
         while (!is.eof() && !is.fail())
         {
             pos = is.tellg();
@@ -93,17 +95,6 @@ namespace wavefront
 			{
 				IgnoreLine(is);
 			}
-            else if (StringEqual(buf, "mtllib"))
-            {
-                std::string str = GetFileDirectory(file);
-                is.get();
-                is.get(buf, 256, ' ');
-                str.append(buf);
-
-				MaterialLoader::Parse(str.c_str(), result);
-
-                IgnoreLine(is);
-            }
 			else
 			{
 				IgnoreLine(is);
@@ -176,7 +167,8 @@ namespace wavefront
 			{
 				is.get();
 				is.get(buf, 256, '\n');
-				obj.materialFileName = buf;
+				obj.materialFileName = "../../../assets/models/";
+				obj.materialFileName += buf;
 			}
 			else
 			{

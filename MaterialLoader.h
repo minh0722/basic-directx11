@@ -17,7 +17,7 @@ namespace wavefront
 	class MaterialLoader final
 	{
 	public:
-		static void Parse(const char* file, Obj& obj);
+		static void Parse(Obj& obj);
 
 	private:
 		static void ParseMaterialInformation(std::ifstream& is, Material& obj);

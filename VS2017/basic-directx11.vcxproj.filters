@@ -16,6 +16,9 @@
     <Filter Include="experimental">
       <UniqueIdentifier>{cb9c7fe5-cd6c-4493-92b7-9ce0bdb3aedf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="extern">
+      <UniqueIdentifier>{bf5078ac-135e-45aa-8eac-cfff514272fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\BaseComponent.h">
@@ -69,6 +72,9 @@
     <ClInclude Include="..\experimental\renderer1.h">
       <Filter>experimental</Filter>
     </ClInclude>
+    <ClInclude Include="..\extern\fastcrc32\Crc32.h">
+      <Filter>extern</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="..\experimental\renderer1.cpp">
       <Filter>experimental</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extern\fastcrc32\Crc32.cpp">
+      <Filter>extern</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
