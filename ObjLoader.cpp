@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ObjLoader.h"
 #include "MaterialLoader.h"
+#include "extern/fastcrc32/Crc32.h"
 
 #include <cassert>
 
@@ -23,6 +24,8 @@ namespace wavefront
 		is.seekg(0, is.beg);
 
 		MaterialLoader::Parse(result);
+
+		uint32_t currentFaceMaterialCrc = 0;
 
         while (!is.eof() && !is.fail())
         {
@@ -91,9 +94,11 @@ namespace wavefront
 				result.normalsFaces.vertexIndices.push_back(Vector3<uint32_t>(vertexNormalIdx1 - 1, vertexNormalIdx2 - 1, vertexNormalIdx3 - 1));
 				result.texCoordFaces.vertexIndices.push_back(Vector3<uint32_t>(texCoordIdx1 - 1, texCoordIdx2 - 1, texCoordIdx3 - 1));
 			}
-			else if (StringEqual(buf, "usemtl") || StringEqual(buf, "usemap"))
+			else if (StringEqual(buf, "usemtl"))
 			{
-				IgnoreLine(is);
+				is.get();
+				is.get(buf, 256, '\n');
+				currentFaceMaterialCrc = crc32_fast(buf, strlen(buf));
 			}
 			else
 			{

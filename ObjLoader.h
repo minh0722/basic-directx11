@@ -9,7 +9,7 @@ namespace wavefront
 	struct Faces
 	{
 		std::vector<Vector3<uint32_t>> vertexIndices;
-		size_t materialId;
+		uint32_t materialId;
 	};
 
     struct Obj

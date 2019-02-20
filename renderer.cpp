@@ -601,8 +601,6 @@ void Renderer::SetupSpaceShip()
 
 	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
 	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size() * 3);
-
-	uint32_t* m = (uint32_t*)result.verticesFaces.vertexIndices.data();
 	
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 
