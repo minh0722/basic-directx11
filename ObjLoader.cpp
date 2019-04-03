@@ -99,6 +99,7 @@ namespace wavefront
 				is.get();
 				is.get(buf, 256, '\n');
 				currentFaceMaterialCrc = crc32_fast(buf, strlen(buf));
+
 			}
 			else
 			{
@@ -171,7 +172,7 @@ namespace wavefront
 			else if (StringEqual(buf, "mtllib"))
 			{
 				is.get();
-				is.get(buf, 256, '\n');
+				is.get(buf, 256, ' '); // TODO: need to find a way to read until \n\r too
 				obj.materialFileName = "../../../assets/models/";
 				obj.materialFileName += buf;
 			}
