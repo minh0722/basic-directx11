@@ -75,6 +75,9 @@
     <ClInclude Include="..\extern\fastcrc32\Crc32.h">
       <Filter>extern</Filter>
     </ClInclude>
+    <ClInclude Include="..\Octahedron.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -124,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="..\extern\fastcrc32\Crc32.cpp">
       <Filter>extern</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Octahedron.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

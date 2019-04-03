@@ -4,6 +4,7 @@
 #include "Matrix44f.h"
 #include "inputclass.h"
 #include "ObjLoader.h"
+#include "Octahedron.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
@@ -36,6 +37,7 @@ void Renderer::Initialize(HWND window)
     SetupAxis();
 
 	SetupSphereMesh();
+    SetupOctahedronMesh();
 
 	SetupSpaceShip();
 }
@@ -57,9 +59,13 @@ void Renderer::Render(InputClass* input)
 	SetupPrimitiveForRender(input, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
 
+    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
+    SetupPrimitiveForRender(input, Octahedral);
+    m_OctahedronMesh.Render(m_DeviceContext.Get());
+
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
-	InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
+	InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
 	SetupSpaceShipForRender(input);
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
@@ -112,7 +118,7 @@ void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
-            D3D11_CREATE_DEVICE_DEBUG,
+            0,
 			feature,
 			ARRAYSIZE(feature),
 			D3D11_SDK_VERSION,
@@ -575,6 +581,68 @@ void Renderer::SetupSphereMesh()
 	m_SphereMesh.AddComponent(graphicComponent);
 }
 
+void Renderer::SetupOctahedronMesh()
+{
+    std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+    vertexShaderInputLayout[0].SemanticName = "POSITION";
+    vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+    vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;			// format of the input vertex
+    vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+    vertexShaderInputLayout[0].AlignedByteOffset = 0;
+    vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
+    vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+    vertexShaderInputLayout[1].SemanticName = "COLOR";
+    vertexShaderInputLayout[1].SemanticIndex = 0;
+    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    vertexShaderInputLayout[1].InputSlot = 0;
+    vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
+    GraphicsComponent::GraphicsComponentDesc desc =
+    {
+        m_Device.Get(),
+        L"vertexShader.cso",
+        L"pixelShader.cso",
+        vertexShaderInputLayout
+    };
+
+    // calculate vertices for the sphere mesh
+    float radius = 7.0f;
+    Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
+    
+    Octahedron oct(radius);
+    oct.triangulate(2);
+
+    std::vector<Vertex> vertices;
+    const std::vector<Vector4f>& octVertices = oct.GetVertices();
+    for (int i = 0; i < octVertices.size(); ++i)
+    {
+        vertices.push_back(Vertex(octVertices[i], green));
+    }
+
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(-30.0f, 0.0f, -30.0f);
+
+    GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
+    graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    graphicComponent->SetIndexBuffer(
+        m_Device.Get(),
+        oct.GetIndices());
+
+    graphicComponent->SetVertexBuffer(
+        m_Device.Get(),
+        vertices
+    );
+
+    graphicComponent->ChangeWorldViewProjBufferData(
+        m_DeviceContext.Get(),
+        { worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
+
+    m_OctahedronMesh.AddComponent(graphicComponent);
+}
+
 void Renderer::SetupSpaceShip()
 {
 	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(1);
@@ -660,10 +728,10 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Tria
 				{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 		}
 	}
-	else
+	else if(prim == Sphere || prim == Octahedral)
 	{
-		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
-		GraphicsComponent* graphicComponent = m_SphereMesh.GetGraphicsComponent();
+		DirectX::XMMATRIX worldMatrix = prim == Sphere ? DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f) : DirectX::XMMatrixTranslation(-30.0, 0.0, -30.0f);
+		GraphicsComponent* graphicComponent = prim == Sphere ? m_SphereMesh.GetGraphicsComponent() : m_OctahedronMesh.GetGraphicsComponent();
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		if (hasInput)

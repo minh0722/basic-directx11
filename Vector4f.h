@@ -22,7 +22,6 @@ public:
     float& operator[](uint16_t index);
     float operator[](uint16_t index) const;
 
-
     float GetLength() const;
 public:
     union
