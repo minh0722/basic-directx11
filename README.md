@@ -41,3 +41,5 @@ https://www.csee.umbc.edu/~squire/reference/polyhedra.shtml
 
 paper about indexing icosahedrons
 https://arxiv.org/ftp/cs/papers/0701/0701164.pdf
+
+https://pdfs.semanticscholar.org/3472/9e87a422b448a02fc575779da6f0686aa5ff.pdf?_ga=2.153282046.734739103.1554282333-600310946.1554282333
