@@ -34,3 +34,10 @@ ID3D11Query
 IDXGIFactory
 
 http://aecobjects.com/2014/10/which_format_is_better/
+
+*****************************
+generating polyhedrons vertices
+https://www.csee.umbc.edu/~squire/reference/polyhedra.shtml
+
+paper about indexing icosahedrons
+https://arxiv.org/ftp/cs/papers/0701/0701164.pdf
