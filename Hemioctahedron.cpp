@@ -62,6 +62,23 @@ void Hemioctahedron::triangulateHelper(int level, int idx1, int idx2, int idx3)
     int idx23 = idx12 + 1;
     int idx31 = idx23 + 1;
 
+    //auto it12 = std::find(m_vertices.begin(), m_vertices.end(), OctahedronVertex{ x12, x12NormCoord });
+    //auto it23 = std::find(m_vertices.begin(), m_vertices.end(), OctahedronVertex{ x23, x23NormCoord });
+    //auto it31 = std::find(m_vertices.begin(), m_vertices.end(), OctahedronVertex{ x31, x31NormCoord });
+
+    //it12 == m_vertices.end() ? idx12 = (int)m_vertices.size() : it12 - m_vertices.begin();
+    //it23 == m_vertices.end() ? idx23 = idx12 + 1 : it23 - m_vertices.begin();
+
+    //if (it12 == m_vertices.end())
+    //{
+    //    idx12 = (int)m_vertices.size();
+    //    m_vertices.push_back({ x12, x12NormCoord });
+    //}
+    //else
+    //{
+    //    idx12 = it12 - m_vertices.begin();
+    //}
+
     m_vertices.push_back({x12, x12NormCoord});
     m_vertices.push_back({x23, x23NormCoord});
     m_vertices.push_back({x31, x31NormCoord});

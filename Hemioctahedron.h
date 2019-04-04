@@ -9,6 +9,11 @@ struct OctahedronVertex
 {
     Vector4f m_vertex;
     Vector2f m_normalizedMappingCoord;    // impostor normalized coord
+
+    bool operator==(const OctahedronVertex& other)
+    {
+        return m_vertex == other.m_vertex;
+    }
 };
 
 class Hemioctahedron

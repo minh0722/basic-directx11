@@ -82,7 +82,7 @@ Vector4f& Vector4f::operator+=(const float num)
     return *this;
 }
 
-bool Vector4f::operator==(const Vector4f other) const
+bool Vector4f::operator==(const Vector4f& other) const
 {
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
