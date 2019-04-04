@@ -78,13 +78,15 @@ private:
 	void SetupSphereMesh();
 	void SetupSpaceShip();
     void SetupOctahedronMesh();
+    void SetupHemioctahedronMesh();
 
 	enum Primitive
 	{
 		Triangle,
 		Line,
 		Sphere,
-        Octahedral
+        Octahedral,
+        Hemioctahedral
 	};
 
     void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
@@ -114,6 +116,7 @@ private:
 	Shape m_SphereMesh;
 	Shape m_SpaceShip;
     Shape m_OctahedronMesh;
+    Shape m_HemioctahedronMesh;
 
     Camera m_Camera;
 };

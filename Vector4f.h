@@ -16,6 +16,7 @@ public:
     Vector4f operator*(const Matrix44f& other) const;
     Vector4f& operator*=(const float num);
     Vector4f& operator+=(const float num);
+    bool operator==(const Vector4f other) const;
     Vector4f CrossProduct(const Vector4f& other) const;
 	float DotProduct(const Vector4f& other) const;
 

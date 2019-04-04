@@ -13,6 +13,7 @@ public:
 	
 	Vector2& operator=(const Vector2& other);
 	Vector2 operator-(const Vector2& other) const;
+    Vector2 operator+(const Vector2& other) const;
 	Vector2 operator/(T num) const;
     Vector2 operator*(T num) const;
 	Vector2& operator*=(const T num);
@@ -72,6 +73,15 @@ Vector2<T> Vector2<T>::operator-(const Vector2<T>& other) const
 	return Vector2(
 		m_Values[0] - other.m_Values[0],
 		m_Values[1] - other.m_Values[1]);
+}
+
+template <typename T>
+Vector2<T> Vector2<T>::operator+(const Vector2<T>& other) const
+{
+    return Vector2(
+        m_Values[0] + other.m_Values[0],
+        m_Values[1] + other.m_Values[1]
+    );
 }
 
 template <typename T>
