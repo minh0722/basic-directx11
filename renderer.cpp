@@ -612,8 +612,9 @@ void Renderer::SetupOctahedronMesh()
     float radius = 7.0f;
     Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
     
+    int triangulateLevel = 5;
     Octahedron oct(radius);
-    oct.triangulate(2);
+    oct.triangulate(triangulateLevel);
 
     std::vector<Vertex> vertices;
     const std::vector<Vector4f>& octVertices = oct.GetVertices();

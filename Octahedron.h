@@ -54,6 +54,14 @@ private:
         Vector4f x23 = Vector4f((x2.x + x3.x) / 2.0f, (x2.y + x3.y) / 2.0f, (x2.z + x3.z) / 2.0f, 1.0f);
         Vector4f x31 = Vector4f((x3.x + x1.x) / 2.0f, (x3.y + x1.y) / 2.0f, (x3.z + x1.z) / 2.0f, 1.0f);
 
+        x12.Normalize3();
+        x23.Normalize3();
+        x31.Normalize3();
+        
+        x12.Mul3(Vector4f(m_radius, m_radius, m_radius, 1.0f));
+        x23.Mul3(Vector4f(m_radius, m_radius, m_radius, 1.0f));
+        x31.Mul3(Vector4f(m_radius, m_radius, m_radius, 1.0f));
+
         int idx12 = (int)m_vertices.size();
         int idx23 = idx12 + 1;
         int idx31 = idx23 + 1;
@@ -71,4 +79,5 @@ private:
 private:
     std::vector<Vector4f> m_vertices;
     std::vector<uint32_t> m_indices;
+    float m_radius;
 };

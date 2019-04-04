@@ -116,3 +116,14 @@ float Vector4f::GetLength() const
     Vector4f res(DirectX::XMVector3Length(m_v));
     return res.m_fValues[0];
 }
+
+void Vector4f::Normalize3()
+{
+    m_v = DirectX::XMVector3Normalize(m_v);
+}
+
+void Vector4f::Mul3(const Vector4f& other)
+{
+    m_v = DirectX::XMVectorMultiply(m_v, other.m_v);
+    m_fValues[3] = 1.0f;
+}

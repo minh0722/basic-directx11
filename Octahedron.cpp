@@ -2,6 +2,7 @@
 #include "Octahedron.h"
 
 Octahedron::Octahedron(float radius)
+    : m_radius(radius)
 {
     // top
     m_vertices.push_back(Vector4f(0.0f, radius * 1.0f, 0.0f, 1.0f));

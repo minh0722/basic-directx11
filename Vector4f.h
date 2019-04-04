@@ -23,6 +23,11 @@ public:
     float operator[](uint16_t index) const;
 
     float GetLength() const;
+
+    void Normalize3();
+
+    void Mul3(const Vector4f& other);
+
 public:
     union
     {
