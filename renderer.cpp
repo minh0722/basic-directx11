@@ -689,7 +689,7 @@ void Renderer::SetupHemioctahedronMesh()
     const std::vector<OctahedronVertex>& octVertices = oct.GetVertices();
     for (int i = 0; i < octVertices.size(); ++i)
     {
-        vertices.push_back(Vertex(octVertices[i].m_vertex, green));
+        vertices.push_back(Vertex(octVertices[i].m_vertex.Mul3(Vector4f(radius, radius, radius, 1.0f)), green));
     }
 
     DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f);

@@ -28,6 +28,7 @@ public:
     void Normalize3();
 
     void Mul3(const Vector4f& other);
+    Vector4f Mul3(const Vector4f& other) const;
 
 public:
     union

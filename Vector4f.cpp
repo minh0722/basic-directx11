@@ -132,3 +132,10 @@ void Vector4f::Mul3(const Vector4f& other)
     m_v = DirectX::XMVectorMultiply(m_v, other.m_v);
     m_fValues[3] = 1.0f;
 }
+
+Vector4f Vector4f::Mul3(const Vector4f& other) const
+{
+    Vector4f res(*this);
+    res.Mul3(other);
+    return res;
+}
