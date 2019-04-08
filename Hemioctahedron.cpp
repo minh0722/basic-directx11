@@ -7,9 +7,11 @@ Vector2f CalculateUV(Vector4f coord)
     float y = coord.y;
     float z = coord.z;
 
-    return {
+    Vector2f res {
         float(0.5 * (x / (1.0f + y) + 1.0f)), 
-        float(0.5 * (z / (1.0f + y) + 1.0f)) };
+        abs(float(0.5 * (z / (1.0f + y) + 1.0f)) - 1.0f) };
+
+    return res;
 }
 
 Hemioctahedron::Hemioctahedron(float radius)
