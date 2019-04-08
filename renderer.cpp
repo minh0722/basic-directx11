@@ -62,10 +62,11 @@ void Renderer::Render(InputClass* input)
 	SetupPrimitiveForRender(input, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
 
-    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
+    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_BACK);
     SetupPrimitiveForRender(input, Octahedral);
     m_OctahedronMesh.Render(m_DeviceContext.Get());
     
+    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
     SetupPrimitiveForRender(input, Hemioctahedral);
     m_HemioctahedronMesh.Render(m_DeviceContext.Get());
 
@@ -618,7 +619,7 @@ void Renderer::SetupOctahedronMesh()
     float radius = 7.0f;
     Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
     
-    int triangulateLevel = 2;
+    int triangulateLevel = 1;
     Octahedron oct(radius);
     oct.triangulate(triangulateLevel);
 
@@ -800,7 +801,11 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Tria
 	}
 	else if(prim == Sphere || prim == Octahedral || prim == Hemioctahedral)
 	{
-		DirectX::XMMATRIX worldMatrix = prim == Sphere ? DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f) : ( prim == Octahedral ? DirectX::XMMatrixTranslation(-30.0, 0.0, -30.0f) : DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f));
+		DirectX::XMMATRIX worldMatrix = prim == Sphere ? DirectX::XMMatrixTranslation(20.0f, 0.0f, -20.0f) : ( prim == Octahedral ? DirectX::XMMatrixTranslation(0.0, 0.0, 0.0f) : DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f));
+
+        //DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationRollPitchYaw(PI / 20, 0, PI / 20);
+        //if (prim == Octahedral) worldMatrix = DirectX::XMMatrixMultiply(worldMatrix, rotation);
+
 		GraphicsComponent* graphicComponent = prim == Sphere ? m_SphereMesh.GetGraphicsComponent() : (prim == Octahedral ? m_OctahedronMesh.GetGraphicsComponent() : m_HemioctahedronMesh.GetGraphicsComponent());
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

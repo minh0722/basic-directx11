@@ -29,7 +29,7 @@ public:
     
     Vector2<float> ToFloatVec() const;
 
-private:
+public:
 	union
 	{
 		T m_Values[2] = {};

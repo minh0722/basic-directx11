@@ -1,18 +1,34 @@
 #include "pch.h"
 #include "Hemioctahedron.h"
 
+Vector2f CalculateUV(Vector4f coord)
+{
+    float x = coord.x;
+    float y = coord.y;
+    float z = coord.z;
+
+    return {
+        float(0.5 * (x / (1.0f + y) + 1.0f)), 
+        float(0.5 * (z / (1.0f + y) + 1.0f)) };
+}
 
 Hemioctahedron::Hemioctahedron(float radius)
     : m_radius(radius)
 {
+    Vector4f x0 = Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+    Vector4f x1 = Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+    Vector4f x2 = Vector4f(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector4f x3 = Vector4f(-1.0f, 0.0f, 0.0f, 1.0f);
+    Vector4f x4 = Vector4f(0.0f, 0.0f, -1.0f, 1.0f);
+
     // top
-    m_vertices.push_back({ Vector4f(0.0f, 1.0f, 0.0f, 1.0f), Vector2f(0.5, 0.5f) });
+    m_vertices.push_back({ x0, CalculateUV(x0)/*Vector2f(0.5, 0.5f)*/ });
 
     // 4 side vertices
-    m_vertices.push_back({ Vector4f(1.0f, 0.0f, 0.0f, 1.0f), Vector2f(1.0f, 1.0f) });
-    m_vertices.push_back({ Vector4f(0.0f, 0.0f, 1.0f, 1.0f), Vector2f(1.0f, 0.0f) });
-    m_vertices.push_back({ Vector4f(-1.0f, 0.0f, 0.0f, 1.0f), Vector2f(0.0f, 0.0f) });
-    m_vertices.push_back({ Vector4f(0.0f, 0.0f, -1.0f, 1.0f), Vector2f(0.0f, 1.0f) });
+    m_vertices.push_back({ x1, CalculateUV(x1)/*Vector2f(1.0f, 0.5f)*/ });
+    m_vertices.push_back({ x2, CalculateUV(x2)/*Vector2f(0.5f, 0.0f)*/ });
+    m_vertices.push_back({ x3, CalculateUV(x3)/*Vector2f(0.0f, 0.5f)*/ });
+    m_vertices.push_back({ x4, CalculateUV(x4)/*Vector2f(0.5f, 1.0f)*/ });
 }
 
 
@@ -29,6 +45,9 @@ void Hemioctahedron::triangulateHelper(int level, int idx1, int idx2, int idx3)
 {
     if (level == 0)
     {
+        if (idx1 == 0 || idx2 == 0 || idx3 == 0)
+            return;
+
         m_indices.push_back(idx1);
         m_indices.push_back(idx2);
         m_indices.push_back(idx3);
@@ -47,6 +66,10 @@ void Hemioctahedron::triangulateHelper(int level, int idx1, int idx2, int idx3)
     Vector2f x12NormCoord = (m_vertices[idx1].m_normalizedMappingCoord + m_vertices[idx2].m_normalizedMappingCoord) / 2.0f;
     Vector2f x23NormCoord = (m_vertices[idx2].m_normalizedMappingCoord + m_vertices[idx3].m_normalizedMappingCoord) / 2.0f;
     Vector2f x31NormCoord = (m_vertices[idx3].m_normalizedMappingCoord + m_vertices[idx1].m_normalizedMappingCoord) / 2.0f;
+
+    x12NormCoord = CalculateUV(x12);
+    x23NormCoord = CalculateUV(x23);
+    x31NormCoord = CalculateUV(x31);
 
     // normalize so vector has length 1
     x12.Normalize3();
