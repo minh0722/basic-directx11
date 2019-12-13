@@ -104,7 +104,7 @@ void Scene::AddCube()
 
     Shape* cube = new Shape;
 
-    BaseComponent* graphicComponent = new GraphicsComponent(desc);
+    GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(g_Renderer.GetContext(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     graphicComponent->SetIndexBuffer(

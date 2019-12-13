@@ -104,6 +104,13 @@ float Vector4f::DotProduct(const Vector4f& other) const
 		m_fValues[3] * other.m_fValues[3];
 }
 
+float Vector4f::DotProduct3(const Vector4f& other) const
+{
+    return m_fValues[0] * other.m_fValues[0] +
+        m_fValues[1] * other.m_fValues[1] +
+        m_fValues[2] * other.m_fValues[2];
+}
+
 float& Vector4f::operator[](uint16_t index)
 {
     assert(index < 4);
@@ -138,4 +145,14 @@ Vector4f Vector4f::Mul3(const Vector4f& other) const
     Vector4f res(*this);
     res.Mul3(other);
     return res;
+}
+
+Vector4f Vector4f::Abs() const
+{
+    return Vector4f{
+        abs(x),
+        abs(y),
+        abs(z),
+        abs(w)
+    };
 }

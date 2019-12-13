@@ -8,15 +8,22 @@ namespace wavefront
 {
 	struct Faces
 	{
-		std::vector<Vector3<uint32_t>> vertexIndices;
+		std::vector<uint32_t> vertexIndices;
 		uint32_t materialId;
 	};
+
+    struct VertexFormat
+    {
+        Vector3<float> vertex;
+        Vector2<float> texcoord;
+    };
 
     struct Obj
     {
         std::vector<Vector3<float>> vertices;
         std::vector<Vector3<float>> vertexNormals;
         std::vector<Vector2<float>> texCoord;
+        std::vector<VertexFormat> vertexBuffer;
 		Faces verticesFaces;
 		Faces normalsFaces;
 		Faces texCoordFaces;

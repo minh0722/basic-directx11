@@ -89,52 +89,6 @@ void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const void* indices
 			m_IndexBuffer.GetAddressOf()));
 }
 
-void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vertex>& vertices)
-{
-	m_VertexBufferStride = sizeof(Vertex);
-	UINT verticesCount = (UINT)vertices.size();
-
-	D3D11_BUFFER_DESC desc = {};
-	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.ByteWidth = verticesCount * sizeof(Vertex);
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-	desc.StructureByteStride = sizeof(Vertex);
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = vertices.data();
-
-	THROW_IF_FAILED(
-		device->CreateBuffer(
-			&desc,
-			&initData,
-			m_VertexBuffer.GetAddressOf()));
-}
-
-void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<Vector3<float>>& vertices)
-{
-	m_VertexBufferStride = sizeof(Vector3<float>);
-	UINT verticesCount = (UINT)vertices.size();
-
-	D3D11_BUFFER_DESC desc = {};
-	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.ByteWidth = verticesCount * sizeof(Vector3<float>);
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-	desc.StructureByteStride = sizeof(Vector3<float>);
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = vertices.data();
-
-	THROW_IF_FAILED(
-		device->CreateBuffer(
-			&desc,
-			&initData,
-			m_VertexBuffer.GetAddressOf()));
-}
-
 void GraphicsComponent::InitWorldViewProjBuffer(ID3D11Device* device)
 {
     D3D11_BUFFER_DESC desc = {};

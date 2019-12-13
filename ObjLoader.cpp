@@ -90,9 +90,17 @@ namespace wavefront
 				is >> vertexNormalIdx3;
 				IgnoreLine(is);
 
-				result.verticesFaces.vertexIndices.push_back(Vector3<uint32_t>(vertexIdx1 - 1, vertexIdx2 - 1, vertexIdx3 - 1));
-				result.normalsFaces.vertexIndices.push_back(Vector3<uint32_t>(vertexNormalIdx1 - 1, vertexNormalIdx2 - 1, vertexNormalIdx3 - 1));
-				result.texCoordFaces.vertexIndices.push_back(Vector3<uint32_t>(texCoordIdx1 - 1, texCoordIdx2 - 1, texCoordIdx3 - 1));
+                result.verticesFaces.vertexIndices.push_back(vertexIdx1 - 1); 
+                result.verticesFaces.vertexIndices.push_back(vertexIdx2 - 1);
+                result.verticesFaces.vertexIndices.push_back(vertexIdx3 - 1);
+
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx1 - 1);
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx2 - 1);
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx3 - 1);
+
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx1 - 1);
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx2 - 1);
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx3 - 1);
 			}
 			else if (StringEqual(buf, "usemtl"))
 			{
@@ -109,6 +117,16 @@ namespace wavefront
 
         char buf[256];
         strerror_s(buf, 256, errno);
+
+        //for (uint32_t i = 0; i < result.verticesFaces.vertexIndices.size(); ++i)
+        //{
+        //    result.vertexBuffer.push_back(VertexFormat{ result.vertices[result.verticesFaces.vertexIndices[i]], Vector2<float>{} });
+        //}
+
+        //for (uint32_t i = 0; i < result.texCoordFaces.vertexIndices.size(); ++i)
+        //{
+        //    result.vertexBuffer
+        //}
 
         return result;
     }
@@ -185,6 +203,7 @@ namespace wavefront
 		obj.vertices.reserve(vertexPosCount);
 		obj.texCoord.reserve(uvCoordCount);
 		obj.vertexNormals.reserve(vertexNormalCount);
+        obj.vertexBuffer.reserve(vertexPosCount);
 		obj.verticesFaces.vertexIndices.reserve(faceCount);
 		obj.normalsFaces.vertexIndices.reserve(faceCount);
 		obj.texCoordFaces.vertexIndices.reserve(faceCount);

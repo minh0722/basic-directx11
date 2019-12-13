@@ -19,6 +19,7 @@ public:
     bool operator==(const Vector4f& other) const;
     Vector4f CrossProduct(const Vector4f& other) const;
 	float DotProduct(const Vector4f& other) const;
+    float DotProduct3(const Vector4f& other) const;
 
     float& operator[](uint16_t index);
     float operator[](uint16_t index) const;
@@ -29,6 +30,8 @@ public:
 
     void Mul3(const Vector4f& other);
     Vector4f Mul3(const Vector4f& other) const;
+
+    Vector4f Abs() const;
 
 public:
     union

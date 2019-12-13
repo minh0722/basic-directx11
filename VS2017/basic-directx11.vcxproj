@@ -77,6 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -89,6 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -103,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -119,6 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -132,12 +136,14 @@
     <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
+    <ClInclude Include="..\GraphicsComponent.hpp" />
     <ClInclude Include="..\Hemioctahedron.h" />
     <ClInclude Include="..\inputclass.h" />
     <ClInclude Include="..\MaterialLoader.h" />
     <ClInclude Include="..\Matrix44f.h" />
     <ClInclude Include="..\ObjLoader.h" />
     <ClInclude Include="..\Octahedron.h" />
+    <ClInclude Include="..\OctahedronVertex.h" />
     <ClInclude Include="..\pch.h" />
     <ClInclude Include="..\renderer.h" />
     <ClInclude Include="..\Scene.h" />
@@ -160,6 +166,7 @@
     <ClCompile Include="..\Matrix44f.cpp" />
     <ClCompile Include="..\ObjLoader.cpp" />
     <ClCompile Include="..\Octahedron.cpp" />
+    <ClCompile Include="..\OctahedronVertex.cpp" />
     <ClCompile Include="..\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch.h</PrecompiledHeaderFile>
@@ -218,6 +225,11 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DirectXTK\DirectXTK_Desktop_2017.vcxproj">
+      <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,7 +24,7 @@ public:
 
 	//T GetLength() const;
 
-private:
+public:
 	union
 	{
 		T m_Values[3];

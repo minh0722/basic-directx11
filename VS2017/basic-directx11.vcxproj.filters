@@ -81,6 +81,12 @@
     <ClInclude Include="..\Hemioctahedron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\OctahedronVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GraphicsComponent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -135,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Hemioctahedron.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OctahedronVertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

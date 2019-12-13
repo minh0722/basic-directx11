@@ -43,6 +43,10 @@ void Renderer::Initialize(HWND window)
     SetupSphereMesh();
 
 	SetupSpaceShip();
+
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    long long f = freq.QuadPart;
 }
 
 void Renderer::Render(InputClass* input)
@@ -278,18 +282,18 @@ void Renderer::SetupTriangle()
 		vertexShaderInputLayout
 	};
 
-	BaseComponent* graphicComponent = new GraphicsComponent(desc);
+    std::vector<std::pair<Vector4f, Vector4f>> vertexBuffer = 
+    {
+        //			pos							color
+        { {-1.0f, -1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f} },		// bottom left
+        { { 1.0f, -1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f} },		// bottom right
+        { { 0.0f,  1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f} }		// top middle
+    };
+
+	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	graphicComponent->SetIndexBuffer(m_Device.Get(), {0, 1, 2});
-	graphicComponent->SetVertexBuffer(
-		m_Device.Get(),
-		{
-			//			pos							color
-			{ {-1.0f, -1.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f} },		// bottom left
-			{ { 1.0f, -1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f} },		// bottom right
-			{ { 0.0f,  1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f} }		// top middle
-		}
-	);
+	graphicComponent->SetVertexBuffer(m_Device.Get(), vertexBuffer);
 
 	m_Triangle.AddComponent(graphicComponent);
 }
@@ -619,15 +623,15 @@ void Renderer::SetupOctahedronMesh()
     float radius = 7.0f;
     Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
     
-    int triangulateLevel = 1;
+    int triangulateLevel = 2;
     Octahedron oct(radius);
     oct.triangulate(triangulateLevel);
 
     std::vector<Vertex> vertices;
-    const std::vector<Vector4f>& octVertices = oct.GetVertices();
+    const std::vector<OctahedronVertex>& octVertices = oct.GetVertices();
     for (int i = 0; i < octVertices.size(); ++i)
     {
-        vertices.push_back(Vertex(octVertices[i], green));
+        vertices.push_back(Vertex(octVertices[i].m_vertex.Mul3(Vector4f(radius, radius, radius, 1.0f)), green));
     }
 
     DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(-30.0f, 0.0f, -30.0f);
@@ -683,15 +687,16 @@ void Renderer::SetupHemioctahedronMesh()
     Vector4f green = { 0.0f, 1.0f, 0.0f, 1.0f };
 
     int triangulateLevel = 2;
-    Hemioctahedron oct(radius);
-    oct.triangulate(triangulateLevel);
+    static Hemioctahedron oct(radius, triangulateLevel);
 
     std::vector<Vertex> vertices;
-    const std::vector<OctahedronVertex>& octVertices = oct.GetVertices();
-    for (int i = 0; i < octVertices.size(); ++i)
+    oct.ProcessVertices([&vertices, green](const OctahedronVertex& octahedronVertex, uint32_t i)
     {
-        vertices.push_back(Vertex(octVertices[i].m_vertex.Mul3(Vector4f(radius, radius, radius, 1.0f)), green));
-    }
+        if(i == 0)
+            vertices.push_back(Vertex(octahedronVertex.m_vertex, {1.0f, 0.0f, 0.0f, 1.0f}));
+        else
+            vertices.push_back(Vertex(octahedronVertex.m_vertex, green));
+    });
 
     DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f);
 
@@ -739,7 +744,7 @@ void Renderer::SetupSpaceShip()
 	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
 
 	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
-	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size() * 3);
+	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size());
 	
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 
