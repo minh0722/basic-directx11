@@ -18,6 +18,15 @@ namespace wavefront
         Vector2<float> texcoord;
     };
 
+    enum DrawType
+    {
+        Draw,                   // non-indexed, non-instanced
+        DrawIndexed,            // indexed, non-instanced
+        DrawIndexedInstanced,   // indexed, instanced
+        DrawInstanced,          // non-indexed, instanced
+        DrawTypeCount
+    };
+
     struct Obj
     {
         std::vector<Vector3<float>> vertices;
@@ -28,6 +37,7 @@ namespace wavefront
 		Faces normalsFaces;
 		Faces texCoordFaces;
 		std::string materialFileName;
+        DrawType drawType;
 
 		std::map<uint32_t, Material> materials;
     };

@@ -279,7 +279,7 @@ void Renderer::SetupTriangle()
 		m_Device.Get(),
 		L"vertexShader.cso",
 		L"pixelShader.cso",
-		vertexShaderInputLayout
+		std::move(vertexShaderInputLayout)
 	};
 
     std::vector<std::pair<Vector4f, Vector4f>> vertexBuffer = 
@@ -322,7 +322,7 @@ void Renderer::SetupCube()
 		m_Device.Get(),
 		L"CubeInstancing_Vs.cso",
 		L"pixelShader.cso",
-		vertexShaderInputLayout
+		std::move(vertexShaderInputLayout)
 	};
 
 	///////////////////////////////////////////////////////////////////////
@@ -392,7 +392,7 @@ void Renderer::SetupAxis()
         m_Device.Get(),
         L"vertexShader.cso",
         L"pixelShader.cso",
-        vertexShaderInputLayout
+        std::move(vertexShaderInputLayout)
     };
 	    
     Vector4f red = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -455,7 +455,7 @@ void Renderer::SetupSphereMesh()
 		m_Device.Get(),
 		L"vertexShader.cso",
 		L"pixelShader.cso",
-		vertexShaderInputLayout
+		std::move(vertexShaderInputLayout)
 	};
 
 	std::vector<Vertex> vertices;
@@ -616,7 +616,7 @@ void Renderer::SetupOctahedronMesh()
         m_Device.Get(),
         L"vertexShader.cso",
         L"pixelShader.cso",
-        vertexShaderInputLayout
+        std::move(vertexShaderInputLayout)
     };
 
     // calculate vertices for the sphere mesh
@@ -679,7 +679,7 @@ void Renderer::SetupHemioctahedronMesh()
         m_Device.Get(),
         L"vertexShader.cso",
         L"pixelShader.cso",
-        vertexShaderInputLayout
+        std::move(vertexShaderInputLayout)
     };
 
     // calculate vertices for the sphere mesh
@@ -721,7 +721,7 @@ void Renderer::SetupHemioctahedronMesh()
 
 void Renderer::SetupSpaceShip()
 {
-	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(1);
+	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
 	vertexShaderInputLayout[0].SemanticName = "POSITION";
 	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
 	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			// format of the input vertex
@@ -730,12 +730,20 @@ void Renderer::SetupSpaceShip()
 	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
 	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
 
+    vertexShaderInputLayout[1].SemanticName = "TEXCOORD";
+    vertexShaderInputLayout[1].SemanticIndex = 0;
+    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32_UINT;
+    vertexShaderInputLayout[1].InputSlot = 0;
+    vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
 		L"SpaceshipVertexShader.cso",
 		L"pixelShader.cso",
-		vertexShaderInputLayout
+        std::move(vertexShaderInputLayout)
 	};
 
 	GraphicsComponent* graphicsComponent = new GraphicsComponent(desc);
@@ -743,9 +751,31 @@ void Renderer::SetupSpaceShip()
 
 	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
 
-	graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
-	graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size());
+    if (result.drawType == wavefront::DrawType::Draw)
+    {
+        graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertexBuffer);
+        graphicsComponent->SetDrawType(result.drawType);
+    }
+    else
+    {
+        graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
+        graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size());
+    }
 	
+    graphicsComponent->LoadTexture(m_Device.Get(), L"../../../assets/uv-checkerboard.png");
+
+    //D3D11_SAMPLER_DESC samplerDesc;
+    //samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    //samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    //samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    //samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    //samplerDesc.MinLOD = 0;
+    //samplerDesc.MaxLOD = 15;
+    //samplerDesc.MipLODBias = 0;
+    //samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    //memset(&samplerDesc.BorderColor[0], 0, 4 * sizeof(float));
+    //graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
+
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 
 	graphicsComponent->ChangeWorldViewProjBufferData(

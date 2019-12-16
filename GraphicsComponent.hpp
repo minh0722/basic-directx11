@@ -3,6 +3,7 @@
 template <typename VertexBufferType>
 void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices)
 {
+    m_VerticesCount = (UINT)vertices.size();
     m_VertexBufferStride = sizeof(VertexBufferType);
     UINT verticesCount = (UINT)vertices.size();
 

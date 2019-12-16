@@ -115,18 +115,25 @@ namespace wavefront
 			}
         }
 
+        if (result.verticesFaces.vertexIndices.size() == result.texCoordFaces.vertexIndices.size())
+        {
+            result.drawType = DrawType::DrawIndexed;
+        }
+        else
+        {
+            result.drawType = DrawType::Draw;
+        }
+
         char buf[256];
         strerror_s(buf, 256, errno);
 
-        //for (uint32_t i = 0; i < result.verticesFaces.vertexIndices.size(); ++i)
-        //{
-        //    result.vertexBuffer.push_back(VertexFormat{ result.vertices[result.verticesFaces.vertexIndices[i]], Vector2<float>{} });
-        //}
-
-        //for (uint32_t i = 0; i < result.texCoordFaces.vertexIndices.size(); ++i)
-        //{
-        //    result.vertexBuffer
-        //}
+        if(result.drawType == DrawType::Draw)
+        {
+            for (uint32_t i = 0; i < result.verticesFaces.vertexIndices.size(); ++i)
+            {
+                result.vertexBuffer.push_back(VertexFormat{ result.vertices[result.verticesFaces.vertexIndices[i]], result.texCoord[result.texCoordFaces.vertexIndices[i]] });
+            }
+        }
 
         return result;
     }

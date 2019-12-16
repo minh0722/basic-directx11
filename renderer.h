@@ -118,8 +118,6 @@ private:
     Shape m_OctahedronMesh;
     Shape m_HemioctahedronMesh;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_uvCheckerboardTexture;
-
     Camera m_Camera;
 };
 

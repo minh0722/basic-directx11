@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "BaseComponent.h"
+#include "ObjLoader.h"
 
 class GraphicsComponent : public BaseComponent
 {
@@ -25,10 +26,15 @@ public:
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
+    void SetSamplerState(ID3D11DeviceContext* context);
+    void SetDrawType(wavefront::DrawType drawType);
+    void LoadTexture(ID3D11Device* device, const wchar_t* texturePath);
 
     void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
     void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
     void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
+
+    void InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc);
 protected:
 
     void InitWorldViewProjBuffer(ID3D11Device* device);
@@ -49,9 +55,15 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_WorldViewProjBuffer = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_Texture = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 
 	UINT m_IndicesCount = 0;
+    UINT m_VerticesCount = 0;
 	UINT m_VertexBufferStride = 0;
+
+    wavefront::DrawType m_drawType = wavefront::DrawType::DrawIndexed;
 };
 
 #include "GraphicsComponent.hpp"

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GraphicsComponent.h"
 #include "renderer.h"
+#include "WICTextureLoader.h"
 
 GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {
@@ -27,6 +28,9 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
     context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
     context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 
+    if (m_Texture)
+        context->PSSetShaderResources(0, 1, m_Texture.GetAddressOf());
+
 	UINT startIndexLocation = 0;
 	UINT baseVertexLocation = 0;
 
@@ -34,14 +38,17 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
     {
         context->DrawIndexedInstanced(
             m_IndicesCount,         // Number of indices read from the index buffer for each instance. 
-            instanceCount,                  // Number of instances to draw
+            instanceCount,          // Number of instances to draw
             0,                      // The location of the first index read by the GPU from the index buffer
             0,                      // A value added to each index before reading a vertex from the vertex buffer
             0);                     // A value added to each index before reading per-instance data from a vertex buffer
     }
     else
     {
-        context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
+        if (m_drawType == wavefront::DrawType::Draw)
+            context->Draw(m_VerticesCount, 0);
+        else
+            context->DrawIndexed(m_IndicesCount, startIndexLocation, baseVertexLocation);
     }
 }
 
@@ -111,6 +118,24 @@ void GraphicsComponent::SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11
 	context->IASetPrimitiveTopology(topology);
 }
 
+void GraphicsComponent::SetSamplerState(ID3D11DeviceContext* context)
+{
+    if(m_SamplerState)
+        context->PSSetSamplers(0, 1, m_SamplerState.GetAddressOf());
+}
+
+void GraphicsComponent::SetDrawType(wavefront::DrawType drawType)
+{
+    m_drawType = drawType;
+}
+
+void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texturePath)
+{
+    THROW_IF_FAILED(
+        DirectX::CreateWICTextureFromFile(device, texturePath, nullptr, m_Texture.ReleaseAndGetAddressOf())
+    );
+}
+
 void GraphicsComponent::ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices)
 {
     D3D11_MAPPED_SUBRESOURCE mappedResource = {};
@@ -161,6 +186,13 @@ void GraphicsComponent::ChangeWorldViewProjBufferData(ID3D11DeviceContext* conte
     memcpy(mappedSubresource.pData, &worldViewProj, sizeof(WorldViewProj));
 
     context->Unmap(m_WorldViewProjBuffer.Get(), 0);
+}
+
+void GraphicsComponent::InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc)
+{
+    THROW_IF_FAILED(
+        device->CreateSamplerState(&desc, m_SamplerState.GetAddressOf())
+    );
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

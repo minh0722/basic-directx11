@@ -10,17 +10,19 @@ cbuffer ConstBuffer : register(b0)
 struct VertexInput
 {
 	float3 pos : POSITION;
+    float2 uv : TEXCOORD0;
 };
 
-struct PixelOutput
+struct VertexOutput
 {
 	float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
 	float4 color : COLOR;
 };
 
-PixelOutput main(VertexInput inputVertex, uint vertexId : SV_VertexID)
+VertexOutput main(VertexInput inputVertex, uint vertexId : SV_VertexID)
 {
-	PixelOutput output;
+	VertexOutput output;
 
 	output.pos = mul(world, float4(inputVertex.pos, 1.0f));
 	output.pos = mul(view, output.pos);
@@ -36,6 +38,8 @@ PixelOutput main(VertexInput inputVertex, uint vertexId : SV_VertexID)
         output.color = float4(0.0f, 1.0f, 0.0f, 1.0f);
     else
         output.color = float4(0.0f, 0.0f, 1.0f, 1.0f);
+
+    output.uv = inputVertex.uv;
 
     return output;
 }
