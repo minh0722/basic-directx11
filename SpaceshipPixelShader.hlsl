@@ -10,5 +10,5 @@ SamplerState wrapSampler : register(s0);
 
 float4 main(InputPixel inputPixel) : SV_TARGET
 {
-	return inputPixel.color;
+    return checkerboardTexture.Sample(wrapSampler, inputPixel.uv);
 }

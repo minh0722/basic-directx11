@@ -732,7 +732,7 @@ void Renderer::SetupSpaceShip()
 
     vertexShaderInputLayout[1].SemanticName = "TEXCOORD";
     vertexShaderInputLayout[1].SemanticIndex = 0;
-    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32_UINT;
+    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
     vertexShaderInputLayout[1].InputSlot = 0;
     vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
     vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -742,7 +742,7 @@ void Renderer::SetupSpaceShip()
 	{
 		m_Device.Get(),
 		L"SpaceshipVertexShader.cso",
-		L"pixelShader.cso",
+		L"SpaceshipPixelShader.cso",
         std::move(vertexShaderInputLayout)
 	};
 
@@ -764,17 +764,16 @@ void Renderer::SetupSpaceShip()
 	
     graphicsComponent->LoadTexture(m_Device.Get(), L"../../../assets/uv-checkerboard.png");
 
-    //D3D11_SAMPLER_DESC samplerDesc;
-    //samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    //samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    //samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    //samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    //samplerDesc.MinLOD = 0;
-    //samplerDesc.MaxLOD = 15;
-    //samplerDesc.MipLODBias = 0;
-    //samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-    //memset(&samplerDesc.BorderColor[0], 0, 4 * sizeof(float));
-    //graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
+	D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    samplerDesc.MipLODBias = 0;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
 
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 
@@ -795,6 +794,8 @@ void Renderer::SetupSpaceShipForRender(InputClass* input)
 	GraphicsComponent* graphicComponent = m_SpaceShip.GetGraphicsComponent();
 
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	graphicComponent->SetSamplerState(m_DeviceContext.Get());
 
 	if (hasInput)
 	{
