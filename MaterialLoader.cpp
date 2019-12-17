@@ -61,21 +61,21 @@ namespace wavefront
 
 			if (StringEqual(buf, "Ka"))
 			{
-				Vector3<float>& ambient = obj.ambient;
+				Vector4f& ambient = obj.ambient;
 				is >> ambient[0] >> ambient[1] >> ambient[2];
 				IgnoreLine(is);
 				gotAmbient = true;
 			}
 			else if (StringEqual(buf, "Kd"))
 			{
-				Vector3<float>& diffuse = obj.diffuse;
+				Vector4f& diffuse = obj.diffuse;
 				is >> diffuse[0] >> diffuse[1] >> diffuse[2];
 				IgnoreLine(is);
 				gotDiffuse = true;
 			}
 			else if (StringEqual(buf, "Ks"))
 			{
-				Vector3<float>& specular = obj.specular;
+				Vector4f& specular = obj.specular;
 				is >> specular[0] >> specular[1] >> specular[2];
 				IgnoreLine(is);
 				gotSpecular = true;

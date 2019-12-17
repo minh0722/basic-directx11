@@ -38,7 +38,7 @@ public:
     template <typename VertexBufferType>
     void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices, uint32_t materialID);
 
-    void AddMaterial(uint32_t materialID, wavefront::Material material);
+    void AddMaterial(ID3D11Device* device, uint32_t materialID, wavefront::Material material);
 
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
     void SetSamplerState(ID3D11DeviceContext* context);
@@ -75,7 +75,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 
     std::unordered_map<uint32_t, Batch> m_VertexBatches;
-    std::unordered_map<uint32_t, wavefront::Material> m_Materials;
+    std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>> m_MaterialBuffers;
 
     UINT m_IndicesCount = 0;        // for non batched geometry
     UINT m_VerticesCount = 0;

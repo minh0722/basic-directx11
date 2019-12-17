@@ -36,6 +36,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
             context->IASetVertexBuffers(startSlot, numBuffers, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
             context->IASetInputLayout(m_VertexInputLayout.Get());
             context->VSSetConstantBuffers(0, 1, m_WorldViewProjBuffer.GetAddressOf());
+            context->PSSetConstantBuffers(0, 1, m_MaterialBuffers[materialID].GetAddressOf());
 
             if (isInstanceRendering)
             {
@@ -165,9 +166,24 @@ void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texture
     );
 }
 
-void GraphicsComponent::AddMaterial(uint32_t materialID, wavefront::Material material)
+void GraphicsComponent::AddMaterial(ID3D11Device* device, uint32_t materialID, wavefront::Material material)
 {
-    m_Materials[materialID] = material;
+    D3D11_BUFFER_DESC desc = {};
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.ByteWidth = sizeof(wavefront::Material);
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+    desc.StructureByteStride = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = &material;
+
+    Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
+
+    THROW_IF_FAILED(device->CreateBuffer(&desc, &initData, buffer.GetAddressOf()));
+
+    m_MaterialBuffers[materialID] = buffer;
 }
 
 //void GraphicsComponent::ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices)

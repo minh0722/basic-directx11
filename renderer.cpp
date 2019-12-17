@@ -755,7 +755,7 @@ void Renderer::SetupSpaceShip()
     {
         uint32_t materialID = it->first;
         graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer, materialID);
-        graphicsComponent->AddMaterial(materialID, result.materials[materialID]);
+        graphicsComponent->AddMaterial(m_Device.Get(), materialID, result.materials[materialID]);
     }
 
     graphicsComponent->SetDrawType(result.drawType);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector3.h"
+#include "Vector4f.h"
 #include <map>
 
 namespace wavefront
@@ -9,9 +10,9 @@ namespace wavefront
 
 	struct Material
 	{
-		Vector3<float> ambient;
-		Vector3<float> diffuse;
-		Vector3<float> specular;
+        Vector4f ambient = {};
+        Vector4f diffuse = {};
+        Vector4f specular = {};
 	};
 
 	class MaterialLoader final
