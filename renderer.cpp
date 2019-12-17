@@ -751,21 +751,12 @@ void Renderer::SetupSpaceShip()
 
 	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
 
-    if (result.drawType == wavefront::DrawType::Draw)
+    for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
     {
-        for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
-        {
-            graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer);
-        }
+        graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer);
+    }
 
-        //graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertexBuffer);
-        graphicsComponent->SetDrawType(result.drawType);
-    }
-    else
-    {
-        graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertices);
-        graphicsComponent->SetIndexBuffer(m_Device.Get(), result.verticesFaces.vertexIndices.data(), result.verticesFaces.vertexIndices.size());
-    }
+    graphicsComponent->SetDrawType(result.drawType);
 	
     graphicsComponent->LoadTexture(m_Device.Get(), L"../../../assets/uv-checkerboard.png");
 

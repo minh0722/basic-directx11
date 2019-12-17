@@ -97,18 +97,6 @@ namespace wavefront
                 result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx1], result.texCoord[texCoordIdx1] });
                 result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx2], result.texCoord[texCoordIdx2] });
                 result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx3], result.texCoord[texCoordIdx3] });
-
-                result.verticesFaces.vertexIndices.push_back(vertexIdx1); 
-                result.verticesFaces.vertexIndices.push_back(vertexIdx2);
-                result.verticesFaces.vertexIndices.push_back(vertexIdx3);
-
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx1);
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx2);
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx3);
-
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx1);
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx2);
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx3);
 			}
 			else if (StringEqual(buf, "usemtl"))
 			{
@@ -134,14 +122,6 @@ namespace wavefront
 
         char buf[256];
         strerror_s(buf, 256, errno);
-
-        if(result.drawType == DrawType::Draw)
-        {
-            for (uint32_t i = 0; i < result.verticesFaces.vertexIndices.size(); ++i)
-            {
-                result.vertexBuffer.push_back(VertexFormat{ result.vertices[result.verticesFaces.vertexIndices[i]], result.texCoord[result.texCoordFaces.vertexIndices[i]] });
-            }
-        }
 
         return result;
     }
@@ -218,10 +198,6 @@ namespace wavefront
 		obj.vertices.reserve(vertexPosCount);
 		obj.texCoord.reserve(uvCoordCount);
 		obj.vertexNormals.reserve(vertexNormalCount);
-        obj.vertexBuffer.reserve(vertexPosCount);
-		obj.verticesFaces.vertexIndices.reserve(faceCount);
-		obj.normalsFaces.vertexIndices.reserve(faceCount);
-		obj.texCoordFaces.vertexIndices.reserve(faceCount);
 
 		// clear eof bit so we can work with the input stream again
 		is.clear();

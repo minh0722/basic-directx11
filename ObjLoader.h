@@ -14,7 +14,6 @@ namespace wavefront
 
 	struct Faces
 	{
-		std::vector<uint32_t> vertexIndices;    // TODO: remove
         std::vector<VertexFormat> vertexBuffer;
 	};
 
@@ -32,10 +31,6 @@ namespace wavefront
         std::vector<Vector3<float>> vertices;
         std::vector<Vector3<float>> vertexNormals;
         std::vector<Vector2<float>> texCoord;
-        std::vector<VertexFormat> vertexBuffer;     // to remove, we keep in each face
-		Faces verticesFaces;                        // to remove, we keep faces per material below in the map
-		Faces normalsFaces;                         // same
-		Faces texCoordFaces;                        // same
 		std::string materialFileName;
         DrawType drawType;
 
