@@ -6,17 +6,17 @@
 
 namespace wavefront
 {
-	struct Faces
-	{
-		std::vector<uint32_t> vertexIndices;
-		uint32_t materialId;
-	};
-
     struct VertexFormat
     {
         Vector3<float> vertex;
         Vector2<float> texcoord;
     };
+
+	struct Faces
+	{
+		std::vector<uint32_t> vertexIndices;    // TODO: remove
+        std::vector<VertexFormat> vertexBuffer;
+	};
 
     enum DrawType
     {
@@ -32,13 +32,14 @@ namespace wavefront
         std::vector<Vector3<float>> vertices;
         std::vector<Vector3<float>> vertexNormals;
         std::vector<Vector2<float>> texCoord;
-        std::vector<VertexFormat> vertexBuffer;
-		Faces verticesFaces;
-		Faces normalsFaces;
-		Faces texCoordFaces;
+        std::vector<VertexFormat> vertexBuffer;     // to remove, we keep in each face
+		Faces verticesFaces;                        // to remove, we keep faces per material below in the map
+		Faces normalsFaces;                         // same
+		Faces texCoordFaces;                        // same
 		std::string materialFileName;
         DrawType drawType;
 
+        std::map<uint32_t, Faces> perMaterialFaces;
 		std::map<uint32_t, Material> materials;
     };
 

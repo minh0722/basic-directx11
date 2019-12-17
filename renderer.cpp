@@ -753,7 +753,12 @@ void Renderer::SetupSpaceShip()
 
     if (result.drawType == wavefront::DrawType::Draw)
     {
-        graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertexBuffer);
+        for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
+        {
+            graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer);
+        }
+
+        //graphicsComponent->SetVertexBuffer(m_Device.Get(), result.vertexBuffer);
         graphicsComponent->SetDrawType(result.drawType);
     }
     else

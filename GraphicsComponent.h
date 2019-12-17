@@ -3,6 +3,14 @@
 #include "BaseComponent.h"
 #include "ObjLoader.h"
 
+struct Batch
+{
+    Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
+    UINT verticesCount;
+    UINT vertexBufferStride;
+    UINT indicesCount;
+};
+
 class GraphicsComponent : public BaseComponent
 {
 public:
@@ -23,15 +31,19 @@ public:
 	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1) override;
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
 	void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount) override;
+    
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
+    template <typename VertexBufferType>
+    void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
+
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
     void SetSamplerState(ID3D11DeviceContext* context);
     void SetDrawType(wavefront::DrawType drawType);
     void LoadTexture(ID3D11Device* device, const wchar_t* texturePath);
 
-    void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
-    void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
+    //void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
+    //void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
     void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
 
     void InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc);
@@ -49,7 +61,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> m_PixelShader = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_VertexBuffer = nullptr;          // for non batched geometry
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_IndexBuffer = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_WorldViewProjBuffer = nullptr;
@@ -59,9 +71,11 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 
-	UINT m_IndicesCount = 0;
+    std::vector<Batch> m_vertexBufferBatches;
+
+    UINT m_IndicesCount = 0;        // for non batched geometry
     UINT m_VerticesCount = 0;
-	UINT m_VertexBufferStride = 0;
+    UINT m_VertexBufferStride = 0;
 
     wavefront::DrawType m_drawType = wavefront::DrawType::DrawIndexed;
 };

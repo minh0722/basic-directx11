@@ -90,24 +90,32 @@ namespace wavefront
 				is >> vertexNormalIdx3;
 				IgnoreLine(is);
 
-                result.verticesFaces.vertexIndices.push_back(vertexIdx1 - 1); 
-                result.verticesFaces.vertexIndices.push_back(vertexIdx2 - 1);
-                result.verticesFaces.vertexIndices.push_back(vertexIdx3 - 1);
+                --vertexIdx1;  --texCoordIdx1; --vertexNormalIdx1;
+                --vertexIdx2;  --texCoordIdx2; --vertexNormalIdx2;
+                --vertexIdx3;  --texCoordIdx3; --vertexNormalIdx3;
 
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx1 - 1);
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx2 - 1);
-                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx3 - 1);
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx1], result.texCoord[texCoordIdx1] });
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx2], result.texCoord[texCoordIdx2] });
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx3], result.texCoord[texCoordIdx3] });
 
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx1 - 1);
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx2 - 1);
-                result.texCoordFaces.vertexIndices.push_back(texCoordIdx3 - 1);
+                result.verticesFaces.vertexIndices.push_back(vertexIdx1); 
+                result.verticesFaces.vertexIndices.push_back(vertexIdx2);
+                result.verticesFaces.vertexIndices.push_back(vertexIdx3);
+
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx1);
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx2);
+                result.normalsFaces.vertexIndices.push_back(vertexNormalIdx3);
+
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx1);
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx2);
+                result.texCoordFaces.vertexIndices.push_back(texCoordIdx3);
 			}
 			else if (StringEqual(buf, "usemtl"))
 			{
 				is.get();
 				is.get(buf, 256, '\n');
 				currentFaceMaterialCrc = crc32_fast(buf, strlen(buf));
-
+                result.perMaterialFaces[currentFaceMaterialCrc];
 			}
 			else
 			{
@@ -115,7 +123,7 @@ namespace wavefront
 			}
         }
 
-        if (result.verticesFaces.vertexIndices.size() == result.texCoordFaces.vertexIndices.size())
+        if (result.vertices.size() == result.texCoord.size())
         {
             result.drawType = DrawType::DrawIndexed;
         }
