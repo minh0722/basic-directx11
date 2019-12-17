@@ -29,9 +29,10 @@ namespace wavefront
 		uint32_t currentFaceMaterialCrc = 0;
 
         // find minimum bounding box
-        float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::min();
-        float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::min();
-        float minZ = std::numeric_limits<float>::max(), maxZ = std::numeric_limits<float>::min();
+		const float MAX_FLOAT = std::numeric_limits<float>::max();
+		const float MIN_FLOAT = std::numeric_limits<float>::min();
+		Vector3<float> min(MAX_FLOAT, MAX_FLOAT, MAX_FLOAT);
+		Vector3<float> max(MIN_FLOAT, MIN_FLOAT, MIN_FLOAT);
 
         while (!is.eof() && !is.fail())
         {
@@ -64,9 +65,9 @@ namespace wavefront
                 is >> x >> y >> z;
                 result.vertices.push_back(Vector3<float>(x, y, z));
 
-                minX = std::min(minX, x); maxX = std::max(maxX, x);
-                minY = std::min(minY, y); maxY = std::max(maxY, y);
-                minZ = std::min(minZ, z); maxZ = std::max(maxZ, z);
+                min.x = std::min(min.x, x); max.x = std::max(max.x, x);
+                min.y = std::min(min.y, y); max.y = std::max(max.y, y);
+                min.z = std::min(min.z, z); max.z = std::max(max.z, z);
 
                 continue;
             }

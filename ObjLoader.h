@@ -8,8 +8,17 @@ namespace wavefront
 {
     struct AABB
     {
-        Vector4f center;
-        Vector4f halfVec;
+		AABB(const Vector3<float>& min, const Vector3<float>& max)
+		{
+			Vector3<float> c = (min + max) / 2.0f;
+
+			m_center = Vector4f(c.x, c.y, c.z, 0.0f);
+
+
+		}
+
+        Vector4f m_center;
+        Vector4f m_halfVec;
     };
 
     struct VertexFormat

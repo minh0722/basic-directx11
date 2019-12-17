@@ -12,6 +12,7 @@ public:
 	Vector3<T>(const Vector3<T>& other);
 	Vector3<T>& operator=(const Vector3<T>& other);
 	Vector3<T> operator-(const Vector3<T>& other) const;
+	Vector3<T> operator+(const Vector3<T>& other) const;
 	Vector3<T> operator/(T num) const;
 	Vector3<T>& operator*=(const T num);
 	Vector3<T>& operator+=(const T num);
@@ -75,6 +76,15 @@ Vector3<T> Vector3<T>::operator-(const Vector3<T>& other) const
 		m_Values[0] - other.m_Values[0],
 		m_Values[1] - other.m_Values[1],
 		m_Values[2] - other.m_Values[2]);
+}
+
+template <typename T>
+Vector3<T> Vector3<T>::operator+(const Vector3<T>& other) const
+{
+	return Vector3<T>(
+		m_Values[0] + other.m_Values[0],
+		m_Values[1] + other.m_Values[1],
+		m_Values[2] + other.m_Values[2]);
 }
 
 template <typename T>
