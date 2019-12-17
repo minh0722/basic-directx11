@@ -3,6 +3,7 @@
 #include "MaterialLoader.h"
 #include "extern/fastcrc32/Crc32.h"
 
+#include <limits>
 #include <cassert>
 
 namespace wavefront
@@ -26,6 +27,11 @@ namespace wavefront
 		MaterialLoader::Parse(result);
 
 		uint32_t currentFaceMaterialCrc = 0;
+
+        // find minimum bounding box
+        float minX = std::numeric_limits<float>::max(), maxX = std::numeric_limits<float>::min();
+        float minY = std::numeric_limits<float>::max(), maxY = std::numeric_limits<float>::min();
+        float minZ = std::numeric_limits<float>::max(), maxZ = std::numeric_limits<float>::min();
 
         while (!is.eof() && !is.fail())
         {
@@ -57,6 +63,11 @@ namespace wavefront
                 is.get();
                 is >> x >> y >> z;
                 result.vertices.push_back(Vector3<float>(x, y, z));
+
+                minX = std::min(minX, x); maxX = std::max(maxX, x);
+                minY = std::min(minY, y); maxY = std::max(maxY, y);
+                minZ = std::min(minZ, z); maxZ = std::max(maxZ, z);
+
                 continue;
             }
             else if (StringEqual(buf, "vn"))
@@ -119,9 +130,6 @@ namespace wavefront
         {
             result.drawType = DrawType::Draw;
         }
-
-        char buf[256];
-        strerror_s(buf, 256, errno);
 
         return result;
     }

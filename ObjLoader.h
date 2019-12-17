@@ -6,6 +6,12 @@
 
 namespace wavefront
 {
+    struct AABB
+    {
+        Vector4f center;
+        Vector4f halfVec;
+    };
+
     struct VertexFormat
     {
         Vector3<float> vertex;
@@ -33,6 +39,7 @@ namespace wavefront
         std::vector<Vector2<float>> texCoord;
 		std::string materialFileName;
         DrawType drawType;
+        AABB boundingBox;
 
         std::map<uint32_t, Faces> perMaterialFaces;
 		std::map<uint32_t, Material> materials;

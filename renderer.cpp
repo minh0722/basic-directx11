@@ -749,7 +749,7 @@ void Renderer::SetupSpaceShip()
 	GraphicsComponent* graphicsComponent = new GraphicsComponent(desc);
 	graphicsComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft6.obj");
+	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft4.obj");
 
     for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
     {
