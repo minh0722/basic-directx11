@@ -26,11 +26,14 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
 	UINT startSlot = 0;
 	UINT numBuffers = 1;
 
-    if (m_vertexBufferBatches.size() > 0)
+    if (m_VertexBatches.size() > 0)
     {
-        for (uint32_t i = 0; i < m_vertexBufferBatches.size(); ++i)
+        for (auto it = m_VertexBatches.begin(); it != m_VertexBatches.end(); ++it)
         {
-            context->IASetVertexBuffers(startSlot, numBuffers, m_vertexBufferBatches[i].vertexBuffer.GetAddressOf(), &m_vertexBufferBatches[i].vertexBufferStride, &offset);
+            const uint32_t materialID = it->first;
+            const Batch& batch = it->second;
+
+            context->IASetVertexBuffers(startSlot, numBuffers, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
             context->IASetInputLayout(m_VertexInputLayout.Get());
             context->VSSetConstantBuffers(0, 1, m_WorldViewProjBuffer.GetAddressOf());
 
@@ -46,7 +49,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
             else
             {
                 if (m_drawType == wavefront::DrawType::Draw)
-                    context->Draw(m_vertexBufferBatches[i].verticesCount, 0);
+                    context->Draw(batch.verticesCount, 0);
                 else
                     context->DrawIndexed(m_IndicesCount, 0, 0);
             }
@@ -160,6 +163,11 @@ void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texture
     THROW_IF_FAILED(
         DirectX::CreateWICTextureFromFile(device, texturePath, nullptr, m_Texture.ReleaseAndGetAddressOf())
     );
+}
+
+void GraphicsComponent::AddMaterial(uint32_t materialID, wavefront::Material material)
+{
+    m_Materials[materialID] = material;
 }
 
 //void GraphicsComponent::ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices)

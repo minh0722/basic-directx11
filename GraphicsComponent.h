@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "BaseComponent.h"
 #include "ObjLoader.h"
+#include "MaterialLoader.h"
 
 struct Batch
 {
@@ -35,7 +36,9 @@ public:
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
     template <typename VertexBufferType>
-    void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
+    void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices, uint32_t materialID);
+
+    void AddMaterial(uint32_t materialID, wavefront::Material material);
 
 	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
     void SetSamplerState(ID3D11DeviceContext* context);
@@ -71,7 +74,8 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 
-    std::vector<Batch> m_vertexBufferBatches;
+    std::unordered_map<uint32_t, Batch> m_VertexBatches;
+    std::unordered_map<uint32_t, wavefront::Material> m_Materials;
 
     UINT m_IndicesCount = 0;        // for non batched geometry
     UINT m_VerticesCount = 0;

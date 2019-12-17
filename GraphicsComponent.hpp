@@ -26,7 +26,7 @@ void GraphicsComponent::SetVertexBuffer(ID3D11Device* device, const std::vector<
 }
 
 template <typename VertexBufferType>
-void GraphicsComponent::AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices)
+void GraphicsComponent::AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices, uint32_t materialID)
 {
     UINT verticesCount = (UINT)vertices.size();
     UINT vertexBufferStride = sizeof(VertexBufferType);
@@ -50,5 +50,5 @@ void GraphicsComponent::AddVertexBatch(ID3D11Device* device, const std::vector<V
             &initData,
             buffer.GetAddressOf()));
 
-    m_vertexBufferBatches.push_back({buffer, verticesCount, vertexBufferStride});
+    m_VertexBatches[materialID] = Batch{buffer, verticesCount, vertexBufferStride};
 }
