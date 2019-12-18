@@ -759,6 +759,7 @@ void Renderer::SetupSpaceShip()
     }
 
     graphicsComponent->SetDrawType(result.drawType);
+    graphicsComponent->SetBoundingBox(result.boundingBox);
 	
     graphicsComponent->LoadTexture(m_Device.Get(), L"../../../assets/uv-checkerboard.png");
 

@@ -159,6 +159,11 @@ void GraphicsComponent::SetDrawType(wavefront::DrawType drawType)
     m_drawType = drawType;
 }
 
+void GraphicsComponent::SetBoundingBox(const wavefront::AABB& boundingBox)
+{
+    m_BoundingBox = boundingBox;
+}
+
 void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texturePath)
 {
     THROW_IF_FAILED(

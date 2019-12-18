@@ -123,6 +123,8 @@ namespace wavefront
 			}
         }
 
+        result.boundingBox.Set(min, max);
+
         if (result.vertices.size() == result.texCoord.size())
         {
             result.drawType = DrawType::DrawIndexed;
