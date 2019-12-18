@@ -25,6 +25,7 @@ public:
 
 private:
     void Setup3DBoxBuffers(ID3D11Device* device);
+	void Change3DBoxBuffers(ID3D11DeviceContext* context);
 
 private:
     static DebugDisplay* ms_DebudDisplay;

@@ -3,10 +3,14 @@
 
 class Matrix44f;
 
+template<typename T>
+class Vector3;
+
 class Vector4f
 {
 public:
     Vector4f() {}
+	Vector4f(const Vector3<float>& v, float w);
 	Vector4f(float x, float y, float z, float w);
 	Vector4f(const Vector4f& other);
     Vector4f(const DirectX::XMVECTOR& other);

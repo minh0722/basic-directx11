@@ -1,5 +1,14 @@
 #include "Vector4f.h"
 #include "Matrix44f.h"
+#include "Vector3.h"
+
+Vector4f::Vector4f(const Vector3<float>& v, float w)
+{
+	m_fValues[0] = v.x;
+	m_fValues[1] = v.y;
+	m_fValues[2] = v.z;
+	m_fValues[2] = w;
+}
 
 Vector4f::Vector4f(float x, float y, float z, float w)
 {

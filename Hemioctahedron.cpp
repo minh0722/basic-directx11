@@ -135,7 +135,7 @@ void Hemioctahedron::triangulateLastLevel(int idx1, int idx2, int idx3)
     Vector4f x23 = Vector4f((x2.x + x3.x) / 2.0f, (x2.y + x3.y) / 2.0f, (x2.z + x3.z) / 2.0f, 1.0f);
     Vector2f x23NormCoord = (m_vertices[idx2].m_normalizedMappingCoord + m_vertices[idx3].m_normalizedMappingCoord) / 2.0f;
 
-    int idx23 = m_vertices.size();
+    uint32_t idx23 = m_vertices.size();
     m_vertices.push_back({ x23, x23NormCoord });
 
     m_indices.push_back(idx1);
