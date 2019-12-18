@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="..\BaseComponent.h" />
     <ClInclude Include="..\Camera.h" />
+    <ClInclude Include="..\DebugDisplay.h" />
     <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp" />
+    <ClCompile Include="..\DebugDisplay.cpp" />
     <ClCompile Include="..\experimental\renderer1.cpp" />
     <ClCompile Include="..\extern\fastcrc32\Crc32.cpp" />
     <ClCompile Include="..\GraphicsComponent.cpp" />

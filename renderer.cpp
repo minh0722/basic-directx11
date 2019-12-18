@@ -361,6 +361,11 @@ void Renderer::SetupCube()
         m_Device.Get(),
         vertices);
     
+    wavefront::AABB boundingBox;
+    boundingBox.Set(Vector3<float>(0.0f, 0.0f, 0.0f), Vector3<float>(1.0f, 1.0f, 1.0f));
+
+    graphicComponent->SetBoundingBox(boundingBox);
+
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
 		{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
@@ -423,6 +428,10 @@ void Renderer::SetupAxis()
         m_Device.Get(),
         vertices
     );
+
+    wavefront::AABB boundingBox;
+    boundingBox.Set(Vector3<float>(0.0f, 0.0f, 0.0f), Vector3<float>(5.0f, 5.0f, 5.0f));
+    graphicComponent->SetBoundingBox(boundingBox);
 
 	graphicComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),
@@ -585,6 +594,10 @@ void Renderer::SetupSphereMesh()
 		vertices
 	);
 
+    wavefront::AABB boundingBox;
+    boundingBox.Set(Vector3<float>(-radius, -radius, -radius), Vector3<float>(radius, radius, radius));
+    graphicComponent->SetBoundingBox(boundingBox);
+
 	graphicComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),
 		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
@@ -647,6 +660,10 @@ void Renderer::SetupOctahedronMesh()
         m_Device.Get(),
         vertices
     );
+
+    wavefront::AABB boundingBox;
+    boundingBox.Set(Vector3<float>(-radius, -radius, -radius), Vector3<float>(radius, radius, radius));
+    graphicComponent->SetBoundingBox(boundingBox);
 
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
@@ -711,6 +728,10 @@ void Renderer::SetupHemioctahedronMesh()
         m_Device.Get(),
         vertices
     );
+
+    wavefront::AABB boundingBox;
+    boundingBox.Set(Vector3<float>(-radius, 0.0f, -radius), Vector3<float>(radius, radius, radius));
+    graphicComponent->SetBoundingBox(boundingBox);
 
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
