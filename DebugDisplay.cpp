@@ -46,7 +46,7 @@ void DebugDisplay::Setup3DBoxesRenderState(ID3D11Device* device)
     D3D11_INPUT_ELEMENT_DESC desc[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-        { "INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 0}
+        { "INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
     };
 
     ID3DBlob* blob;
@@ -107,14 +107,14 @@ void DebugDisplay::Update3DBoxBuffers(ID3D11DeviceContext* context)
 		const auto& box3D = m_3DBoxes[i];
 		Vector4f buffer[12 * 2];
 		
-		Vector4f a = Vector4f(box3D.m_center + box3D.m_extent, 0.0f);
-		Vector4f b = a - Vector4f(2.0f * box3D.m_extent.x, 0.0f, 0.0f, 0.0f);
-		Vector4f c = b - Vector4f(0.0f, 0.0f, 2.0f * box3D.m_extent.z, 0.0f);
-		Vector4f d = a - Vector4f(0.0f, 0.0f, 2.0f * box3D.m_extent.z, 0.0f);
-		Vector4f e = a - Vector4f(0.0f, 2.0f * box3D.m_extent.y, 0.0f, 0.0f);
-		Vector4f f = e - Vector4f(2.0f * box3D.m_extent.x, 0.0f, 0.0f, 0.0f);
-		Vector4f g = f - Vector4f(0.0f, 0.0f, 2.0f * box3D.m_extent.z, 0.0f);
-		Vector4f h = e - Vector4f(0.0f, 0.0f, 2.0f * box3D.m_extent.z, 0.0f);
+		Vector4f a = Vector4f(box3D.m_center + box3D.m_extent, 1.0f);
+		Vector4f b = Vector4f(a.XYZ() - Vector3<float>(2.0f * box3D.m_extent.x, 0.0f, 0.0f), 1.0f);
+		Vector4f c = Vector4f(b.XYZ() - Vector3<float>(0.0f, 0.0f, 2.0f * box3D.m_extent.z), 1.0f);
+		Vector4f d = Vector4f(a.XYZ() - Vector3<float>(0.0f, 0.0f, 2.0f * box3D.m_extent.z), 1.0f);
+		Vector4f e = Vector4f(a.XYZ() - Vector3<float>(0.0f, 2.0f * box3D.m_extent.y, 0.0f), 1.0f);
+		Vector4f f = Vector4f(e.XYZ() - Vector3<float>(2.0f * box3D.m_extent.x, 0.0f, 0.0f), 1.0f);
+		Vector4f g = Vector4f(f.XYZ() - Vector3<float>(0.0f, 0.0f, 2.0f * box3D.m_extent.z), 1.0f);
+		Vector4f h = Vector4f(e.XYZ() - Vector3<float>(0.0f, 0.0f, 2.0f * box3D.m_extent.z), 1.0f);
 
 		int32_t j = -1;
 		buffer[++j] = a; buffer[++j] = b;
@@ -144,10 +144,11 @@ void DebugDisplay::Update3DBoxBuffers(ID3D11DeviceContext* context)
     for (uint32_t i = 0; i < m_3DBoxesCount; ++i)
     {
         const Debug3DBox& box = m_3DBoxes[i];
-        DirectX::XMMATRIX world = DirectX::XMMatrixTranslation(box.m_pos.x, box.m_pos.y, box.m_pos.z);
         
-        memcpy(mappedResource.pData, &world, sizeof(DirectX::XMMATRIX));
-        mappedResource.pData = (uint8_t*)mappedResource.pData + sizeof(DirectX::XMMATRIX);
+		Vector4f position(box.m_pos, 0.0f);
+
+        memcpy(mappedResource.pData, &position, sizeof(Vector4f));
+        mappedResource.pData = (uint8_t*)mappedResource.pData + sizeof(Vector4f);
     }
     context->Unmap(m_3DBoxesInstanceBuffer.Get(), 0);
 }

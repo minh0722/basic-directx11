@@ -6,11 +6,6 @@ cbuffer ConstBuffer : register(b0)
     matrix proj;
 };
 
-cbuffer InstanceBuffer
-{
-    float4 positions[1024];
-}
-
 struct VertexInput
 {
     float4 pos : POSITION;
@@ -22,11 +17,11 @@ struct PixelOutput
     float4 color : COLOR;
 };
 
-PixelOutput main(VertexInput inputVertex, uint instanceID : SV_InstanceID)
+PixelOutput main(VertexInput inputVertex, float4 instancePos : INSTANCEPOS0, uint instanceID : SV_InstanceID)
 {
     PixelOutput output;
     
-    output.pos = positions[instanceID] + inputVertex.pos;
+    output.pos = instancePos + inputVertex.pos;
     output.pos = mul(view, output.pos);
     output.pos = mul(proj, output.pos);
 

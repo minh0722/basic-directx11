@@ -7,7 +7,7 @@ Vector4f::Vector4f(const Vector3<float>& v, float w)
 	m_fValues[0] = v.x;
 	m_fValues[1] = v.y;
 	m_fValues[2] = v.z;
-	m_fValues[2] = w;
+	m_fValues[3] = w;
 }
 
 Vector4f::Vector4f(float x, float y, float z, float w)
