@@ -96,6 +96,11 @@ bool Vector4f::operator==(const Vector4f& other) const
     return x == other.x && y == other.y && z == other.z && w == other.w;
 }
 
+bool Vector4f::operator!=(const Vector4f& other) const
+{
+    return !(*this == other);
+}
+
 Vector4f Vector4f::CrossProduct(const Vector4f& other) const
 {
     return Vector4f(

@@ -25,6 +25,8 @@ public:
 
     void Render(Renderer* renderer);
 
+    void OnNewFrame();
+
 private:
     void Setup3DBoxesRenderState(ID3D11Device* device);
     void Setup3DBoxBuffers(ID3D11Device* device);

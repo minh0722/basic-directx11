@@ -42,7 +42,6 @@ void Renderer::Initialize(HWND window)
 	SetupSphereMesh();
     SetupOctahedronMesh();
     SetupHemioctahedronMesh();
-    SetupSphereMesh();
 
 	SetupSpaceShip();
 
@@ -56,6 +55,7 @@ void Renderer::Initialize(HWND window)
 
 void Renderer::Render(InputClass* input)
 {
+    m_DebugDisplay->OnNewFrame();
     m_Camera.UpdateCameraMatrices();
 
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };

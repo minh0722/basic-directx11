@@ -184,3 +184,8 @@ void DebugDisplay::Render(Renderer* renderer)
 
     context->DrawInstanced(12 * 2, m_3DBoxesCount, 0, 0);
 }
+
+void DebugDisplay::OnNewFrame()
+{
+    m_3DBoxesCount = 0;
+}
