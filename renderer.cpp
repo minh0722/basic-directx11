@@ -87,6 +87,8 @@ void Renderer::Render(InputClass* input)
 	SetupSpaceShipForRender(input);
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
+    m_DebugDisplay->Render(this);
+
 	m_SwapChain->Present(0, 0);
 }
 
