@@ -144,8 +144,7 @@ void DebugDisplay::Update3DBoxBuffers(ID3D11DeviceContext* context)
     for (uint32_t i = 0; i < m_3DBoxesCount; ++i)
     {
         const Debug3DBox& box = m_3DBoxes[i];
-        DirectX::XMMATRIX world;
-        DirectX::XMMatrixTranslation(box.m_pos.x, box.m_pos.y, box.m_pos.z);
+        DirectX::XMMATRIX world = DirectX::XMMatrixTranslation(box.m_pos.x, box.m_pos.y, box.m_pos.z);
         
         memcpy(mappedResource.pData, &world, sizeof(DirectX::XMMATRIX));
         mappedResource.pData = (uint8_t*)mappedResource.pData + sizeof(DirectX::XMMATRIX);
