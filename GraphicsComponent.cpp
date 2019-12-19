@@ -80,6 +80,8 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
                 context->DrawIndexed(m_IndicesCount, 0, 0);
         }
     }
+
+    DebugDisplay::GetDebugDisplay().Draw3DBox()
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)

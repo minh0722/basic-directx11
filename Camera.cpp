@@ -118,15 +118,13 @@ void Camera::ZoomCamera(ZoomType zoom, int zoomThreshHold)
 	//OUTPUT_DEBUG("Camera position: %f %f %f %f\n", m_Position.m128_f32[0], m_Position.m128_f32[1], m_Position.m128_f32[2], m_Position.m128_f32[3]);
 }
 
-DirectX::XMMATRIX Camera::GetViewMatrix()
+DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
-	UpdateCameraMatrices();
 	return m_ViewMatrix;
 }
 
-DirectX::XMMATRIX Camera::GetProjectionMatrix()
+DirectX::XMMATRIX Camera::GetProjectionMatrix() const
 {
-	UpdateCameraMatrices();
 	return m_PerspectiveProjectionMatrix;
 }
 

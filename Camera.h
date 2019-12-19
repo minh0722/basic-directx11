@@ -18,10 +18,9 @@ public:
     void Rotate(RotationAxis axis, float degree);
 	void ZoomCamera(ZoomType zoom, int zoomThreshHold = 1);
     	
-    DirectX::XMMATRIX GetViewMatrix();
-	DirectX::XMMATRIX GetProjectionMatrix();
+    DirectX::XMMATRIX GetViewMatrix() const;
+	DirectX::XMMATRIX GetProjectionMatrix() const;
 
-private:
 	void UpdateCameraMatrices();
 
 private:

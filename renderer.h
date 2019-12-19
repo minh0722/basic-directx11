@@ -5,6 +5,7 @@
 #include "Vector4f.h"
 
 class InputClass;
+class DebugDisplay;
 
 struct Vertex
 {
@@ -60,6 +61,7 @@ public:
 
     ID3D11Device* GetDevice();
     ID3D11DeviceContext* GetContext();
+    const Camera& GetCamera();
 
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
@@ -98,6 +100,7 @@ private:
 
 private:
     static Renderer* ms_Instance;
+    DebugDisplay* m_DebugDisplay;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;

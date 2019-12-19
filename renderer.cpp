@@ -6,6 +6,7 @@
 #include "ObjLoader.h"
 #include "Octahedron.h"
 #include "Hemioctahedron.h"
+#include "DebugDisplay.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
@@ -22,6 +23,7 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+    delete m_DebugDisplay;
 }
 
 void Renderer::Initialize(HWND window)
@@ -47,10 +49,15 @@ void Renderer::Initialize(HWND window)
     LARGE_INTEGER freq;
     QueryPerformanceFrequency(&freq);
     long long f = freq.QuadPart;
+
+    m_DebugDisplay = new DebugDisplay(m_Device.Get(), m_DeviceContext.Get());
+    DebugDisplay::SetDebugDisplay(m_DebugDisplay);
 }
 
 void Renderer::Render(InputClass* input)
 {
+    m_Camera.UpdateCameraMatrices();
+
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -91,6 +98,11 @@ ID3D11Device* Renderer::GetDevice()
 ID3D11DeviceContext* Renderer::GetContext()
 {
     return m_DeviceContext.Get();
+}
+
+const Camera& Renderer::GetCamera()
+{
+    return m_Camera;
 }
 
 void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)

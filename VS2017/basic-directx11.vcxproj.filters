@@ -159,5 +159,6 @@
     <FxCompile Include="..\CubeInstancing_Vs.hlsl" />
     <FxCompile Include="..\SpaceshipVertexShader.hlsl" />
     <FxCompile Include="..\SpaceshipPixelShader.hlsl" />
+    <FxCompile Include="..\debugdisplay3dbox.hlsl" />
   </ItemGroup>
 </Project>
