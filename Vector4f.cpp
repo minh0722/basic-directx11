@@ -165,3 +165,8 @@ Vector4f Vector4f::Abs() const
         abs(w)
     };
 }
+
+Vector3<float> Vector4f::XYZ() const
+{
+    return Vector3<float>(x, y, z);
+}

@@ -37,6 +37,8 @@ public:
 
     Vector4f Abs() const;
 
+    Vector3<float> XYZ() const;
+
 public:
     union
     {

@@ -44,6 +44,7 @@ public:
     void SetSamplerState(ID3D11DeviceContext* context);
     void SetDrawType(wavefront::DrawType drawType);
     void SetBoundingBox(const wavefront::AABB& boundingBox);
+    void SetWorldPosition(Vector4f pos);
     void LoadTexture(ID3D11Device* device, const wchar_t* texturePath);
 
     //void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
@@ -84,6 +85,7 @@ private:
 
     wavefront::DrawType m_drawType = wavefront::DrawType::DrawIndexed;
     wavefront::AABB m_BoundingBox;
+    Vector4f m_WorldPosition;
 };
 
 #include "GraphicsComponent.hpp"

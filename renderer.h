@@ -66,12 +66,13 @@ public:
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;
 
+    void SetRasterizerState(D3D11_FILL_MODE fillMode = D3D11_FILL_SOLID, D3D11_CULL_MODE cullMode = D3D11_CULL_BACK);
+
 private:
 	void InitDeviceSwapChainAndDeviceContext(HWND window);
 	void InitRenderTargetView(IDXGISwapChain* swapChain);
 	void InitDepthStencilBufferAndView();
 	void InitDepthStencilState();
-	void InitRasterizerState(D3D11_FILL_MODE fillMode = D3D11_FILL_SOLID, D3D11_CULL_MODE cullMode = D3D11_CULL_BACK);
 	void InitViewPort();
 
 	void SetupTriangle();

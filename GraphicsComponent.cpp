@@ -2,6 +2,7 @@
 #include "GraphicsComponent.h"
 #include "renderer.h"
 #include "WICTextureLoader.h"
+#include "DebugDisplay.h"
 
 GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {
@@ -81,7 +82,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
         }
     }
 
-    //DebugDisplay::GetDebugDisplay().Draw3DBox()
+    DebugDisplay::GetDebugDisplay().Draw3DBox(m_WorldPosition.XYZ(), m_BoundingBox.m_center.XYZ(), m_BoundingBox.m_halfVec.XYZ());
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
@@ -164,6 +165,11 @@ void GraphicsComponent::SetDrawType(wavefront::DrawType drawType)
 void GraphicsComponent::SetBoundingBox(const wavefront::AABB& boundingBox)
 {
     m_BoundingBox = boundingBox;
+}
+
+void GraphicsComponent::SetWorldPosition(Vector4f pos)
+{
+    m_WorldPosition = pos;
 }
 
 void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texturePath)

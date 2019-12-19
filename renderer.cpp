@@ -62,28 +62,28 @@ void Renderer::Render(InputClass* input)
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	InitRasterizerState(D3D11_FILL_SOLID);
+	SetRasterizerState(D3D11_FILL_SOLID);
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupPrimitiveForRender(input);
 	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
 	SetupPrimitiveForRender(input, Line);
     m_Axis.Render(m_DeviceContext.Get());
 	
-	InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
+	SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
 	SetupPrimitiveForRender(input, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
 
-    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_BACK);
+    SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_BACK);
     SetupPrimitiveForRender(input, Octahedral);
     m_OctahedronMesh.Render(m_DeviceContext.Get());
     
-    InitRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
+    SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
     SetupPrimitiveForRender(input, Hemioctahedral);
     m_HemioctahedronMesh.Render(m_DeviceContext.Get());
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
-	InitRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
+	SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
 	SetupSpaceShipForRender(input);
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
@@ -235,7 +235,7 @@ void Renderer::InitDepthStencilState()
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
-void Renderer::InitRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, D3D11_CULL_MODE cullMode /*= D3D11_CULL_BACK*/)
+void Renderer::SetRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, D3D11_CULL_MODE cullMode /*= D3D11_CULL_BACK*/)
 {
 	D3D11_RASTERIZER_DESC desc = {};
 	desc.AntialiasedLineEnable = false;
@@ -355,7 +355,8 @@ void Renderer::SetupCube()
         { { 0.0f, 1.0f, 1.0f, 1.0f }, green }
     };
     
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+    Vector4f worldPos(1.0f, 0.0f, 2.0f, 0.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
         
 	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -377,6 +378,7 @@ void Renderer::SetupCube()
     boundingBox.Set(Vector3<float>(0.0f, 0.0f, 0.0f), Vector3<float>(1.0f, 1.0f, 1.0f));
 
     graphicComponent->SetBoundingBox(boundingBox);
+    graphicComponent->SetWorldPosition(worldPos);
 
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
@@ -426,8 +428,9 @@ void Renderer::SetupAxis()
         { { 0.0f, 0.0f, 0.0f, 1.0f }, blue },       // z
         { { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
     };
-	    
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+    Vector4f worldPos(0.f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 	
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -444,6 +447,7 @@ void Renderer::SetupAxis()
     wavefront::AABB boundingBox;
     boundingBox.Set(Vector3<float>(0.0f, 0.0f, 0.0f), Vector3<float>(5.0f, 5.0f, 5.0f));
     graphicComponent->SetBoundingBox(boundingBox);
+    graphicComponent->SetWorldPosition(worldPos);
 
 	graphicComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),
@@ -592,7 +596,8 @@ void Renderer::SetupSphereMesh()
 		}
 	}
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    Vector4f worldPos(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
 	GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -609,6 +614,7 @@ void Renderer::SetupSphereMesh()
     wavefront::AABB boundingBox;
     boundingBox.Set(Vector3<float>(-radius, -radius, -radius), Vector3<float>(radius, radius, radius));
     graphicComponent->SetBoundingBox(boundingBox);
+    graphicComponent->SetWorldPosition(worldPos);
 
 	graphicComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),
@@ -727,7 +733,8 @@ void Renderer::SetupHemioctahedronMesh()
             vertices.push_back(Vertex(octahedronVertex.m_vertex, green));
     });
 
-    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f);
+    Vector4f worldPos(-50.0f, 0.0f, -50.0f, 0.0f);
+    DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
     graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -744,6 +751,7 @@ void Renderer::SetupHemioctahedronMesh()
     wavefront::AABB boundingBox;
     boundingBox.Set(Vector3<float>(-radius, 0.0f, -radius), Vector3<float>(radius, radius, radius));
     graphicComponent->SetBoundingBox(boundingBox);
+    graphicComponent->SetWorldPosition(worldPos);
 
     graphicComponent->ChangeWorldViewProjBufferData(
         m_DeviceContext.Get(),
@@ -792,7 +800,6 @@ void Renderer::SetupSpaceShip()
     }
 
     graphicsComponent->SetDrawType(result.drawType);
-    graphicsComponent->SetBoundingBox(result.boundingBox);
 	
     graphicsComponent->LoadTexture(m_Device.Get(), L"../../../assets/uv-checkerboard.png");
 
@@ -807,7 +814,11 @@ void Renderer::SetupSpaceShip()
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
     graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+    Vector4f worldPos(0.0f, 0.0f, 5.0f, 0.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+
+    graphicsComponent->SetBoundingBox(result.boundingBox);
+    graphicsComponent->SetWorldPosition(worldPos);
 
 	graphicsComponent->ChangeWorldViewProjBufferData(
 		m_DeviceContext.Get(),

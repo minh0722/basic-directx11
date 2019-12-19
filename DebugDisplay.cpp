@@ -46,11 +46,11 @@ void DebugDisplay::Setup3DBoxesRenderState(ID3D11Device* device)
     D3D11_INPUT_ELEMENT_DESC desc[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 
-        {"INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 0}
+        { "INSTANCEPOS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 0}
     };
 
     ID3DBlob* blob;
-    THROW_IF_FAILED(D3DReadFileToBlob(L"vertexShader.cso", &blob));
+    THROW_IF_FAILED(D3DReadFileToBlob(L"debugdisplay3dbox.cso", &blob));
 
     THROW_IF_FAILED(
         device->CreateInputLayout(
@@ -61,11 +61,11 @@ void DebugDisplay::Setup3DBoxesRenderState(ID3D11Device* device)
             m_3DBoxesInputLayout.GetAddressOf()));
 
     THROW_IF_FAILED(
-        device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_3DBoxVS.GetAddressOf())
+        device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_3DBoxVS.ReleaseAndGetAddressOf())
     );
 
     THROW_IF_FAILED(D3DReadFileToBlob(L"pixelShader.cso", &blob));
-    THROW_IF_FAILED(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_3DBoxPS.GetAddressOf()));
+    THROW_IF_FAILED(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, m_3DBoxPS.ReleaseAndGetAddressOf()));
 }
 
 void DebugDisplay::Setup3DBoxBuffers(ID3D11Device* device)
@@ -164,11 +164,23 @@ void DebugDisplay::Draw3DBox(Vector3<float> pos, Vector3<float> center, Vector3<
 
 void DebugDisplay::Render(Renderer* renderer)
 {
+    ID3D11DeviceContext* context = renderer->GetContext();
+
     UpdateViewProjectionBuffer(renderer);
     Update3DBoxBuffers(renderer->GetContext());
 
-    for (const auto& box3D : m_3DBoxes)
-    {
+    renderer->SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
+    context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+    context->VSSetShader(m_3DBoxVS.Get(), nullptr, 0);
+    context->PSSetShader(m_3DBoxPS.Get(), nullptr, 0);
 
-    }
+    UINT vertexBufferStride = sizeof(Vector4f);
+    UINT instanceBufferStride = sizeof(Vector4f);
+    UINT offset = 0;
+    context->IASetVertexBuffers(0, 1, m_3DBoxesVertexBuffer.GetAddressOf(), &vertexBufferStride, &offset);
+    context->IASetVertexBuffers(1, 1, m_3DBoxesInstanceBuffer.GetAddressOf(), &instanceBufferStride, &offset);
+    context->IASetInputLayout(m_3DBoxesInputLayout.Get());
+    context->VSSetConstantBuffers(0, 1, m_CameraViewProjectionBuffer.GetAddressOf());
+
+    context->DrawInstanced(12 * 2, m_3DBoxesCount, 0, 0);
 }
