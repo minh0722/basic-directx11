@@ -3,6 +3,7 @@
 #include "renderer.h"
 
 DebugDisplay* DebugDisplay::ms_DebudDisplay = nullptr;
+bool DebugDisplay::ms_EnableDebugDisplay = true;
 
 DebugDisplay::DebugDisplay(ID3D11Device* device, ID3D11DeviceContext* context)
 {
@@ -165,6 +166,9 @@ void DebugDisplay::Draw3DBox(Vector3<float> pos, Vector3<float> center, Vector3<
 
 void DebugDisplay::Render(Renderer* renderer)
 {
+    if (!ms_EnableDebugDisplay)
+        return;
+
     ID3D11DeviceContext* context = renderer->GetContext();
 
     UpdateViewProjectionBuffer(renderer);
@@ -186,4 +190,9 @@ void DebugDisplay::Render(Renderer* renderer)
 void DebugDisplay::OnNewFrame()
 {
     m_3DBoxesCount = 0;
+}
+
+void DebugDisplay::ToggleDebugDisplay()
+{
+    ms_EnableDebugDisplay = !ms_EnableDebugDisplay;
 }

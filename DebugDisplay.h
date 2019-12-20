@@ -21,6 +21,8 @@ public:
     static void SetDebugDisplay(DebugDisplay* debugDisplay) { ms_DebudDisplay = debugDisplay; }
     static DebugDisplay& GetDebugDisplay() { return *ms_DebudDisplay; }
 
+    static void ToggleDebugDisplay();
+
     void Draw3DBox(Vector3<float> pos, Vector3<float> center, Vector3<float> extent);
 
     void Render(Renderer* renderer);
@@ -37,6 +39,7 @@ private:
 
 private:
     static DebugDisplay* ms_DebudDisplay;
+    static bool ms_EnableDebugDisplay;
 
     Debug3DBox m_3DBoxes[MAX_ELEMENT];
     uint32_t m_3DBoxesCount = 0;
