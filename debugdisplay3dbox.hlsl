@@ -33,15 +33,21 @@ struct PixelOutput
 
 PixelOutput main(/*VertexInput inputVertex,*/uint vertexID : SV_VertexID, uint instanceID : SV_InstanceID)
 {
-    uint vertexAddress = 12 * 2 * instanceID + vertexID * 4;
+    uint vertexAddress = instanceID * 12 * 2 * 16 + vertexID * 16;
     float4 vertexPos = asfloat(VertexBuffer.Load4(vertexAddress));
 
     uint instanceWorldMatrixAddress = instanceID * 16 * 4;  // 16 floats per matrix * 4 bytes per float
+
+    float4 c0 = asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress));
+    float4 c1 = asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 16));
+    float4 c2 = asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 32));
+    float4 c3 = asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 48));
+
     matrix worldMatrix = {
-        asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress)),
-        asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 16)),
-        asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 32)),
-        asfloat(InstanceBuffer.Load4(instanceWorldMatrixAddress + 48))
+        float4(c0.x, c1.x, c2.x, c3.x),
+        float4(c0.y, c1.y, c2.y, c3.y),
+        float4(c0.z, c1.z, c2.z, c3.z),
+        float4(c0.w, c1.w, c2.w, c3.w)
     };
 
     PixelOutput output;

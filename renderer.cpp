@@ -431,7 +431,7 @@ void Renderer::SetupAxis()
         { { 0.0f, 0.0f, 5.0f, 1.0f }, blue }
     };
 
-    Vector4f worldPos(0.f, 0.0f, 0.0f, 0.0f);
+    Vector4f worldPos(0.0f, 0.0f, 0.0f, 0.0f);
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 	
     GraphicsComponent* graphicComponent = new GraphicsComponent(desc);
@@ -856,9 +856,12 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Tria
 
 	if (prim == Triangle)
 	{
-		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(1.0f, 0.0f, 2.0f);
+        Vector4f pos(1.0f, 0.0f, 2.0f, 1.0f);
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 		GraphicsComponent* graphicComponent = m_Cube.GetGraphicsComponent();
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        graphicComponent->SetWorldPosition(pos);
 
 		if (hasInput)
 		{
@@ -869,9 +872,12 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Tria
 	}
 	else if(prim == Line)
 	{
-		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+        Vector4f pos(0.0f, 0.0f, 0.0f, 1.0f);
+		DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 		GraphicsComponent* graphicComponent = m_Axis.GetGraphicsComponent();
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+        graphicComponent->SetWorldPosition(pos);
 
 		if (hasInput)
 		{
@@ -882,13 +888,23 @@ void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Tria
 	}
 	else if(prim == Sphere || prim == Octahedral || prim == Hemioctahedral)
 	{
-		DirectX::XMMATRIX worldMatrix = prim == Sphere ? DirectX::XMMatrixTranslation(20.0f, 0.0f, -20.0f) : ( prim == Octahedral ? DirectX::XMMatrixTranslation(0.0, 0.0, 0.0f) : DirectX::XMMatrixTranslation(-50.0f, 0.0f, -50.0f));
+        Vector4f pos;
+        if (prim == Sphere)
+            pos = Vector4f(20.0f, 0.0, -20.0f, 1.0f);
+        else if (prim == Octahedral)
+            pos = Vector4f(-10.0f, 0.0f, 0.0f, 1.0f);
+        else
+            pos = Vector4f(-50.0f, 0.0f, -50.0f, 1.0f);
+
+        DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 
         //DirectX::XMMATRIX rotation = DirectX::XMMatrixRotationRollPitchYaw(PI / 20, 0, PI / 20);
         //if (prim == Octahedral) worldMatrix = DirectX::XMMatrixMultiply(worldMatrix, rotation);
 
 		GraphicsComponent* graphicComponent = prim == Sphere ? m_SphereMesh.GetGraphicsComponent() : (prim == Octahedral ? m_OctahedronMesh.GetGraphicsComponent() : m_HemioctahedronMesh.GetGraphicsComponent());
 		graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        graphicComponent->SetWorldPosition(pos);
 
 		if (hasInput)
 		{
