@@ -888,7 +888,7 @@ void Renderer::SetupPrimitiveForRender(bool hasInput, Primitive prim/*= Triangle
         if (prim == Sphere)
             pos = Vector4f(20.0f, 0.0, -20.0f, 1.0f);
         else if (prim == Octahedral)
-            pos = Vector4f(-10.0f, 0.0f, 0.0f, 1.0f);
+            pos = Vector4f(-20.0f, 0.0f, 0.0f, 1.0f);
         else
             pos = Vector4f(-50.0f, 0.0f, -50.0f, 1.0f);
 
