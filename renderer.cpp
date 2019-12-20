@@ -55,6 +55,7 @@ void Renderer::Initialize(HWND window)
 
 void Renderer::Render(InputClass* input)
 {
+    bool hasInput = onInput(input, m_Camera);
     m_DebugDisplay->OnNewFrame();
     m_Camera.UpdateCameraMatrices();
 
@@ -64,27 +65,27 @@ void Renderer::Render(InputClass* input)
 
 	SetRasterizerState(D3D11_FILL_SOLID);
 	//m_Triangle.Render(m_DeviceContext.Get());
-    SetupPrimitiveForRender(input);
+    SetupPrimitiveForRender(hasInput);
 	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
-	SetupPrimitiveForRender(input, Line);
+	SetupPrimitiveForRender(hasInput, Line);
     m_Axis.Render(m_DeviceContext.Get());
 	
 	SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
-	SetupPrimitiveForRender(input, Sphere);
+	SetupPrimitiveForRender(hasInput, Sphere);
 	m_SphereMesh.Render(m_DeviceContext.Get());
 
     SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_BACK);
-    SetupPrimitiveForRender(input, Octahedral);
+    SetupPrimitiveForRender(hasInput, Octahedral);
     m_OctahedronMesh.Render(m_DeviceContext.Get());
     
     SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
-    SetupPrimitiveForRender(input, Hemioctahedral);
+    SetupPrimitiveForRender(hasInput, Hemioctahedral);
     m_HemioctahedronMesh.Render(m_DeviceContext.Get());
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
 	SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
-	SetupSpaceShipForRender(input);
+	SetupSpaceShipForRender(hasInput);
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
     m_DebugDisplay->Render(this);
@@ -829,11 +830,8 @@ void Renderer::SetupSpaceShip()
 	m_SpaceShip.AddComponent(graphicsComponent);
 }
 
-void Renderer::SetupSpaceShipForRender(InputClass* input)
+void Renderer::SetupSpaceShipForRender(bool hasInput)
 {
-	bool hasInput = onInput(input, m_Camera);
-
-
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, -20.0f);
 
 	GraphicsComponent* graphicComponent = m_SpaceShip.GetGraphicsComponent();
@@ -850,10 +848,8 @@ void Renderer::SetupSpaceShipForRender(InputClass* input)
 	}
 }
 
-void Renderer::SetupPrimitiveForRender(InputClass* input, Primitive prim/*= Triangle*/)
-{		
-	bool hasInput = onInput(input, m_Camera);
-
+void Renderer::SetupPrimitiveForRender(bool hasInput, Primitive prim/*= Triangle*/)
+{
 	if (prim == Triangle)
 	{
         Vector4f pos(1.0f, 0.0f, 2.0f, 1.0f);

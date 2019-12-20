@@ -92,8 +92,8 @@ private:
         Hemioctahedral
 	};
 
-    void SetupPrimitiveForRender(InputClass* input, Primitive prim = Triangle);
-	void SetupSpaceShipForRender(InputClass* input);
+    void SetupPrimitiveForRender(bool hasInput, Primitive prim = Triangle);
+	void SetupSpaceShipForRender(bool hasInput);
 
 	bool onInput(InputClass* input, Camera& camera);
 
