@@ -1016,7 +1016,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
     }
     else if (input->IsRotating())
     {
-        Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.05f;
+        Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.10f;
         camera.Rotate(RotationAxis::Yaw, rotDir[0]);
         camera.Rotate(RotationAxis::Pitch, rotDir[1]);
         return true;
