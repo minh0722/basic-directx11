@@ -143,7 +143,7 @@ void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 			nullptr,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
-            0,
+            D3D11_CREATE_DEVICE_DEBUG,
 			feature,
 			ARRAYSIZE(feature),
 			D3D11_SDK_VERSION,

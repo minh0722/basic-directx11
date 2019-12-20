@@ -46,7 +46,9 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_3DBoxesVertexBuffer;
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_3DBoxesInstanceBuffer;
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> m_3DBoxesInputLayout;
+
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_3DBoxesVertexSRV;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_3DBoxesInstanceSRV;
 
     Microsoft::WRL::ComPtr<ID3D11Buffer> m_CameraViewProjectionBuffer;
 };
