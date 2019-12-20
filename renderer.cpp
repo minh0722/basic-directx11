@@ -832,13 +832,16 @@ void Renderer::SetupSpaceShip()
 
 void Renderer::SetupSpaceShipForRender(bool hasInput)
 {
-	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(0.0f, 0.0f, -20.0f);
+    Vector4f pos(0.0f, 0.0f, -20.0f, 1.0f);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 
 	GraphicsComponent* graphicComponent = m_SpaceShip.GetGraphicsComponent();
 
 	graphicComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	graphicComponent->SetSamplerState(m_DeviceContext.Get());
+
+    graphicComponent->SetWorldPosition(pos);
 
 	if (hasInput)
 	{
