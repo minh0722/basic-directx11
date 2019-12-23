@@ -923,6 +923,8 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 	float threshHold = 0.05f;
 	
+	bool hasInput = false;
+
 	if (input->IsKeyDown('W'))
 	{
 		DirectX::XMVECTOR moveForwardVec = DirectX::XMVectorSet(0.0f, 0.0f, threshHold, 0.0f);
@@ -930,107 +932,107 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 				
 		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
 		
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('S'))
+	if (input->IsKeyDown('S'))
 	{
 		DirectX::XMVECTOR moveBackwardVec = DirectX::XMVectorSet(0.0f, 0.0f, -threshHold, 0.0f);
 		camera.MoveCameraWorldAxisAligned(moveBackwardVec);
 
 		//OUTPUT_DEBUG("%f %f %f %f\n", camPos.m128_f32[0], camPos.m128_f32[1], camPos.m128_f32[2], camPos.m128_f32[3]);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('A'))
+	if (input->IsKeyDown('A'))
 	{
 		DirectX::XMVECTOR moveLeftVec = DirectX::XMVectorSet(-threshHold, 0.0f, 0.0f, 0.0f);
 		camera.MoveCameraWorldAxisAligned(moveLeftVec);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('D'))
+	if (input->IsKeyDown('D'))
 	{
 		DirectX::XMVECTOR moveRightVec = DirectX::XMVectorSet(threshHold, 0.0f, 0.0f, 0.0f);
 		camera.MoveCameraWorldAxisAligned(moveRightVec);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('Q'))
+	if (input->IsKeyDown('Q'))
 	{
 		camera.Rotate(RotationAxis::Yaw, -threshHold);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('E'))
+	if (input->IsKeyDown('E'))
 	{
 		camera.Rotate(RotationAxis::Yaw, threshHold);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('R'))
+	if (input->IsKeyDown('R'))
 	{
 		camera.Rotate(RotationAxis::Pitch, -threshHold);
 		
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('F'))
+	if (input->IsKeyDown('F'))
 	{
 		camera.Rotate(RotationAxis::Pitch, threshHold);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('T'))
+	if (input->IsKeyDown('T'))
 	{
 		camera.Rotate(RotationAxis::Roll, 0.01f);
 
-		return true;
+		hasInput = true;
 	}
-	else if (input->IsKeyDown('G'))
+	if (input->IsKeyDown('G'))
 	{
 		camera.Rotate(RotationAxis::Roll, -0.01f);
 
-		return true;
+		hasInput = true;
 	}
-    else if (input->IsKeyDown('B'))
+    if (input->IsKeyDown('B'))
     {
         DebugDisplay::ToggleDebugDisplay();
-        return false;
+        hasInput = false;
     }
 	else if (input->IsKeyDown(VK_UP))
 	{
 		DirectX::XMVECTOR moveUpVec = DirectX::XMVectorSet(0.0, threshHold, 0.0f, 0.0f);
 		camera.MoveCameraWorldAxisAligned(moveUpVec);
 
-		return true;
+		hasInput = true;
 	}
 	else if (input->IsKeyDown(VK_DOWN))
 	{
 		DirectX::XMVECTOR moveDownVec = DirectX::XMVectorSet(0.0f, -threshHold, 0.0f, 0.0f);
 		camera.MoveCameraWorldAxisAligned(moveDownVec);
 
-		return true;
+		hasInput = true;
 	}
 	else if (input->MouseWheelMoved())
 	{
 		camera.ZoomCamera(input->GetMouseWheelDelta() < 0 ? ZoomType::ZoomOut : ZoomType::ZoomIn);
-		return true;
+		hasInput = true;
 	}
     else if (input->IsPanning())
     {
         Vector2<float> panDir = input->GetPanningDirection().ToFloatVec() * 0.05f;
         DirectX::XMVECTOR panningVec = DirectX::XMVectorSet((float)panDir[0], (float)panDir[1], 0.0f, 0.0f);
         camera.MoveCameraOrientationAxisAligned(panningVec);
-        return true;
+        hasInput = true;
     }
     else if (input->IsRotating())
     {
         Vector2<float> rotDir = input->GetRotatingDirection().ToFloatVec() * 0.10f;
         camera.Rotate(RotationAxis::Yaw, rotDir[0]);
         camera.Rotate(RotationAxis::Pitch, rotDir[1]);
-        return true;
+        hasInput = true;
     }
 
-	return false;
+	return hasInput;
 }
 
 bool Renderer::TestCubeRotation(InputClass* input, float& xRotation, float& yRotation, float& zRotation)
