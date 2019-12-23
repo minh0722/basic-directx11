@@ -137,22 +137,32 @@ void Renderer::InitDeviceSwapChainAndDeviceContext(HWND window)
 	// don't set the advanced flag
 	swapChainDesc.Flags = 0;
 
-	const D3D_FEATURE_LEVEL feature[] = { D3D_FEATURE_LEVEL_11_1 };
+	const D3D_FEATURE_LEVEL feature[] = { 
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0
+	};
 
-	THROW_IF_FAILED(
-		D3D11CreateDeviceAndSwapChain(
-			nullptr,
-			D3D_DRIVER_TYPE_HARDWARE,
-			nullptr,
-            D3D11_CREATE_DEVICE_DEBUG,
-			feature,
-			ARRAYSIZE(feature),
-			D3D11_SDK_VERSION,
-			&swapChainDesc,
-			m_SwapChain.GetAddressOf(),
-			m_Device.GetAddressOf(),
-			nullptr,
-			m_DeviceContext.GetAddressOf()));
+	HRESULT hr = E_FAIL;
+	UINT flags = D3D11_CREATE_DEVICE_DEBUG;
+	while (hr != S_OK)
+	{
+		hr = D3D11CreateDeviceAndSwapChain(
+				nullptr,
+				D3D_DRIVER_TYPE_HARDWARE,
+				nullptr,
+				flags,
+				feature,
+				ARRAYSIZE(feature),
+				D3D11_SDK_VERSION,
+				&swapChainDesc,
+				m_SwapChain.GetAddressOf(),
+				m_Device.GetAddressOf(),
+				nullptr,
+				m_DeviceContext.GetAddressOf());
+
+		if (hr != S_OK)
+			flags = 0;
+	}
 }
 
 void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
