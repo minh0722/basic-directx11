@@ -993,13 +993,13 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 	}
 	if (input->IsKeyDown('T'))
 	{
-		camera.Rotate(RotationAxis::Roll, 0.01f);
+		camera.Rotate(RotationAxis::Roll, threshHold);
 
 		hasInput = true;
 	}
 	if (input->IsKeyDown('G'))
 	{
-		camera.Rotate(RotationAxis::Roll, -0.01f);
+		camera.Rotate(RotationAxis::Roll, -threshHold);
 
 		hasInput = true;
 	}
