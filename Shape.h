@@ -8,7 +8,6 @@ class GraphicsComponent;
 class Shape
 {
 public:
-	Shape();
 	~Shape();
 
 	void SetGraphicsComponent(GraphicsComponent* newComponent);
@@ -18,5 +17,5 @@ public:
     GraphicsComponent* GetGraphicsComponent();
 
 private:
-	GraphicsComponent* m_graphicsComponent;
+	GraphicsComponent* m_graphicsComponent = nullptr;
 };

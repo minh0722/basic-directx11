@@ -2,10 +2,6 @@
 #include "Shape.h"
 #include "GraphicsComponent.h"
 
-Shape::Shape()
-{
-}
-
 Shape::~Shape()
 {
     delete m_graphicsComponent;
