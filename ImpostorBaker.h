@@ -16,9 +16,15 @@ public:
 	void Initialize(Renderer* renderer);
 
 private:
-	void InitAtlasRenderTarget(ID3D11Device* device);
+	void InitAtlasRenderTargets(ID3D11Device* device);
+	void InitDepthStencilState(ID3D11Device* device);
 
 private:
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_atlasRTV;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_atlasTexture;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasRTV;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 };
