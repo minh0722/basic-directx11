@@ -321,7 +321,7 @@ void Renderer::SetupTriangle()
 	graphicComponent->SetIndexBuffer(m_Device.Get(), {0, 1, 2});
 	graphicComponent->SetVertexBuffer(m_Device.Get(), vertexBuffer);
 
-	m_Triangle.AddComponent(graphicComponent);
+	m_Triangle.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupCube()
@@ -398,7 +398,7 @@ void Renderer::SetupCube()
         m_DeviceContext.Get(),
 		{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 	
-	m_Cube.AddComponent(graphicComponent);
+	m_Cube.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupAxis()
@@ -467,7 +467,7 @@ void Renderer::SetupAxis()
 		m_DeviceContext.Get(),
 		{worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix()});
 
-    m_Axis.AddComponent(graphicComponent);
+    m_Axis.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupSphereMesh()
@@ -634,7 +634,7 @@ void Renderer::SetupSphereMesh()
 		m_DeviceContext.Get(),
 		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 
-	m_SphereMesh.AddComponent(graphicComponent);
+	m_SphereMesh.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupOctahedronMesh()
@@ -701,7 +701,7 @@ void Renderer::SetupOctahedronMesh()
         m_DeviceContext.Get(),
         { worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 
-    m_OctahedronMesh.AddComponent(graphicComponent);
+    m_OctahedronMesh.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupHemioctahedronMesh()
@@ -771,7 +771,7 @@ void Renderer::SetupHemioctahedronMesh()
         m_DeviceContext.Get(),
         { worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 
-    m_HemioctahedronMesh.AddComponent(graphicComponent);
+    m_HemioctahedronMesh.SetGraphicsComponent(graphicComponent);
 }
 
 void Renderer::SetupSpaceShip()
@@ -838,7 +838,7 @@ void Renderer::SetupSpaceShip()
 		m_DeviceContext.Get(),
 		{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 
-	m_SpaceShip.AddComponent(graphicsComponent);
+	m_SpaceShip.SetGraphicsComponent(graphicsComponent);
 }
 
 void Renderer::SetupSpaceShipForRender(bool hasInput)

@@ -86,6 +86,11 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
         DebugDisplay::GetDebugDisplay().Draw3DBox(m_WorldPosition.XYZ(), m_BoundingBox.m_center.XYZ(), m_BoundingBox.m_halfVec.XYZ());
 }
 
+void GraphicsComponent::BakeImpostor()
+{
+
+}
+
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)
 {
     m_IndicesCount = (UINT)indices.size();

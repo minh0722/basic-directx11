@@ -1,6 +1,5 @@
 #pragma once
 #include "pch.h"
-#include "BaseComponent.h"
 #include "ObjLoader.h"
 #include "MaterialLoader.h"
 
@@ -12,7 +11,7 @@ struct Batch
     UINT indicesCount;
 };
 
-class GraphicsComponent : public BaseComponent
+class GraphicsComponent
 {
 public:
 	struct GraphicsComponentDesc
@@ -29,9 +28,10 @@ public:
 
 	GraphicsComponent(const GraphicsComponentDesc& desc);
 
-	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1) override;
-	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices) override;
-	void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount) override;
+	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1);
+    void BakeImpostor();
+	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices);
+	void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount);
     
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
@@ -40,7 +40,7 @@ public:
 
     void AddMaterial(ID3D11Device* device, uint32_t materialID, wavefront::Material material);
 
-	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology) override;
+	void SetPrimitiveTopology(ID3D11DeviceContext* context, D3D11_PRIMITIVE_TOPOLOGY topology);
     void SetSamplerState(ID3D11DeviceContext* context);
     void SetDrawType(wavefront::DrawType drawType);
     void SetBoundingBox(const wavefront::AABB& boundingBox);

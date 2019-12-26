@@ -2,7 +2,6 @@
 
 #include "vector"
 
-class BaseComponent;
 class Id3d11DeviceContext;
 class GraphicsComponent;
 
@@ -12,11 +11,12 @@ public:
 	Shape();
 	~Shape();
 
-	void AddComponent(BaseComponent* newComponent);
+	void SetGraphicsComponent(GraphicsComponent* newComponent);
 	void Render(ID3D11DeviceContext* context, bool isInstancing = false, uint32_t instanceCount = 1);
+	void BakeImpostor();
 
     GraphicsComponent* GetGraphicsComponent();
 
 private:
-	std::vector<BaseComponent*> m_Components;
+	GraphicsComponent* m_graphicsComponent;
 };

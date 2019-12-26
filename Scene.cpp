@@ -121,7 +121,7 @@ void Scene::AddCube()
         vertices
     );
 
-    cube->AddComponent(graphicComponent);
+    cube->SetGraphicsComponent(graphicComponent);
 
     m_SceneObjects.push_back(cube);
 }
