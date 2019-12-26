@@ -3,6 +3,7 @@
 #include "Shape.h"
 #include "Camera.h"
 #include "Vector4f.h"
+#include "ImpostorBaker.h"
 
 class InputClass;
 class DebugDisplay;
@@ -123,6 +124,7 @@ private:
     Shape m_HemioctahedronMesh;
 
     Camera m_Camera;
+	ImpostorBaker m_ImpostorBaker;
 };
 
 #define g_Renderer Renderer::GetInstance()

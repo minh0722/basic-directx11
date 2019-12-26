@@ -51,6 +51,7 @@ void Renderer::Initialize(HWND window)
 
     m_DebugDisplay = new DebugDisplay(m_Device.Get(), m_DeviceContext.Get());
     DebugDisplay::SetDebugDisplay(m_DebugDisplay);
+	m_ImpostorBaker.Initialize(this);
 }
 
 void Renderer::Render(InputClass* input)
