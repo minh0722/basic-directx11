@@ -1,18 +1,20 @@
 #include "ImpostorBaker.h"
 #include "renderer.h"
 
+const uint32_t ImpostorBaker::ms_atlasViewCount;
+const uint32_t ImpostorBaker::ms_atlasDimension;
+
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
 	InitAtlasRenderTargets(renderer->GetDevice());
+	InitDepthStencilState(renderer->GetDevice());
 }
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 {
-	uint32_t dimension = 4098;
-
 	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Width = dimension;
-	desc.Height = dimension;
+	desc.Width = ms_atlasDimension;
+	desc.Height = ms_atlasDimension;
 	desc.MipLevels = 0;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;

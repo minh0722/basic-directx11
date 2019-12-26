@@ -20,6 +20,9 @@ private:
 	void InitDepthStencilState(ID3D11Device* device);
 
 private:
+	static const uint32_t ms_atlasViewCount = 10;
+	static const uint32_t ms_atlasDimension = 4096;
+
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
 
@@ -27,4 +30,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasRTV;
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+
+	D3D11_VIEWPORT viewports[ms_atlasViewCount][ms_atlasViewCount];
 };
