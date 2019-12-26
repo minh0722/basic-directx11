@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Shape.h"
-#include "BaseComponent.h"
 #include "GraphicsComponent.h"
 
 Shape::Shape()
