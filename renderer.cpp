@@ -93,6 +93,8 @@ void Renderer::Render(InputClass* input)
 
     m_DebugDisplay->Render(this);
 
+	//m_ImpostorBaker.Bake(m_DeviceContext.Get());
+
 	m_SwapChain->Present(0, 0);
 }
 

@@ -1,7 +1,8 @@
 #include "ImpostorBaker.h"
 #include "renderer.h"
+#include "Vector2.h"
 
-const uint32_t ImpostorBaker::ms_atlasViewCount;
+const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
@@ -44,7 +45,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	THROW_IF_FAILED(
-		device->CreateDepthStencilView(m_depthAtlasTexture.Get(), &depthStencilViewDesc, m_depthAtlasRTV.GetAddressOf())
+		device->CreateDepthStencilView(m_depthAtlasTexture.Get(), &depthStencilViewDesc, m_depthAtlasDSV.GetAddressOf())
 	);
 }
 
@@ -62,4 +63,52 @@ void ImpostorBaker::InitDepthStencilState(ID3D11Device* device)
 			&depthStencilDesc,
 			m_depthStencilState.ReleaseAndGetAddressOf()));
 
+}
+
+void ImpostorBaker::Bake(ID3D11DeviceContext* context)
+{
+	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	context->ClearRenderTargetView(m_albedoAtlasRTV.Get(), clearColor);
+	context->ClearDepthStencilView(m_depthAtlasDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
+	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
+
+	float framesMinusOne = (float)ms_atlasFramesCount - 1;
+
+	for (float y = 0; y < ms_atlasFramesCount; ++y)
+	for (float x = 0; x < ms_atlasFramesCount; ++x)
+	{
+		Vector2<float> vec(
+			x / framesMinusOne * 2.0f - 1.0f, 
+			y / framesMinusOne * 2.0f - 1.0f);
+
+		Vector3<float> ray = OctahedralCoordToVector(vec);
+		ray = ray.Normalize();
+
+		SetViewport(context, x, y);
+	}
+}
+
+Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
+{
+	Vector3<float> n(vec.x, vec.y, 1.0f - std::abs(vec.x) - std::abs(vec.y));
+	float t = std::clamp(-n.y, 0.0f, 1.0f);
+	n.x += n.x >= 0.0f ? -t : t;
+	n.z += n.z >= 0.0f ? -t : t;
+	return n;
+}
+
+void ImpostorBaker::SetViewport(ID3D11DeviceContext* context, float x, float y)
+{
+	float viewDimension = (float)ms_atlasDimension / (float)ms_atlasFramesCount;
+
+	D3D11_VIEWPORT desc = {};
+	desc.Width = viewDimension;
+	desc.Height = viewDimension;
+	desc.MinDepth = 0.0f;
+	desc.MaxDepth = 1.0f;
+	desc.TopLeftX = x * viewDimension;
+	desc.TopLeftY = y * viewDimension;
+
+	context->RSSetViewports(1, &desc);
 }
