@@ -16,14 +16,16 @@ public:
 	Vector3<T> operator/(T num) const;
 	Vector3<T>& operator*=(const T num);
 	Vector3<T>& operator+=(const T num);
+	Vector3<T> operator-() const;
 	Vector3<T> CrossProduct(const Vector3<T>& other) const;
 	T DotProduct(const Vector3<T>& other) const;
 
 	T& operator[](uint16_t index);
 	T operator[](uint16_t index) const;
 
-
-	//T GetLength() const;
+	Vector3<T> Normalize();
+	T Length();
+	
 
 public:
 	union
@@ -117,6 +119,12 @@ Vector3<T>& Vector3<T>::operator+=(const T num)
 }
 
 template <typename T>
+Vector3<T> Vector3<T>::operator-() const
+{
+	return Vector3<float>(-x, -y, -z);
+}
+
+template <typename T>
 Vector3<T> Vector3<T>::CrossProduct(const Vector3<T>& other) const
 {
 	return Vector3<T>(
@@ -146,4 +154,17 @@ T Vector3<T>::operator[](uint16_t index) const
 {
 	assert(index < 3);
 	return m_Values[index];
+}
+
+template <typename T>
+Vector3<T> Vector3<T>::Normalize()
+{
+	T len = Length();
+	return Vector3(x / len, y / len, z / len);
+}
+
+template <typename T>
+T Vector3<T>::Length()
+{
+	return sqrt(x * x + y * y + z * z);
 }
