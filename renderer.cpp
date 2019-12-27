@@ -33,7 +33,6 @@ void Renderer::Initialize(HWND window)
     InitDepthStencilBufferAndView();
     InitDepthStencilState();
 	InitRenderTargetView(m_SwapChain.Get());
-	InitViewPort();
 		
 	SetupTriangle();
 	SetupCube();
@@ -63,6 +62,9 @@ void Renderer::Render(InputClass* input)
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
+	SetViewPort();
 
 	SetRasterizerState(D3D11_FILL_SOLID);
 	//m_Triangle.Render(m_DeviceContext.Get());
@@ -180,8 +182,6 @@ void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 			backBufferTexture.Get(),
 			nullptr,
 			m_RenderTargetView.ReleaseAndGetAddressOf()));
-
-	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
 }
 
 void Renderer::InitDepthStencilBufferAndView()
@@ -245,8 +245,6 @@ void Renderer::InitDepthStencilState()
 		m_Device->CreateDepthStencilState(
 			&depthStencilDesc,
 			m_DepthStencilState.ReleaseAndGetAddressOf()));
-
-	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 }
 
 void Renderer::SetRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, D3D11_CULL_MODE cullMode /*= D3D11_CULL_BACK*/)
@@ -268,7 +266,7 @@ void Renderer::SetRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, 
 	m_DeviceContext->RSSetState(m_RasterizerState.Get());
 }
 
-void Renderer::InitViewPort()
+void Renderer::SetViewPort()
 {
 	D3D11_VIEWPORT desc = {};
 	desc.TopLeftX = 0.0f;

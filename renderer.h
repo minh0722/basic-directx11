@@ -74,7 +74,7 @@ private:
 	void InitRenderTargetView(IDXGISwapChain* swapChain);
 	void InitDepthStencilBufferAndView();
 	void InitDepthStencilState();
-	void InitViewPort();
+	void SetViewPort();
 
 	void SetupTriangle();
 	void SetupCube();
