@@ -4,6 +4,7 @@
 #include "Vector4f.h"
 
 class Renderer;
+class GraphicsComponent;
 
 template <typename T>
 class Vector2;
@@ -17,27 +18,26 @@ struct Snapshot
 class ImpostorBaker
 {
 public:
-	void Initialize(Renderer* renderer);
-
-	void Bake(ID3D11DeviceContext* context);
+	static void Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent);
+	static void Initialize(Renderer* renderer);
 
 private:
-	void InitAtlasRenderTargets(ID3D11Device* device);
-	void InitDepthStencilState(ID3D11Device* device);
+	static void InitAtlasRenderTargets(ID3D11Device* device);
+	static void InitDepthStencilState(ID3D11Device* device);
 
-	void SetViewport(ID3D11DeviceContext* context, float x, float y);
+	static void SetViewport(ID3D11DeviceContext* context, float x, float y);
 
-	Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
+	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
 
 private:
 	static const uint32_t ms_atlasFramesCount = 10;
 	static const uint32_t ms_atlasDimension = 4096;
 
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
+	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
+	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
+	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
+	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
 
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 };

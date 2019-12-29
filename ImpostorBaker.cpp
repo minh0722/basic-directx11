@@ -5,6 +5,14 @@
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
 
+Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
+
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
+Microsoft::WRL::ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
+
+Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
+
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
 	InitAtlasRenderTargets(renderer->GetDevice());
@@ -65,7 +73,7 @@ void ImpostorBaker::InitDepthStencilState(ID3D11Device* device)
 
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context)
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	context->ClearRenderTargetView(m_albedoAtlasRTV.Get(), clearColor);
@@ -85,7 +93,10 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context)
 		Vector3<float> ray = OctahedralCoordToVector(vec);
 		ray = ray.Normalize();
 
+
 		SetViewport(context, x, y);
+
+
 	}
 }
 

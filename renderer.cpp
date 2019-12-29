@@ -7,6 +7,7 @@
 #include "Octahedron.h"
 #include "Hemioctahedron.h"
 #include "DebugDisplay.h"
+#include "ImpostorBaker.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
@@ -50,7 +51,8 @@ void Renderer::Initialize(HWND window)
 
     m_DebugDisplay = new DebugDisplay(m_Device.Get(), m_DeviceContext.Get());
     DebugDisplay::SetDebugDisplay(m_DebugDisplay);
-	m_ImpostorBaker.Initialize(this);
+
+	ImpostorBaker::Initialize(this);
 }
 
 void Renderer::Render(InputClass* input)
@@ -93,7 +95,7 @@ void Renderer::Render(InputClass* input)
 
     m_DebugDisplay->Render(this);
 
-	//m_ImpostorBaker.Bake(m_DeviceContext.Get());
+	m_SpaceShip.BakeImpostor(m_DeviceContext.Get());
 
 	m_SwapChain->Present(0, 0);
 }

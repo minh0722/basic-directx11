@@ -17,9 +17,9 @@ void Shape::Render(ID3D11DeviceContext* context, bool isInstancing /*= false*/, 
     m_graphicsComponent->Render(context, isInstancing, instanceCount);
 }
 
-void Shape::BakeImpostor()
+void Shape::BakeImpostor(ID3D11DeviceContext* context)
 {
-    
+    m_graphicsComponent->BakeImpostor(context);
 }
 
 GraphicsComponent* Shape::GetGraphicsComponent()
