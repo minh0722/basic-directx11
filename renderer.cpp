@@ -776,35 +776,19 @@ void Renderer::SetupHemioctahedronMesh()
 
 void Renderer::SetupSpaceShip()
 {
-	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
-	vertexShaderInputLayout[0].SemanticName = "POSITION";
-	vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
-	vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			// format of the input vertex
-	vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
-	vertexShaderInputLayout[0].AlignedByteOffset = 0;
-	vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each triangle)
-	vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
-
-    vertexShaderInputLayout[1].SemanticName = "TEXCOORD";
-    vertexShaderInputLayout[1].SemanticIndex = 0;
-    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-    vertexShaderInputLayout[1].InputSlot = 0;
-    vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft4.obj");
 
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
 		L"SpaceshipVertexShader.cso",
 		L"SpaceshipPixelShader.cso",
-        std::move(vertexShaderInputLayout)
+        std::move(result.vertexShaderInputLayout)
 	};
 
 	GraphicsComponent* graphicsComponent = new GraphicsComponent(desc);
 	graphicsComponent->SetPrimitiveTopology(m_DeviceContext.Get(), D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft4.obj");
 
     for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
     {
