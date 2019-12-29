@@ -50,5 +50,5 @@ void GraphicsComponent::AddVertexBatch(ID3D11Device* device, const std::vector<V
             &initData,
             buffer.GetAddressOf()));
 
-    m_VertexBatches[materialID] = Batch{buffer, verticesCount, vertexBufferStride};
+    m_Batches[materialID] = Batch{buffer, verticesCount, vertexBufferStride};
 }

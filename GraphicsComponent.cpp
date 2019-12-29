@@ -28,9 +28,9 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
 	UINT startSlot = 0;
 	UINT numBuffers = 1;
 
-    if (m_VertexBatches.size() > 0)
+    if (m_Batches.size() > 0)
     {
-        for (auto it = m_VertexBatches.begin(); it != m_VertexBatches.end(); ++it)
+        for (auto it = m_Batches.begin(); it != m_Batches.end(); ++it)
         {
             const uint32_t materialID = it->first;
             const Batch& batch = it->second;
@@ -89,7 +89,14 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
 
 void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
 {
-    ImpostorBaker::Bake(context, this);
+    if (m_Batches.size() > 0)
+    {
+        ImpostorBaker::PrepareBake(context);
+        for (auto it = m_Batches.begin(); it != m_Batches.end(); ++it)
+        {
+            ImpostorBaker::Bake(context, this);
+        }
+    }
 }
 
 void GraphicsComponent::SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices)

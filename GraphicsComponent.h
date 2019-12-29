@@ -32,7 +32,7 @@ public:
     void BakeImpostor(ID3D11DeviceContext* context);
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices);
 	void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount);
-    
+
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
     template <typename VertexBufferType>
@@ -76,7 +76,7 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 
-    std::unordered_map<uint32_t, Batch> m_VertexBatches;
+    std::unordered_map<uint32_t, Batch> m_Batches;
     std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>> m_MaterialBuffers;
 
     UINT m_IndicesCount = 0;        // for non batched geometry

@@ -4,13 +4,10 @@
 
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
-
 Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
-
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
-
 Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
@@ -73,14 +70,17 @@ void ImpostorBaker::InitDepthStencilState(ID3D11Device* device)
 
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent)
+void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	context->ClearRenderTargetView(m_albedoAtlasRTV.Get(), clearColor);
 	context->ClearDepthStencilView(m_depthAtlasDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
 	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
+}
 
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent)
+{
 	float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
 	for (float y = 0; y < ms_atlasFramesCount; ++y)
@@ -92,7 +92,6 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphi
 
 		Vector3<float> ray = OctahedralCoordToVector(vec);
 		ray = ray.Normalize();
-
 
 		SetViewport(context, x, y);
 

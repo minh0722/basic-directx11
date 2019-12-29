@@ -18,6 +18,7 @@ struct Snapshot
 class ImpostorBaker
 {
 public:
+	static void PrepareBake(ID3D11DeviceContext* context);
 	static void Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent);
 	static void Initialize(Renderer* renderer);
 
