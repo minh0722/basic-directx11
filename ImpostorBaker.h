@@ -19,7 +19,7 @@ class ImpostorBaker
 {
 public:
 	static void PrepareBake(ID3D11DeviceContext* context);
-	static void Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent);
+	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent);
 	static void Initialize(Renderer* renderer);
 
 private:
@@ -27,8 +27,15 @@ private:
 	static void InitDepthStencilState(ID3D11Device* device);
 	static void InitRasterizerState(ID3D11Device* device);
 	static void InitShaders(ID3D11Device* device);
+	static void InitViewProjBuffer(ID3D11Device* device);
 
 	static void SetViewport(ID3D11DeviceContext* context, float x, float y);
+	static void SetViewProjMatrixBuffer(ID3D11DeviceContext* context);
+	static void SetRenderTargets(ID3D11DeviceContext* context);
+	static void SetDepthStencilState(ID3D11DeviceContext* context);
+	static void SetRasterizerState(ID3D11DeviceContext* context);
+
+	static void UpdateViewProjMatrix(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewMat, const DirectX::XMMATRIX& projMat);
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
 
@@ -47,4 +54,6 @@ private:
 
 	static Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
 	static Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
+
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_viewProjBuffer;
 };

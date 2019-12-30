@@ -1,6 +1,9 @@
+#include "pch.h"
 #include "ImpostorBaker.h"
 #include "renderer.h"
 #include "Vector2.h"
+#include "GraphicsComponent.h"
+#include "ObjLoader.h"
 
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
@@ -12,12 +15,14 @@ Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilSta
 Microsoft::WRL::ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
 Microsoft::WRL::ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
 Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
+Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
 	InitAtlasRenderTargets(renderer->GetDevice());
 	InitDepthStencilState(renderer->GetDevice());
 	InitShaders(renderer->GetDevice());
+	InitViewProjBuffer(renderer->GetDevice());
 }
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
@@ -113,6 +118,19 @@ void ImpostorBaker::InitShaders(ID3D11Device* device)
 			m_pixelShader.ReleaseAndGetAddressOf()));
 }
 
+void ImpostorBaker::InitViewProjBuffer(ID3D11Device* device)
+{
+	D3D11_BUFFER_DESC desc = {};
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.ByteWidth = 2 * sizeof(DirectX::XMMATRIX);
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+
+	THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_viewProjBuffer.GetAddressOf()));
+}
+
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -123,8 +141,12 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->RSSetState(m_rasterizerState.Get());
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent)
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent)
 {
+	SetRenderTargets(context);
+	SetDepthStencilState(context);
+	SetRasterizerState(context);
+
 	float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
 	for (float y = 0; y < ms_atlasFramesCount; ++y)
@@ -134,12 +156,26 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphi
 			x / framesMinusOne * 2.0f - 1.0f, 
 			y / framesMinusOne * 2.0f - 1.0f);
 
-		Vector3<float> ray = OctahedralCoordToVector(vec);
-		ray = ray.Normalize();
+		Vector3<float> ray = OctahedralCoordToVector(vec).Normalize();
+
+		const auto& boundingBox = graphicsComponent->GetBoundingBox();
+		float radius = boundingBox.GetRadius();
+		float diameter = radius * 2.0f;
+		const Vector4f& center = boundingBox.m_center;
+
+		const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
+		ray = -ray;
+
+		auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
+		auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
+		static const auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
+		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
+
+		UpdateViewProjMatrix(context, viewMatrix, projMatrix);
+		SetViewProjMatrixBuffer(context);
 
 		SetViewport(context, x, y);
-
-
 	}
 }
 
@@ -165,4 +201,36 @@ void ImpostorBaker::SetViewport(ID3D11DeviceContext* context, float x, float y)
 	desc.TopLeftY = y * viewDimension;
 
 	context->RSSetViewports(1, &desc);
+}
+
+void ImpostorBaker::SetViewProjMatrixBuffer(ID3D11DeviceContext* context)
+{
+	context->VSSetConstantBuffers(0, 1, m_viewProjBuffer.GetAddressOf());
+}
+
+void ImpostorBaker::SetRenderTargets(ID3D11DeviceContext* context)
+{
+	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
+}
+
+void ImpostorBaker::SetDepthStencilState(ID3D11DeviceContext* context)
+{
+	context->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+}
+
+void ImpostorBaker::SetRasterizerState(ID3D11DeviceContext* context)
+{
+	context->RSSetState(m_rasterizerState.Get());
+}
+
+void ImpostorBaker::UpdateViewProjMatrix(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewMat, const DirectX::XMMATRIX& projMat)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+
+	THROW_IF_FAILED(context->Map(m_viewProjBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+
+	memcpy(mappedResource.pData, &viewMat, sizeof(DirectX::XMMATRIX));
+	memcpy((uint8_t*)mappedResource.pData + sizeof(DirectX::XMMATRIX), &projMat, sizeof(DirectX::XMMATRIX));
+
+	context->Unmap(m_viewProjBuffer.Get(), 0);
 }

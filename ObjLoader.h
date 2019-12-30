@@ -19,6 +19,11 @@ namespace wavefront
             m_halfVec = Vector4f(h.x, h.y, h.z, 0.0f);
 		}
 
+        float GetRadius() const
+        {
+            return m_halfVec.GetLength();
+        }
+
         Vector4f m_center = {};
         Vector4f m_halfVec = {};
     };

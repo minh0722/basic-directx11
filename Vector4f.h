@@ -16,8 +16,10 @@ public:
     Vector4f(const DirectX::XMVECTOR& other);
 	Vector4f& operator=(const Vector4f& other);
     Vector4f operator-(const Vector4f& other) const;
+    Vector4f operator+(const Vector4f& other) const;
     Vector4f operator/(float num) const;
     Vector4f operator*(const Matrix44f& other) const;
+    Vector4f operator*(const float f) const;
     Vector4f& operator*=(const float num);
     Vector4f& operator+=(const float num);
     bool operator==(const Vector4f& other) const;

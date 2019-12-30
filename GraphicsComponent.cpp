@@ -106,7 +106,6 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
 
             context->IASetVertexBuffers(startSlot, numBuffers, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
             context->IASetInputLayout(m_VertexInputLayout.Get());
-            context->VSSetConstantBuffers(0, 1, m_WorldViewProjBuffer.GetAddressOf());
             context->PSSetConstantBuffers(0, 1, m_MaterialBuffers[materialID].GetAddressOf());
             context->IASetPrimitiveTopology(batch.m_topology);
             ImpostorBaker::Bake(context, this);
@@ -285,6 +284,11 @@ void GraphicsComponent::InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DES
     THROW_IF_FAILED(
         device->CreateSamplerState(&desc, m_SamplerState.GetAddressOf())
     );
+}
+
+const wavefront::AABB& GraphicsComponent::GetBoundingBox() const
+{
+    return m_BoundingBox;
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

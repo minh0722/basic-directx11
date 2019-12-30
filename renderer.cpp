@@ -808,10 +808,11 @@ void Renderer::SetupSpaceShip()
     samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 0;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
     samplerDesc.MinLOD = 0;
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    samplerDesc.MipLODBias = 0;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
     graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
 
     Vector4f worldPos(0.0f, 0.0f, 5.0f, 0.0f);

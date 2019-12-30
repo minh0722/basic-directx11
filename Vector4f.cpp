@@ -53,6 +53,16 @@ Vector4f Vector4f::operator-(const Vector4f& other) const
         m_fValues[3] - other.m_fValues[3]);
 }
 
+Vector4f Vector4f::operator+(const Vector4f& other) const
+{
+    return Vector4f(
+        m_fValues[0] + other.m_fValues[0],
+        m_fValues[1] + other.m_fValues[1],
+        m_fValues[2] + other.m_fValues[2],
+        m_fValues[3] + other.m_fValues[3]);
+}
+
+
 Vector4f Vector4f::operator/(float num) const
 {
     return Vector4f(
@@ -69,6 +79,11 @@ Vector4f Vector4f::operator*(const Matrix44f& other) const
         x * other[0][1] + y * other[1][1] + z * other[2][1] + w * other[3][1],
         x * other[0][2] + y * other[1][2] + z * other[2][2] + w * other[3][2],
         x * other[0][3] + y * other[1][3] + z * other[2][3] + w * other[3][3]);
+}
+
+Vector4f Vector4f::operator*(const float f) const
+{
+    return Vector4f(x * f, y * f, z * f, w * f);
 }
 
 Vector4f& Vector4f::operator*=(const float num)

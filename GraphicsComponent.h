@@ -53,6 +53,9 @@ public:
     void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
 
     void InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc);
+
+    const wavefront::AABB& GetBoundingBox() const;
+
 protected:
 
     void InitWorldViewProjBuffer(ID3D11Device* device);
