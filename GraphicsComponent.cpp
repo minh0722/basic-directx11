@@ -91,9 +91,24 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
 {
     if (m_Batches.size() > 0)
     {
+        UINT offset = 0;
+        UINT startSlot = 0;
+        UINT numBuffers = 1;
+
+        if (m_Texture)
+            context->PSSetShaderResources(0, 1, m_Texture.GetAddressOf());
+
         ImpostorBaker::PrepareBake(context);
         for (auto it = m_Batches.begin(); it != m_Batches.end(); ++it)
         {
+            const uint32_t materialID = it->first;
+            const Batch& batch = it->second;
+
+            context->IASetVertexBuffers(startSlot, numBuffers, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
+            context->IASetInputLayout(m_VertexInputLayout.Get());
+            context->VSSetConstantBuffers(0, 1, m_WorldViewProjBuffer.GetAddressOf());
+            context->PSSetConstantBuffers(0, 1, m_MaterialBuffers[materialID].GetAddressOf());
+            context->IASetPrimitiveTopology(batch.m_topology);
             ImpostorBaker::Bake(context, this);
         }
     }

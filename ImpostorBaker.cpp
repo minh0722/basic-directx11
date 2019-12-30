@@ -9,11 +9,15 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
+Microsoft::WRL::ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
+Microsoft::WRL::ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
+Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
 	InitAtlasRenderTargets(renderer->GetDevice());
 	InitDepthStencilState(renderer->GetDevice());
+	InitShaders(renderer->GetDevice());
 }
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
@@ -70,6 +74,45 @@ void ImpostorBaker::InitDepthStencilState(ID3D11Device* device)
 
 }
 
+void ImpostorBaker::InitRasterizerState(ID3D11Device* device)
+{
+	D3D11_RASTERIZER_DESC desc = {};
+	desc.AntialiasedLineEnable = false;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.DepthBias = 0;
+	desc.DepthBiasClamp = 0.0f;
+	desc.DepthClipEnable = true;
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.FrontCounterClockwise = true;
+	desc.MultisampleEnable = false;
+	desc.ScissorEnable = false;
+	desc.SlopeScaledDepthBias = 0.0f;
+
+	THROW_IF_FAILED(device->CreateRasterizerState(&desc, m_rasterizerState.ReleaseAndGetAddressOf()));
+}
+
+void ImpostorBaker::InitShaders(ID3D11Device* device)
+{
+	ID3DBlob* blob;
+	THROW_IF_FAILED(D3DReadFileToBlob(L"vertexShader.cso", &blob));
+
+	THROW_IF_FAILED(
+		device->CreateVertexShader(
+			blob->GetBufferPointer(),
+			blob->GetBufferSize(),
+			nullptr,
+			m_vertexShader.ReleaseAndGetAddressOf()));
+
+	THROW_IF_FAILED(D3DReadFileToBlob(L"pixelShader.cso", &blob));
+
+	THROW_IF_FAILED(
+		device->CreatePixelShader(
+			blob->GetBufferPointer(),
+			blob->GetBufferSize(),
+			nullptr,
+			m_pixelShader.ReleaseAndGetAddressOf()));
+}
+
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -77,6 +120,7 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->ClearDepthStencilView(m_depthAtlasDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
 	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
+	context->RSSetState(m_rasterizerState.Get());
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, GraphicsComponent* graphicsComponent)

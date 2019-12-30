@@ -795,7 +795,7 @@ void Renderer::SetupSpaceShip()
     for (auto it = result.perMaterialFaces.begin(); it != result.perMaterialFaces.end(); ++it)
     {
         uint32_t materialID = it->first;
-        graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer, materialID);
+        graphicsComponent->AddVertexBatch(m_Device.Get(), it->second.vertexBuffer, materialID, result.m_topology);
         graphicsComponent->AddMaterial(m_Device.Get(), materialID, result.materials[materialID]);
     }
 

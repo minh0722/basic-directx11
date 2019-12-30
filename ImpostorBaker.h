@@ -25,6 +25,8 @@ public:
 private:
 	static void InitAtlasRenderTargets(ID3D11Device* device);
 	static void InitDepthStencilState(ID3D11Device* device);
+	static void InitRasterizerState(ID3D11Device* device);
+	static void InitShaders(ID3D11Device* device);
 
 	static void SetViewport(ID3D11DeviceContext* context, float x, float y);
 
@@ -41,4 +43,8 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
 
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+	static Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
+
+	static Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vertexShader;
+	static Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
 };

@@ -9,6 +9,7 @@ struct Batch
     UINT verticesCount;
     UINT vertexBufferStride;
     UINT indicesCount;
+    D3D11_PRIMITIVE_TOPOLOGY m_topology;
 };
 
 class GraphicsComponent
@@ -36,7 +37,7 @@ public:
     template <typename VertexBufferType>
     void SetVertexBuffer(ID3D11Device* device, const std::vector<VertexBufferType>& vertices);
     template <typename VertexBufferType>
-    void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices, uint32_t materialID);
+    void AddVertexBatch(ID3D11Device* device, const std::vector<VertexBufferType>& vertices, uint32_t materialID, D3D11_PRIMITIVE_TOPOLOGY topology);
 
     void AddMaterial(ID3D11Device* device, uint32_t materialID, wavefront::Material material);
 

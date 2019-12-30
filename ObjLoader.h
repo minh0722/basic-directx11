@@ -55,6 +55,7 @@ namespace wavefront
         std::map<uint32_t, Faces> perMaterialFaces;
 		std::map<uint32_t, Material> materials;
 
+        D3D11_PRIMITIVE_TOPOLOGY m_topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
         std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout = 
         {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
