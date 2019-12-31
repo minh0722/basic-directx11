@@ -21,6 +21,7 @@ void ImpostorBaker::Initialize(Renderer* renderer)
 {
 	InitAtlasRenderTargets(renderer->GetDevice());
 	InitDepthStencilState(renderer->GetDevice());
+	InitRasterizerState(renderer->GetDevice());
 	InitShaders(renderer->GetDevice());
 	InitViewProjBuffer(renderer->GetDevice());
 }
@@ -99,7 +100,7 @@ void ImpostorBaker::InitRasterizerState(ID3D11Device* device)
 void ImpostorBaker::InitShaders(ID3D11Device* device)
 {
 	ID3DBlob* blob;
-	THROW_IF_FAILED(D3DReadFileToBlob(L"vertexShader.cso", &blob));
+	THROW_IF_FAILED(D3DReadFileToBlob(L"impostorBakerVertexShader.cso", &blob));
 
 	THROW_IF_FAILED(
 		device->CreateVertexShader(
@@ -146,6 +147,7 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 	SetRenderTargets(context);
 	SetDepthStencilState(context);
 	SetRasterizerState(context);
+	SetShaders(context);
 
 	float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
@@ -188,6 +190,12 @@ Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
 	n.x += n.x >= 0.0f ? -t : t;
 	n.z += n.z >= 0.0f ? -t : t;
 	return n;
+}
+
+void ImpostorBaker::SetShaders(ID3D11DeviceContext* context)
+{
+	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 }
 
 void ImpostorBaker::SetViewport(ID3D11DeviceContext* context, float x, float y)

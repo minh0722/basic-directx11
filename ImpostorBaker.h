@@ -30,6 +30,7 @@ private:
 	static void InitShaders(ID3D11Device* device);
 	static void InitViewProjBuffer(ID3D11Device* device);
 
+	static void SetShaders(ID3D11DeviceContext* context);
 	static void SetViewport(ID3D11DeviceContext* context, float x, float y);
 	static void SetViewProjMatrixBuffer(ID3D11DeviceContext* context);
 	static void SetRenderTargets(ID3D11DeviceContext* context);
