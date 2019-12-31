@@ -108,7 +108,7 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
             context->IASetInputLayout(m_VertexInputLayout.Get());
             context->PSSetConstantBuffers(0, 1, m_MaterialBuffers[materialID].GetAddressOf());
             context->IASetPrimitiveTopology(batch.m_topology);
-            ImpostorBaker::Bake(context, this);
+            ImpostorBaker::Bake(context, this, batch);
         }
     }
 }

@@ -5,6 +5,7 @@
 
 class Renderer;
 class GraphicsComponent;
+struct Batch;
 
 template <typename T>
 class Vector2;
@@ -19,7 +20,7 @@ class ImpostorBaker
 {
 public:
 	static void PrepareBake(ID3D11DeviceContext* context);
-	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent);
+	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 	static void Initialize(Renderer* renderer);
 
 private:

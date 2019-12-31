@@ -141,7 +141,7 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->RSSetState(m_rasterizerState.Get());
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent)
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
 {
 	SetRenderTargets(context);
 	SetDepthStencilState(context);
@@ -176,6 +176,8 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 		SetViewProjMatrixBuffer(context);
 
 		SetViewport(context, x, y);
+
+		context->Draw(batch.verticesCount, 0);
 	}
 }
 

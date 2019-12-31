@@ -163,5 +163,6 @@
     <FxCompile Include="..\SpaceshipVertexShader.hlsl" />
     <FxCompile Include="..\SpaceshipPixelShader.hlsl" />
     <FxCompile Include="..\debugdisplay3dbox.hlsl" />
+    <FxCompile Include="..\impostorBakerVertexShader.hlsl" />
   </ItemGroup>
 </Project>
