@@ -2,7 +2,6 @@ struct InputPixel
 {
 	float4 pos : SV_POSITION;
     float2 uv : TEXCOORD0;
-	float4 color : COLOR;
 };
 
 cbuffer MaterialBuffer : register(b0)
