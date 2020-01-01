@@ -33,7 +33,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	desc.Height = ms_atlasDimension;
 	desc.MipLevels = 0;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.SampleDesc = { 1, 0 };
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_RENDER_TARGET;
