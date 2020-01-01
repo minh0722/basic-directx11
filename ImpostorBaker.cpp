@@ -170,7 +170,7 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 		auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
 		auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
-		static const auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		static const auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
 		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
 
