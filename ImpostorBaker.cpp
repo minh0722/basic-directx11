@@ -109,7 +109,7 @@ void ImpostorBaker::InitShaders(ID3D11Device* device)
 			nullptr,
 			m_vertexShader.ReleaseAndGetAddressOf()));
 
-	THROW_IF_FAILED(D3DReadFileToBlob(L"pixelShader.cso", &blob));
+	THROW_IF_FAILED(D3DReadFileToBlob(L"SpaceshipPixelShader.cso", &blob));
 
 	THROW_IF_FAILED(
 		device->CreatePixelShader(
