@@ -186,9 +186,9 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
 {
 	Vector3<float> n(vec.x, vec.y, 1.0f - std::abs(vec.x) - std::abs(vec.y));
-	float t = std::clamp(-n.y, 0.0f, 1.0f);
+	float t = std::clamp(-n.z, 0.0f, 1.0f);
 	n.x += n.x >= 0.0f ? -t : t;
-	n.z += n.z >= 0.0f ? -t : t;
+	n.y += n.y >= 0.0f ? -t : t;
 	return n;
 }
 
