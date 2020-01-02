@@ -84,7 +84,7 @@ void ImpostorBaker::InitRasterizerState(ID3D11Device* device)
 {
 	D3D11_RASTERIZER_DESC desc = {};
 	desc.AntialiasedLineEnable = false;
-	desc.CullMode = D3D11_CULL_BACK;
+	desc.CullMode = D3D11_CULL_NONE;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
 	desc.DepthClipEnable = true;
@@ -151,6 +151,12 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 	float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
+	const auto& boundingBox = graphicsComponent->GetBoundingBox();
+	const Vector4f& center = boundingBox.m_center;
+	auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
+	float radius = boundingBox.GetRadius();
+	float diameter = radius * 2.0f;
+
 	for (float y = 0; y < ms_atlasFramesCount; ++y)
 	for (float x = 0; x < ms_atlasFramesCount; ++x)
 	{
@@ -160,16 +166,10 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 		Vector3<float> ray = OctahedralCoordToVector(vec).Normalize();
 
-		const auto& boundingBox = graphicsComponent->GetBoundingBox();
-		float radius = boundingBox.GetRadius();
-		float diameter = radius * 2.0f;
-		const Vector4f& center = boundingBox.m_center;
-
 		const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
 		ray = -ray;
 
 		auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
-		auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
 		static const auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
 		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
@@ -185,10 +185,10 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
 {
-	Vector3<float> n(vec.x, vec.y, 1.0f - std::abs(vec.x) - std::abs(vec.y));
-	float t = std::clamp(-n.z, 0.0f, 1.0f);
+	Vector3<float> n(vec.x, 1.0f - std::abs(vec.x) - std::abs(vec.y), vec.y);
+	float t = std::clamp(-n.y, 0.0f, 1.0f);
 	n.x += n.x >= 0.0f ? -t : t;
-	n.y += n.y >= 0.0f ? -t : t;
+	n.z += n.z >= 0.0f ? -t : t;
 	return n;
 }
 
