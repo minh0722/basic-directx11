@@ -165,12 +165,16 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 			y / framesMinusOne * 2.0f - 1.0f);
 
 		Vector3<float> ray = OctahedralCoordToVector(vec).Normalize();
+        DirectX::XMVECTOR xmRay = DirectX::XMVectorSet(ray.x, ray.y, ray.z, 1.0f);
 
 		const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
-		ray = -ray;
 
 		auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
-		static const auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+		auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+
+        if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(xmRay, globalUp), DirectX::XMVectorZero())))
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+
 		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
 		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
 
