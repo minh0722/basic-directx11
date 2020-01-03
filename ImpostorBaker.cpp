@@ -4,6 +4,8 @@
 #include "Vector2.h"
 #include "GraphicsComponent.h"
 #include "ObjLoader.h"
+#include <ScreenGrab.h>
+#include <wincodec.h>
 
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
@@ -185,6 +187,8 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 		context->Draw(batch.verticesCount, 0);
 	}
+
+	THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
