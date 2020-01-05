@@ -23,6 +23,9 @@ public:
 	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 	static void Initialize(Renderer* renderer);
 
+	static const uint32_t ms_atlasFramesCount = 10;
+	static const uint32_t ms_atlasDimension = 4096;
+
 private:
 	static void InitAtlasRenderTargets(ID3D11Device* device);
 	static void InitDepthStencilState(ID3D11Device* device);
@@ -42,9 +45,6 @@ private:
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
 
 private:
-	static const uint32_t ms_atlasFramesCount = 10;
-	static const uint32_t ms_atlasDimension = 4096;
-
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
 	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
 
