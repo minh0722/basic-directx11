@@ -18,14 +18,22 @@ Microsoft::WRL::ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
 Microsoft::WRL::ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
 Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
+Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAtlasUAV;
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
-	InitAtlasRenderTargets(renderer->GetDevice());
-	InitDepthStencilState(renderer->GetDevice());
-	InitRasterizerState(renderer->GetDevice());
-	InitShaders(renderer->GetDevice());
-	InitViewProjBuffer(renderer->GetDevice());
+    ID3D11Device* device = renderer->GetDevice();
+	InitAtlasRenderTargets(device);
+	InitDepthStencilState(device);
+	InitRasterizerState(device);
+	InitShaders(device);
+	InitViewProjBuffer(device);
+    //InitComputeStuff(device);
 }
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
@@ -38,7 +46,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.SampleDesc = { 1, 0 };
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
@@ -49,7 +57,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 		device->CreateRenderTargetView(m_albedoAtlasTexture.Get(), nullptr, m_albedoAtlasRTV.GetAddressOf())
 	);
 
-	desc.Format = DXGI_FORMAT_D32_FLOAT;
+	desc.Format = DXGI_FORMAT_R32_TYPELESS;
 	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 	THROW_IF_FAILED(
@@ -134,6 +142,46 @@ void ImpostorBaker::InitViewProjBuffer(ID3D11Device* device)
 	THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_viewProjBuffer.GetAddressOf()));
 }
 
+void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
+{
+    // masking cs
+    ID3DBlob* blob;
+    THROW_IF_FAILED(D3DReadFileToBlob(L"impostorMaskingCS.cso", &blob));
+
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(), 
+        blob->GetBufferSize(), 
+        nullptr, 
+        m_maskingCS.ReleaseAndGetAddressOf()));
+
+    // temp atlas texture and srv
+    D3D11_TEXTURE2D_DESC desc = {};
+    m_albedoAtlasTexture->GetDesc(&desc);
+    desc.MipLevels = 1;
+    desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_tempAtlasTexture.GetAddressOf()));
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    
+    THROW_IF_FAILED(device->CreateShaderResourceView(m_tempAtlasTexture.Get(), &srvDesc, m_tempAtlasSRV.GetAddressOf()));
+
+    D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+    uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+    uavDesc.Texture2D.MipSlice = 0;
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_tempAtlasTexture.Get(), &uavDesc, m_tempAtlasUAV.GetAddressOf()));
+
+    THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
+
+    srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+    THROW_IF_FAILED(device->CreateShaderResourceView(m_depthAtlasTexture.Get(), &srvDesc, m_depthAtlasSRV.GetAddressOf()));
+}
+
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -188,7 +236,36 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 		context->Draw(batch.verticesCount, 0);
 	}
 
-	THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
+	//THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
+    //DoProcessing(context);
+}
+
+void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
+{
+    context->CSSetShader(m_maskingCS.Get(), nullptr, 0);
+
+    context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
+    context->CSSetUnorderedAccessViews(0, 1, m_tempAtlasUAV.GetAddressOf(), nullptr);
+
+    const uint32_t GROUP_SIZE = 256;
+    const uint32_t MAX_DIM_GROUPS = 1024;
+    const uint32_t MAX_DIM_THREADS = (GROUP_SIZE * MAX_DIM_GROUPS);
+    const uint32_t length = ms_atlasDimension * ms_atlasDimension;
+
+    uint32_t x, y, z;
+    if (length <= MAX_DIM_THREADS)
+    {
+        x = (length - 1) / GROUP_SIZE + 1;
+        y = z = 1;
+    }
+    else
+    {
+        x = MAX_DIM_GROUPS;
+        y = (length - 1) / MAX_DIM_THREADS + 1;
+        z = 1;
+    }
+
+    context->Dispatch(x, y, z);
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)

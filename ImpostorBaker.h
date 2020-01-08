@@ -32,6 +32,7 @@ private:
 	static void InitRasterizerState(ID3D11Device* device);
 	static void InitShaders(ID3D11Device* device);
 	static void InitViewProjBuffer(ID3D11Device* device);
+    static void InitComputeStuff(ID3D11Device* device);
 
 	static void SetShaders(ID3D11DeviceContext* context);
 	static void SetViewport(ID3D11DeviceContext* context, float x, float y);
@@ -43,6 +44,8 @@ private:
 	static void UpdateViewProjMatrix(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewMat, const DirectX::XMMATRIX& projMat);
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
+
+    static void DoProcessing(ID3D11DeviceContext* context);
 
 private:
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
@@ -58,4 +61,11 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11PixelShader> m_pixelShader;
 
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_viewProjBuffer;
+
+    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_maskingCS;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempAtlasTexture;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAtlasSRV;
+    static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAtlasUAV;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 };
