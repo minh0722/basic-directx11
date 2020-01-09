@@ -23,7 +23,6 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAtlasUAV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
@@ -33,7 +32,7 @@ void ImpostorBaker::Initialize(Renderer* renderer)
 	InitRasterizerState(device);
 	InitShaders(device);
 	InitViewProjBuffer(device);
-    //InitComputeStuff(device);
+    InitComputeStuff(device);
 }
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
@@ -41,7 +40,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = ms_atlasDimension;
 	desc.Height = ms_atlasDimension;
-	desc.MipLevels = 0;
+	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.SampleDesc = { 1, 0 };
@@ -57,7 +56,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 		device->CreateRenderTargetView(m_albedoAtlasTexture.Get(), nullptr, m_albedoAtlasRTV.GetAddressOf())
 	);
 
-	desc.Format = DXGI_FORMAT_R32_TYPELESS;
+	desc.Format = DXGI_FORMAT_D32_FLOAT;
 	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 	THROW_IF_FAILED(
@@ -177,9 +176,6 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_tempAtlasTexture.Get(), &uavDesc, m_tempAtlasUAV.GetAddressOf()));
 
     THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
-
-    srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-    THROW_IF_FAILED(device->CreateShaderResourceView(m_depthAtlasTexture.Get(), &srvDesc, m_depthAtlasSRV.GetAddressOf()));
 }
 
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
@@ -237,7 +233,7 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 	}
 
 	//THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
-    //DoProcessing(context);
+    DoProcessing(context);
 }
 
 void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)

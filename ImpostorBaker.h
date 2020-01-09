@@ -67,5 +67,4 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAtlasUAV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 };
