@@ -233,11 +233,13 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 	}
 
 	//THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
-    DoProcessing(context);
 }
 
 void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 {
+    // unbind the albedoatlas since it was the render target
+    context->OMSetRenderTargets(0, nullptr, nullptr);
+
     context->CSSetShader(m_maskingCS.Get(), nullptr, 0);
 
     context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
@@ -262,6 +264,12 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     }
 
     context->Dispatch(x, y, z);
+
+    ID3D11ShaderResourceView* resetSRV[] = { nullptr };
+    ID3D11UnorderedAccessView* resetUAV[] = { nullptr };
+    context->CSSetShader(nullptr, nullptr, 0);
+    context->CSSetShaderResources(0, 1, resetSRV);
+    context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)

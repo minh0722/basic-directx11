@@ -110,6 +110,7 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
             context->IASetPrimitiveTopology(batch.m_topology);
             ImpostorBaker::Bake(context, this, batch);
         }
+        ImpostorBaker::DoProcessing(context);
     }
 }
 

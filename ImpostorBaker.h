@@ -23,6 +23,8 @@ public:
 	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 	static void Initialize(Renderer* renderer);
 
+    static void DoProcessing(ID3D11DeviceContext* context);
+
 	static const uint32_t ms_atlasFramesCount = 10;
 	static const uint32_t ms_atlasDimension = 4096;
 
@@ -44,8 +46,6 @@ private:
 	static void UpdateViewProjMatrix(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewMat, const DirectX::XMMATRIX& projMat);
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
-
-    static void DoProcessing(ID3D11DeviceContext* context);
 
 private:
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
