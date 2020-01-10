@@ -235,6 +235,25 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 	//THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
 }
 
+void ImpostorBaker::CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z)
+{
+    const uint32_t GROUP_SIZE = 256;
+    const uint32_t MAX_DIM_GROUPS = 1024;
+    const uint32_t MAX_DIM_THREADS = (GROUP_SIZE * MAX_DIM_GROUPS);
+
+    if (workSize <= MAX_DIM_THREADS)
+    {
+        x = (workSize - 1) / GROUP_SIZE + 1;
+        y = z = 1;
+    }
+    else
+    {
+        x = MAX_DIM_GROUPS;
+        y = (workSize - 1) / MAX_DIM_THREADS + 1;
+        z = 1;
+    }
+}
+
 void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 {
     // unbind the albedoatlas since it was the render target
@@ -245,24 +264,8 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
     context->CSSetUnorderedAccessViews(0, 1, m_tempAtlasUAV.GetAddressOf(), nullptr);
 
-    const uint32_t GROUP_SIZE = 256;
-    const uint32_t MAX_DIM_GROUPS = 1024;
-    const uint32_t MAX_DIM_THREADS = (GROUP_SIZE * MAX_DIM_GROUPS);
-    const uint32_t length = ms_atlasDimension * ms_atlasDimension;
-
     uint32_t x, y, z;
-    if (length <= MAX_DIM_THREADS)
-    {
-        x = (length - 1) / GROUP_SIZE + 1;
-        y = z = 1;
-    }
-    else
-    {
-        x = MAX_DIM_GROUPS;
-        y = (length - 1) / MAX_DIM_THREADS + 1;
-        z = 1;
-    }
-
+    CalculateWorkSize(ms_atlasDimension * ms_atlasDimension, x, y, z);
     context->Dispatch(x, y, z);
 
     ID3D11ShaderResourceView* resetSRV[] = { nullptr };

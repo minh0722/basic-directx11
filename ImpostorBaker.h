@@ -46,6 +46,7 @@ private:
 	static void UpdateViewProjMatrix(ID3D11DeviceContext* context, const DirectX::XMMATRIX& viewMat, const DirectX::XMMATRIX& projMat);
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
+    static void CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z);
 
 private:
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
