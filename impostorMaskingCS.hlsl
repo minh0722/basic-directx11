@@ -15,10 +15,10 @@ void main( uint3 id : SV_DispatchThreadID )
     atlas.GetDimensions(atlasWidth, atlasHeight);
 
     uint x = idx % atlasHeight;
-    uint y = idx % atlasWidth;
+    uint y = (idx - x) / atlasWidth;
 
     float4 color = atlas.Load(uint3(x, y, 0));
     float hasColor = float(any(color));
 
-    result[uint2(x, y)] = float4(1.0f - hasColor, 0.0f, 0.0f, 0.0f);
+    result[uint2(x, y)] = float4(hasColor, 0.0f, 0.0f, 0.0f);
 }
