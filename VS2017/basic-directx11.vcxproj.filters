@@ -93,6 +93,9 @@
     <ClInclude Include="..\ImpostorBaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\computeShadersCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -168,5 +171,6 @@
     <FxCompile Include="..\debugdisplay3dbox.hlsl" />
     <FxCompile Include="..\impostorBakerVertexShader.hlsl" />
     <FxCompile Include="..\impostorMaskingCS.hlsl" />
+    <FxCompile Include="..\dilate.hlsl" />
   </ItemGroup>
 </Project>

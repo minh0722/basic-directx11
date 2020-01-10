@@ -1,6 +1,4 @@
-#define GROUP_SIZE 256
-#define MAX_DIM_GROUPS 1024
-#define MAX_DIM_THREADS (GROUP_SIZE * MAX_DIM_GROUPS)
+#include "computeShadersCommon.h"
 
 Texture2D<float4> atlas : register(t0);
 RWTexture2D<float4> result : register(u0);
