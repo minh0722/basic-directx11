@@ -20,6 +20,7 @@ Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
@@ -164,6 +165,13 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
         nullptr,
         m_dilateCS.ReleaseAndGetAddressOf()));
 
+    THROW_IF_FAILED(D3DReadFileToBlob(L"distanceAlpha.cso", &blob));
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        nullptr,
+        m_distanceAlphaCS.ReleaseAndGetAddressOf()));
+
     // temp atlas texture and srv
     D3D11_TEXTURE2D_DESC desc = {};
     m_albedoAtlasTexture->GetDesc(&desc);
@@ -302,6 +310,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->CSSetShaderResources(0, 2, resetSRV);
     context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
 
+    // distance alpha
 
 }
 

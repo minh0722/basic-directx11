@@ -65,6 +65,7 @@ private:
 
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_maskingCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_dilateCS;
+    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaCS;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_dilatedTexture;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAtlasSRV;

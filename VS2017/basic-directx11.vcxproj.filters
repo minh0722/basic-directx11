@@ -172,5 +172,6 @@
     <FxCompile Include="..\impostorBakerVertexShader.hlsl" />
     <FxCompile Include="..\impostorMaskingCS.hlsl" />
     <FxCompile Include="..\dilate.hlsl" />
+    <FxCompile Include="..\distanceAlpha.hlsl" />
   </ItemGroup>
 </Project>
