@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Camera.h" />
+    <ClInclude Include="..\computeShadersCommon.h" />
     <ClInclude Include="..\DebugDisplay.h" />
     <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
