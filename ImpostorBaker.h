@@ -70,7 +70,9 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_dilatedTexture;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_dilatedTextureSRV;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
+	static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_minDistanceBufferUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAtlasUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_dilatedTextureUAV;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_minDistanceBuffer;
 };
