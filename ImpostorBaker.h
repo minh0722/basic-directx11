@@ -74,5 +74,6 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_minDistanceBufferUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAtlasUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_dilatedTextureUAV;
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> m_distanceAlphaConstants;
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_minDistanceBuffer;
 };

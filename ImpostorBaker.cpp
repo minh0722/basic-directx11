@@ -29,6 +29,7 @@ Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_minDistanceBufferUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAtlasUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedTextureUAV;
+Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
@@ -213,8 +214,16 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 	uavDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
-	uavDesc.Buffer.NumElements = ms_atlasDimension * ms_atlasDimension;
-	THROW_IF_FAILED(device->CreateUnorderedAccessView(m_minDistanceBuffer.Get(), &uavDesc, nullptr));
+	uavDesc.Buffer.NumElements = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
+	THROW_IF_FAILED(device->CreateUnorderedAccessView(m_minDistanceBuffer.Get(), &uavDesc, m_minDistanceBufferUAV.GetAddressOf()));
+
+    bufferDesc.ByteWidth = 16;      // must be multiple of 16 so using sizeof(uint32_t) will fail
+    bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bufferDesc.StructureByteStride = sizeof(uint32_t);
+
+    THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_distanceAlphaConstants.GetAddressOf()));
 }
 
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
@@ -301,13 +310,13 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     // unbind the albedoatlas since it was the render target
     context->OMSetRenderTargets(0, nullptr, nullptr);
 
+    uint32_t x, y, z;
+    CalculateWorkSize(ms_atlasDimension * ms_atlasDimension, x, y, z);
+
     // first do masking of the albedo atlas
     context->CSSetShader(m_maskingCS.Get(), nullptr, 0);
     context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
     context->CSSetUnorderedAccessViews(0, 1, m_tempAtlasUAV.GetAddressOf(), nullptr);
-
-    uint32_t x, y, z;
-    CalculateWorkSize(ms_atlasDimension * ms_atlasDimension, x, y, z);
     context->Dispatch(x, y, z);
 
     // reset
@@ -328,6 +337,42 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
 
     // distance alpha
+    struct DistanceAlphaConst
+    {
+        uint32_t frameCount;
+        uint32_t frameX;
+        uint32_t frameY;
+    } constant;
+
+    uint32_t frameSize = ms_atlasDimension / ms_atlasFramesCount;
+    CalculateWorkSize(frameSize * frameSize, x, y, z);
+
+    context->CSSetShader(m_distanceAlphaCS.Get(), nullptr, 0);
+    //context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
+    context->CSSetShaderResources(0, 1, m_tempAtlasSRV.GetAddressOf());
+    context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
+
+    for(uint32_t r = 0; r < ms_atlasFramesCount; ++r)
+    for(uint32_t c = 0; c < ms_atlasFramesCount; ++c)
+    {
+        constant.frameCount = ms_atlasFramesCount;
+        constant.frameX = c;
+        constant.frameY = r;
+
+        D3D11_MAPPED_SUBRESOURCE mappedRes = {};
+        THROW_IF_FAILED(context->Map(m_distanceAlphaConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+        DistanceAlphaConst* mappedConst = reinterpret_cast<DistanceAlphaConst*>(mappedRes.pData);
+        memcpy(mappedConst, &constant, sizeof(DistanceAlphaConst));
+        context->Unmap(m_distanceAlphaConstants.Get(), 0);
+        context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
+
+        context->Dispatch(x, y, z);
+    }
+    
+    // reset
+    context->CSSetShader(nullptr, nullptr, 0);
+    context->CSSetShaderResources(0, 2, resetSRV);
+    context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
 
 }
 

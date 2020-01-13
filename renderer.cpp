@@ -95,12 +95,12 @@ void Renderer::Render(InputClass* input)
 
     m_DebugDisplay->Render(this);
 
-	//static bool baked = false;
-	//if (!baked)
-	//{
+	static bool baked = false;
+	if (!baked)
+	{
 		m_SpaceShip.BakeImpostor(m_DeviceContext.Get());
-	//	baked = true;
-	//}
+		baked = true;
+	}
 
 	m_SwapChain->Present(0, 0);
 }
