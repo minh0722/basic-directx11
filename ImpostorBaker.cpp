@@ -21,16 +21,20 @@ Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_dilatedTextureSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_minDistanceBufferUAV;
+Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_maxDistanceBufferUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAtlasUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedTextureUAV;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
+Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_maxDistanceBuffer;
+Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
@@ -175,6 +179,13 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
         nullptr,
         m_distanceAlphaCS.ReleaseAndGetAddressOf()));
 
+    THROW_IF_FAILED(D3DReadFileToBlob(L"maxDistance.cso", &blob));
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        nullptr,
+        m_maxDistanceCS.ReleaseAndGetAddressOf()));
+
     // temp atlas texture and srv
     D3D11_TEXTURE2D_DESC desc = {};
     m_albedoAtlasTexture->GetDesc(&desc);
@@ -211,11 +222,17 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 
 	THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_minDistanceBuffer.GetAddressOf()));
 
+    bufferDesc.ByteWidth = sizeof(float);
+    THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_maxDistanceBuffer.GetAddressOf()));
+
 	uavDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
 	uavDesc.Buffer.NumElements = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
 	THROW_IF_FAILED(device->CreateUnorderedAccessView(m_minDistanceBuffer.Get(), &uavDesc, m_minDistanceBufferUAV.GetAddressOf()));
+
+    uavDesc.Buffer.NumElements = 1;
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_maxDistanceBuffer.Get(), &uavDesc, m_maxDistanceBufferUAV.GetAddressOf()));
 
     bufferDesc.ByteWidth = 16;      // must be multiple of 16 so using sizeof(uint32_t) will fail
     bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -224,6 +241,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     bufferDesc.StructureByteStride = sizeof(uint32_t);
 
     THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_distanceAlphaConstants.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_minDistancesCountConstant.GetAddressOf()));
 }
 
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
@@ -234,6 +252,12 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
 	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
 	context->RSSetState(m_rasterizerState.Get());
+
+    uint32_t count = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
+    D3D11_MAPPED_SUBRESOURCE mappedRes = {};
+    THROW_IF_FAILED(context->Map(m_minDistancesCountConstant.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+    *(uint32_t*)mappedRes.pData = count;
+    context->Unmap(m_minDistancesCountConstant.Get(), 0);
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
@@ -365,8 +389,18 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         memcpy(mappedConst, &constant, sizeof(DistanceAlphaConst));
         context->Unmap(m_distanceAlphaConstants.Get(), 0);
         context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
-
         context->Dispatch(x, y, z);
+
+        // reset
+        context->CSSetShader(nullptr, nullptr, 0);
+        context->CSSetShaderResources(0, 2, resetSRV);
+        context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
+
+        context->CSSetShader(m_maxDistanceCS.Get(), nullptr, 0);
+        context->CSSetConstantBuffers(0, 1, m_minDistancesCountConstant.GetAddressOf());
+        context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->Dispatch(1, 1, 1);
     }
     
     // reset
