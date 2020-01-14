@@ -1,3 +1,6 @@
 [submodule "DirectXTK"]
 	path = DirectXTK
 	url = https://github.com/microsoft/DirectXTK.git
+[submodule "renderdoc"]
+	path = renderdoc
+	url = https://github.com/baldurk/renderdoc.git
