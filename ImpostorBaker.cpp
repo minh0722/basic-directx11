@@ -22,6 +22,7 @@ Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
@@ -186,6 +187,13 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
         nullptr,
         m_maxDistanceCS.ReleaseAndGetAddressOf()));
 
+    THROW_IF_FAILED(D3DReadFileToBlob(L"distanceAlphaFinalize.cso", &blob));
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        nullptr,
+        m_distanceAlphaFinalizeCS.ReleaseAndGetAddressOf()));
+
     // temp atlas texture and srv
     D3D11_TEXTURE2D_DESC desc = {};
     m_albedoAtlasTexture->GetDesc(&desc);
@@ -331,6 +339,14 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     ID3D11ShaderResourceView* resetSRV[] = { nullptr, nullptr };
     ID3D11UnorderedAccessView* resetUAV[] = { nullptr };
 
+    auto ResetStates = [&resetSRV, &resetUAV, &context]() 
+    {
+        // reset
+        context->CSSetShader(nullptr, nullptr, 0);
+        context->CSSetShaderResources(0, 2, resetSRV);
+        context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
+    };
+
     // unbind the albedoatlas since it was the render target
     context->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -343,10 +359,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->CSSetUnorderedAccessViews(0, 1, m_tempAtlasUAV.GetAddressOf(), nullptr);
     context->Dispatch(x, y, z);
 
-    // reset
-    context->CSSetShader(nullptr, nullptr, 0);
-    context->CSSetShaderResources(0, 1, resetSRV);
-    context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
+    ResetStates();
 
     // then do dilating
     context->CSSetShader(m_dilateCS.Get(), nullptr, 0);
@@ -355,10 +368,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->CSSetUnorderedAccessViews(0, 1, m_dilatedTextureUAV.GetAddressOf(), nullptr);
     context->Dispatch(x, y, z);
 
-    // reset
-    context->CSSetShader(nullptr, nullptr, 0);
-    context->CSSetShaderResources(0, 2, resetSRV);
-    context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
+    ResetStates();
 
     // distance alpha
     struct DistanceAlphaConst
@@ -391,10 +401,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
         context->Dispatch(x, y, z);
 
-        // reset
-        context->CSSetShader(nullptr, nullptr, 0);
-        context->CSSetShaderResources(0, 2, resetSRV);
-        context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
+        ResetStates();
 
         context->CSSetShader(m_maxDistanceCS.Get(), nullptr, 0);
         context->CSSetConstantBuffers(0, 1, m_minDistancesCountConstant.GetAddressOf());
@@ -403,11 +410,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->Dispatch(1, 1, 1);
     }
     
-    // reset
-    context->CSSetShader(nullptr, nullptr, 0);
-    context->CSSetShaderResources(0, 2, resetSRV);
-    context->CSSetUnorderedAccessViews(0, 1, resetUAV, nullptr);
-
+    ResetStates();
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
