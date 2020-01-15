@@ -25,6 +25,7 @@ Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedTexture;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakeResultTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_dilatedTextureSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
@@ -32,10 +33,20 @@ Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_minDistanceBu
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_maxDistanceBufferUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAtlasUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedTextureUAV;
+Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeResultUAV;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_maxDistanceBuffer;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
+
+struct MaxDistanceConst
+{
+    uint32_t minDistLength;
+    uint32_t frameDimension;
+    uint32_t frameCount;
+    uint32_t frameX;
+    uint32_t frameY;
+};
 
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
@@ -202,6 +213,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 
     THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_tempAtlasTexture.GetAddressOf()));
     THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_dilatedTexture.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_bakeResultTexture.GetAddressOf()));
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Texture2D.MipLevels = 1;
@@ -218,6 +230,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     uavDesc.Texture2D.MipSlice = 0;
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_tempAtlasTexture.Get(), &uavDesc, m_tempAtlasUAV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_dilatedTexture.Get(), &uavDesc, m_dilatedTextureUAV.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeResultTexture.Get(), &uavDesc, m_bakeResultUAV.GetAddressOf()));
 
     THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
 
@@ -236,7 +249,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 	uavDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
-	uavDesc.Buffer.NumElements = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
+	uavDesc.Buffer.NumElements = ms_atlasDimension * ms_atlasDimension;
 	THROW_IF_FAILED(device->CreateUnorderedAccessView(m_minDistanceBuffer.Get(), &uavDesc, m_minDistanceBufferUAV.GetAddressOf()));
 
     uavDesc.Buffer.NumElements = 1;
@@ -249,6 +262,9 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     bufferDesc.StructureByteStride = sizeof(uint32_t);
 
     THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_distanceAlphaConstants.GetAddressOf()));
+
+    bufferDesc.ByteWidth = 32;
+    bufferDesc.StructureByteStride = 0;
     THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_minDistancesCountConstant.GetAddressOf()));
 }
 
@@ -260,12 +276,6 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
 	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
 	context->RSSetState(m_rasterizerState.Get());
-
-    uint32_t count = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
-    D3D11_MAPPED_SUBRESOURCE mappedRes = {};
-    THROW_IF_FAILED(context->Map(m_minDistancesCountConstant.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
-    *(uint32_t*)mappedRes.pData = count;
-    context->Unmap(m_minDistancesCountConstant.Get(), 0);
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
@@ -403,11 +413,32 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 
         ResetStates();
 
+        uint32_t count = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
+        THROW_IF_FAILED(context->Map(m_minDistancesCountConstant.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+        MaxDistanceConst* maxDistConst = reinterpret_cast<MaxDistanceConst*>(mappedRes.pData);
+        maxDistConst->minDistLength = count;
+        maxDistConst->frameDimension = ms_atlasDimension / ms_atlasFramesCount;
+        maxDistConst->frameCount = ms_atlasFramesCount;
+        maxDistConst->frameX = c;
+        maxDistConst->frameY = r;
+        context->Unmap(m_minDistancesCountConstant.Get(), 0);
+
         context->CSSetShader(m_maxDistanceCS.Get(), nullptr, 0);
         context->CSSetConstantBuffers(0, 1, m_minDistancesCountConstant.GetAddressOf());
         context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
         context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
         context->Dispatch(1, 1, 1);
+
+        ResetStates();
+        context->CSSetShader(m_distanceAlphaFinalizeCS.Get(), nullptr, 0);
+        context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
+        context->CSSetShaderResources(0, 1, m_dilatedTextureSRV.GetAddressOf());
+        context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(2, 1, m_bakeResultUAV.GetAddressOf(), nullptr);
+        context->Dispatch(x, y, z);
+
+        ResetStates();
     }
     
     ResetStates();

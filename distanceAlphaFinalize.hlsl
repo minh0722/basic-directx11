@@ -8,10 +8,9 @@ cbuffer Constants : register(b0)
 };
 
 Texture2D<float4> source : register(t0);
-Texture2D<float4> sourceMask : register(t1);
 RWStructuredBuffer<float> MinDistances : register(u0);
 RWStructuredBuffer<float> MaxDistances : register(u1);
-RWTexture2D<float4> Result;
+RWTexture2D<float4> Result : register(u2);
 
 [numthreads(GROUP_SIZE, 1, 1)]
 void main( uint3 id : SV_DispatchThreadID )
@@ -20,7 +19,7 @@ void main( uint3 id : SV_DispatchThreadID )
 
     uint width;
     uint height;
-    sourceMask.GetDimensions(width, height);
+    source.GetDimensions(width, height);
 
     uint frameSize = width / frameCount;
 
