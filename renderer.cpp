@@ -8,18 +8,32 @@
 #include "Hemioctahedron.h"
 #include "DebugDisplay.h"
 #include "ImpostorBaker.h"
+#include "api/app/renderdoc_app.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
 float sin45 = (float)std::sin(PI / 4);
 
+RENDERDOC_API_1_4_0* renderdoc = nullptr;
 Renderer* Renderer::ms_Instance = nullptr;
+
+#define RENDERDOC_BEGIN_CAPTURE if(renderdoc) renderdoc->StartFrameCapture(nullptr, nullptr);
+#define RENDERDOC_END_CAPTURE if(renderdoc) renderdoc->EndFrameCapture(nullptr, nullptr);
 
 Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
 {
+    if (HMODULE mod = LoadLibrary("renderdoc.dll"))
+    {
+        pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_0, (void**)&renderdoc);
+        assert(ret == 1);
+
+        renderdoc->SetCaptureFilePathTemplate("renderdoc_captures/capture");
+    }
+    auto error = GetLastError();
 }
 
 Renderer::~Renderer()
@@ -94,12 +108,14 @@ void Renderer::Render(InputClass* input)
 	m_SpaceShip.Render(m_DeviceContext.Get());
 
     m_DebugDisplay->Render(this);
-
+    
 	static bool baked = false;
 	if (!baked)
 	{
+        RENDERDOC_BEGIN_CAPTURE
 		m_SpaceShip.BakeImpostor(m_DeviceContext.Get());
 		baked = true;
+        RENDERDOC_END_CAPTURE
 	}
 
 	m_SwapChain->Present(0, 0);
