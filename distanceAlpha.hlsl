@@ -8,7 +8,7 @@ cbuffer Constants : register(b0)
 };
 
 Texture2D<float4> sourceMask : register(t0);
-RWStructuredBuffer<float> MinDistances : register(u0); //size of frame
+RWStructuredBuffer<float> MinDistances : register(u0); //size of atlas dimension square
 
 [numthreads(GROUP_SIZE, 1, 1)]
 void main( uint3 id : SV_DispatchThreadID )
@@ -53,6 +53,6 @@ void main( uint3 id : SV_DispatchThreadID )
                 minDistance = min(minDistance, len);
         }
 
-        MinDistances[idx] = minDistance;
+        MinDistances[y * width + x] = minDistance;
     }
 }

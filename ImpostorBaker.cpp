@@ -48,6 +48,13 @@ struct MaxDistanceConst
     uint32_t frameY;
 };
 
+struct DistanceAlphaConst
+{
+    uint32_t frameCount;
+    uint32_t frameX;
+    uint32_t frameY;
+};
+
 void ImpostorBaker::Initialize(Renderer* renderer)
 {
     ID3D11Device* device = renderer->GetDevice();
@@ -380,21 +387,10 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 
     ResetStates();
 
-    // distance alpha
-    struct DistanceAlphaConst
-    {
-        uint32_t frameCount;
-        uint32_t frameX;
-        uint32_t frameY;
-    } constant;
+    DistanceAlphaConst constant;
 
     uint32_t frameSize = ms_atlasDimension / ms_atlasFramesCount;
     CalculateWorkSize(frameSize * frameSize, x, y, z);
-
-    context->CSSetShader(m_distanceAlphaCS.Get(), nullptr, 0);
-    //context->CSSetShaderResources(0, 1, m_albedoAtlasSRV.GetAddressOf());
-    context->CSSetShaderResources(0, 1, m_tempAtlasSRV.GetAddressOf());
-    context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
 
     for(uint32_t r = 0; r < ms_atlasFramesCount; ++r)
     for(uint32_t c = 0; c < ms_atlasFramesCount; ++c)
@@ -403,16 +399,21 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         constant.frameX = c;
         constant.frameY = r;
 
+        // distance alpha (min distances)
         D3D11_MAPPED_SUBRESOURCE mappedRes = {};
         THROW_IF_FAILED(context->Map(m_distanceAlphaConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
         DistanceAlphaConst* mappedConst = reinterpret_cast<DistanceAlphaConst*>(mappedRes.pData);
         memcpy(mappedConst, &constant, sizeof(DistanceAlphaConst));
         context->Unmap(m_distanceAlphaConstants.Get(), 0);
+        context->CSSetShader(m_distanceAlphaCS.Get(), nullptr, 0);
+        context->CSSetShaderResources(0, 1, m_tempAtlasSRV.GetAddressOf());
+        context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
         context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
         context->Dispatch(x, y, z);
 
         ResetStates();
 
+        // max distance
         uint32_t count = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
         THROW_IF_FAILED(context->Map(m_minDistancesCountConstant.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
         MaxDistanceConst* maxDistConst = reinterpret_cast<MaxDistanceConst*>(mappedRes.pData);
@@ -429,6 +430,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
         context->Dispatch(1, 1, 1);
 
+        // distance alpha finalize
         ResetStates();
         context->CSSetShader(m_distanceAlphaFinalizeCS.Get(), nullptr, 0);
         context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
