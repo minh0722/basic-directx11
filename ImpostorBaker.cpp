@@ -41,7 +41,7 @@ Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
 
 struct MaxDistanceConst
 {
-    uint32_t minDistLength;
+    uint32_t atlasWidth;
     uint32_t frameDimension;
     uint32_t frameCount;
     uint32_t frameX;
@@ -417,7 +417,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         uint32_t count = (ms_atlasDimension / ms_atlasFramesCount) * (ms_atlasDimension / ms_atlasFramesCount);
         THROW_IF_FAILED(context->Map(m_minDistancesCountConstant.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
         MaxDistanceConst* maxDistConst = reinterpret_cast<MaxDistanceConst*>(mappedRes.pData);
-        maxDistConst->minDistLength = count;
+        maxDistConst->atlasWidth = ms_atlasDimension;
         maxDistConst->frameDimension = ms_atlasDimension / ms_atlasFramesCount;
         maxDistConst->frameCount = ms_atlasFramesCount;
         maxDistConst->frameX = c;
