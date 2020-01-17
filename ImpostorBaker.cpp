@@ -444,6 +444,8 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     }
     
     ResetStates();
+
+    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeResultTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
