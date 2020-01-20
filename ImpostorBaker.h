@@ -20,7 +20,7 @@ class ImpostorBaker
 {
 public:
 	static void PrepareBake(ID3D11DeviceContext* context);
-	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
+	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent);
 	static void Initialize(Renderer* renderer);
 
     static void DoProcessing(ID3D11DeviceContext* context);
@@ -29,6 +29,8 @@ public:
 	static const uint32_t ms_atlasDimension = 4096;
 
 private:
+    static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
+
 	static void InitAtlasRenderTargets(ID3D11Device* device);
 	static void InitDepthStencilState(ID3D11Device* device);
 	static void InitRasterizerState(ID3D11Device* device);

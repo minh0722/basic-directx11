@@ -98,19 +98,7 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
         if (m_Texture)
             context->PSSetShaderResources(0, 1, m_Texture.GetAddressOf());
 
-        ImpostorBaker::PrepareBake(context);
-        for (auto it = m_Batches.begin(); it != m_Batches.end(); ++it)
-        {
-            const uint32_t materialID = it->first;
-            const Batch& batch = it->second;
-
-            context->IASetVertexBuffers(startSlot, numBuffers, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
-            context->IASetInputLayout(m_VertexInputLayout.Get());
-            context->PSSetConstantBuffers(0, 1, m_MaterialBuffers[materialID].GetAddressOf());
-            context->IASetPrimitiveTopology(batch.m_topology);
-            ImpostorBaker::Bake(context, this, batch);
-        }
-        ImpostorBaker::DoProcessing(context);
+        ImpostorBaker::Bake(context, this);
     }
 }
 
@@ -290,6 +278,21 @@ void GraphicsComponent::InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DES
 const wavefront::AABB& GraphicsComponent::GetBoundingBox() const
 {
     return m_BoundingBox;
+}
+
+const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GraphicsComponent::GetInputLayout() const
+{
+    return m_VertexInputLayout;
+}
+
+const std::unordered_map<uint32_t, Batch>& GraphicsComponent::GetBatches() const
+{
+    return m_Batches;
+}
+
+const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& GraphicsComponent::GetMaterialBuffers() const
+{
+    return m_MaterialBuffers;
 }
 
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)

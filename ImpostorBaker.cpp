@@ -285,6 +285,28 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->RSSetState(m_rasterizerState.Get());
 }
 
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent)
+{
+    uint32_t offset = 0;
+    const auto& inputLayout = graphicsComponent->GetInputLayout();
+    const auto& batches = graphicsComponent->GetBatches();
+    const auto& materialBuffers = graphicsComponent->GetMaterialBuffers();
+
+    ImpostorBaker::PrepareBake(context);
+    for (auto it = batches.begin(); it != batches.end(); ++it)
+    {
+        const uint32_t materialID = it->first;
+        const Batch& batch = it->second;
+
+        context->IASetVertexBuffers(0, 1, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
+        context->IASetInputLayout(inputLayout.Get());
+        context->PSSetConstantBuffers(0, 1, materialBuffers.at(materialID).GetAddressOf());
+        context->IASetPrimitiveTopology(batch.m_topology);
+        Bake(context, graphicsComponent, batch);
+    }
+    DoProcessing(context);
+}
+
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
 {
 	SetRenderTargets(context);

@@ -55,6 +55,9 @@ public:
     void InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc);
 
     const wavefront::AABB& GetBoundingBox() const;
+    const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetInputLayout() const;
+    const std::unordered_map<uint32_t, Batch>& GetBatches() const;
+    const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& GetMaterialBuffers() const;
 
 protected:
 
