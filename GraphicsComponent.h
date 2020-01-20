@@ -79,7 +79,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_WorldViewProjBuffer = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout = nullptr;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_Texture = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TextureSRV = nullptr;
 
     Microsoft::WRL::ComPtr<ID3D11SamplerState> m_SamplerState = nullptr;
 

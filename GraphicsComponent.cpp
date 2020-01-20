@@ -20,8 +20,8 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
     context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
     context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 
-    if (m_Texture)
-        context->PSSetShaderResources(0, 1, m_Texture.GetAddressOf());
+    if (m_TextureSRV)
+        context->PSSetShaderResources(0, 1, m_TextureSRV.GetAddressOf());
     
     UINT stride = m_VertexBufferStride;
 	UINT offset = 0;
@@ -95,8 +95,8 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
         UINT startSlot = 0;
         UINT numBuffers = 1;
 
-        if (m_Texture)
-            context->PSSetShaderResources(0, 1, m_Texture.GetAddressOf());
+        if (m_TextureSRV)
+            context->PSSetShaderResources(0, 1, m_TextureSRV.GetAddressOf());
 
         ImpostorBaker::Bake(context, this);
     }
@@ -192,7 +192,7 @@ void GraphicsComponent::SetWorldPosition(Vector4f pos)
 void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texturePath)
 {
     THROW_IF_FAILED(
-        DirectX::CreateWICTextureFromFile(device, texturePath, nullptr, m_Texture.ReleaseAndGetAddressOf())
+        DirectX::CreateWICTextureFromFile(device, texturePath, nullptr, m_TextureSRV.ReleaseAndGetAddressOf())
     );
 }
 
