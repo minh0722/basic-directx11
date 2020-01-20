@@ -87,7 +87,7 @@ void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRend
         DebugDisplay::GetDebugDisplay().Draw3DBox(m_WorldPosition.XYZ(), m_BoundingBox.m_center.XYZ(), m_BoundingBox.m_halfVec.XYZ());
 }
 
-void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
+void GraphicsComponent::BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* context)
 {
     if (m_Batches.size() > 0)
     {
@@ -98,7 +98,18 @@ void GraphicsComponent::BakeImpostor(ID3D11DeviceContext* context)
         if (m_TextureSRV)
             context->PSSetShaderResources(0, 1, m_TextureSRV.GetAddressOf());
 
-        ImpostorBaker::Bake(context, this);
+        BakeResult result = ImpostorBaker::Bake(context, this);
+
+        D3D11_TEXTURE2D_DESC desc = {};
+        result.m_AlbedoBakedTexture->GetDesc(&desc);
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Format = desc.Format;
+        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Texture2D.MipLevels = 1;
+        srvDesc.Texture2D.MostDetailedMip = 0;
+
+        THROW_IF_FAILED(device->CreateShaderResourceView(result.m_AlbedoBakedTexture.Get(), &srvDesc, m_ImpostorAlbedoAtlasSRV.GetAddressOf()));
     }
 }
 

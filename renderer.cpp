@@ -113,7 +113,7 @@ void Renderer::Render(InputClass* input)
 	if (!baked)
 	{
         RENDERDOC_BEGIN_CAPTURE
-		m_SpaceShip.BakeImpostor(m_DeviceContext.Get());
+		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
         RENDERDOC_END_CAPTURE
 	}

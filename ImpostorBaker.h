@@ -16,11 +16,17 @@ struct Snapshot
 	Vector4f m_ray;
 };
 
+struct BakeResult
+{
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_AlbedoBakedTexture;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_NormalDepthTexture;
+};
+
 class ImpostorBaker
 {
 public:
 	static void PrepareBake(ID3D11DeviceContext* context);
-	static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent);
+	static BakeResult Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent);
 	static void Initialize(Renderer* renderer);
 
     static void DoProcessing(ID3D11DeviceContext* context);
@@ -56,6 +62,7 @@ private:
 
 	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 	static Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;

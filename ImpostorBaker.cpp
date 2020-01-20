@@ -14,6 +14,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
+Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
 Microsoft::WRL::ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
 Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
@@ -87,8 +88,8 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 		device->CreateRenderTargetView(m_albedoAtlasTexture.Get(), nullptr, m_albedoAtlasRTV.GetAddressOf())
 	);
 
-	desc.Format = DXGI_FORMAT_D32_FLOAT;
-	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	desc.Format = DXGI_FORMAT_R32_TYPELESS;
+	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
 	THROW_IF_FAILED(
 		device->CreateTexture2D(&desc, nullptr, m_depthAtlasTexture.GetAddressOf())
@@ -102,6 +103,14 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	THROW_IF_FAILED(
 		device->CreateDepthStencilView(m_depthAtlasTexture.Get(), &depthStencilViewDesc, m_depthAtlasDSV.GetAddressOf())
 	);
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+
+    THROW_IF_FAILED(device->CreateShaderResourceView(m_depthAtlasTexture.Get(), &srvDesc, m_depthAtlasSRV.GetAddressOf()));
 }
 
 void ImpostorBaker::InitDepthStencilState(ID3D11Device* device)
@@ -285,7 +294,7 @@ void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 	context->RSSetState(m_rasterizerState.Get());
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent)
+BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent)
 {
     uint32_t offset = 0;
     const auto& inputLayout = graphicsComponent->GetInputLayout();
@@ -305,6 +314,8 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
         Bake(context, graphicsComponent, batch);
     }
     DoProcessing(context);
+
+    return BakeResult{ m_albedoAtlasTexture, nullptr }; // nullptr for now, we havent done normal depth baking yet
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)

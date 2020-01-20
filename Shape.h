@@ -12,7 +12,7 @@ public:
 
 	void SetGraphicsComponent(GraphicsComponent* newComponent);
 	void Render(ID3D11DeviceContext* context, bool isInstancing = false, uint32_t instanceCount = 1);
-	void BakeImpostor(ID3D11DeviceContext* context);
+	void BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* context);
 
     GraphicsComponent* GetGraphicsComponent();
 
