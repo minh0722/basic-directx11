@@ -9,12 +9,14 @@ cbuffer ConstBuffer : register(b0)
 struct VertexInput
 {
     float3 pos : POSITION;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
 };
 
 struct VertexOutput
 {
     float4 pos : SV_POSITION;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
 };
 
@@ -26,6 +28,7 @@ VertexOutput main(VertexInput inputVertex, uint vertexId : SV_VertexID)
     output.pos = mul(proj, output.pos);
 
     output.uv = inputVertex.uv;
+    output.normal = inputVertex.normal;
 
     return output;
 }

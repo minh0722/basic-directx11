@@ -7,7 +7,7 @@ struct PS_OUTPUT
 struct InputPixel
 {
     float4 pos : SV_POSITION;
-    float3 normal : NORMAL0;
+    float3 normal : NORMAL;
     float2 uv : TEXCOORD0;
 };
 
@@ -24,7 +24,7 @@ PS_OUTPUT main(InputPixel inputPixel)
 {
     PS_OUTPUT output;
     output.color = float4(diffuse.rgb, 1.0f);
-    output.normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    output.normal = float4(inputPixel.normal * 0.5f + 0.5f, 1.0f);
 
     return output;
 }

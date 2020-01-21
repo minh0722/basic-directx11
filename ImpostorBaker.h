@@ -64,6 +64,9 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_normalAtlasTexture;
+    static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_normalAtlasRTV;
+
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 	static Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_rasterizerState;
 
