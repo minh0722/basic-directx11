@@ -2,11 +2,15 @@
 
 #define NEIGHBORS 8
 
+cbuffer FlagsConstants
+{
+    uint AllChannels;
+    uint NormalsDepth; // if true, alpha border uses 0.5 instead of 0.0
+};
+
 Texture2D<float4> source;
 Texture2D<float4> sourceMask;
 RWTexture2D<float4> result;
-bool AllChannels = false;
-bool NormalsDepth = false; // if true, alpha border uses 0.5 instead of 0.0
 
 [numthreads(GROUP_SIZE, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
