@@ -26,7 +26,7 @@ Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_normalDepthBakeCS;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_normalDepthMergeCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAlbedoAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempNormalAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedAlbedoTexture;
@@ -245,12 +245,12 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
         nullptr,
         m_distanceAlphaFinalizeCS.ReleaseAndGetAddressOf()));
 
-    //THROW_IF_FAILED(D3DReadFileToBlob(L"", &blob));
-    //THROW_IF_FAILED(device->CreateComputeShader(
-    //    blob->GetBufferPointer(),
-    //    blob->GetBufferSize(),
-    //    nullptr,
-    //    m_normalDepthBakeCS.ReleaseAndGetAddressOf()));
+    THROW_IF_FAILED(D3DReadFileToBlob(L"normalDepthMergeCS.cso", &blob));
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        nullptr,
+		m_normalDepthMergeCS.ReleaseAndGetAddressOf()));
 
     // temp atlas texture and srv
     D3D11_TEXTURE2D_DESC desc = {};
@@ -464,6 +464,26 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->Unmap(m_dilateConstants.Get(), 0);
     };
 
+	// do merging of normal and depth
+	context->CSSetShader(m_normalDepthMergeCS.Get(), nullptr, 0);
+	context->CSSetShaderResources(0, 1, m_normalAtlasSRV.GetAddressOf());
+	context->CSSetShaderResources(1, 1, m_depthAtlasSRV.GetAddressOf());
+	context->CSSetUnorderedAccessViews(0, 1, m_bakeNormalResultUAV.GetAddressOf(), nullptr);
+	context->Dispatch(x, y, z);
+
+
+	ResetStates();
+
+	//// then do dilating on normal
+	//SetDilateConstant(1, 1);
+	//context->CSSetShader(m_dilateCS.Get(), nullptr, 0);
+	//context->CSSetShaderResources(0, 1, m_normalAtlasSRV.GetAddressOf());
+	//context->CSSetShaderResources(1, 1, m_tempAlbedoAtlasSRV.GetAddressOf());   // use same mask as albedo
+	//context->CSSetConstantBuffers(0, 1, m_dilateConstants.GetAddressOf());
+	//context->CSSetUnorderedAccessViews(0, 1, m_dilatedNormalTextureUAV.GetAddressOf(), nullptr);
+	//context->Dispatch(x, y, z);
+
+	//ResetStates();
 
     // then do dilating on albedo
     SetDilateConstant(0, 0);
@@ -475,16 +495,6 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     context->Dispatch(x, y, z);
 
     ResetStates();
-
-    // then do dilating on normal
-    SetDilateConstant(1, 1);
-    context->CSSetShader(m_dilateCS.Get(), nullptr, 0);
-    context->CSSetShaderResources(0, 1, m_normalAtlasSRV.GetAddressOf());
-    context->CSSetShaderResources(1, 1, m_tempAlbedoAtlasSRV.GetAddressOf());   // use same mask as albedo
-    context->CSSetConstantBuffers(0, 1, m_dilateConstants.GetAddressOf());
-    context->CSSetUnorderedAccessViews(0, 1, m_dilatedNormalTextureUAV.GetAddressOf(), nullptr);
-    context->Dispatch(x, y, z);
-
 
     DistanceAlphaConst constant;
     uint32_t frameSize = ms_atlasDimension / ms_atlasFramesCount;

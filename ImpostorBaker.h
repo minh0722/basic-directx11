@@ -80,7 +80,7 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_maxDistanceCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaFinalizeCS;
-    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_normalDepthBakeCS;
+    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_normalDepthMergeCS;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempAlbedoAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempNormalAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_dilatedAlbedoTexture;
