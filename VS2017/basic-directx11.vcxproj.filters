@@ -175,5 +175,6 @@
     <FxCompile Include="..\distanceAlpha.hlsl" />
     <FxCompile Include="..\maxDistance.hlsl" />
     <FxCompile Include="..\distanceAlphaFinalize.hlsl" />
+    <FxCompile Include="..\impostorBakerPixelShader.hlsl" />
   </ItemGroup>
 </Project>

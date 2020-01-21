@@ -1,6 +1,7 @@
 struct InputPixel
 {
 	float4 pos : SV_POSITION;
+    float3 normal : NORMAL0;
     float2 uv : TEXCOORD0;
 };
 

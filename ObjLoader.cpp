@@ -106,9 +106,9 @@ namespace wavefront
                 --vertexIdx2;  --texCoordIdx2; --vertexNormalIdx2;
                 --vertexIdx3;  --texCoordIdx3; --vertexNormalIdx3;
 
-                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx1], result.texCoord[texCoordIdx1] });
-                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx2], result.texCoord[texCoordIdx2] });
-                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx3], result.texCoord[texCoordIdx3] });
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx1], result.vertexNormals[vertexNormalIdx1], result.texCoord[texCoordIdx1] });
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx2], result.vertexNormals[vertexNormalIdx2], result.texCoord[texCoordIdx2] });
+                result.perMaterialFaces[currentFaceMaterialCrc].vertexBuffer.push_back(VertexFormat{ result.vertices[vertexIdx3], result.vertexNormals[vertexNormalIdx3], result.texCoord[texCoordIdx3] });
 			}
 			else if (StringEqual(buf, "usemtl"))
 			{
