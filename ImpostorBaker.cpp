@@ -44,7 +44,8 @@ Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_maxDistanceBu
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAlbedoAtlasUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedAlbedoTextureUAV;
 Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedNormalTextureUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeResultUAV;
+Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeAlbedoResultUAV;
+Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeNormalResultUAV;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_dilateConstants;
 Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
@@ -282,7 +283,8 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_tempAlbedoAtlasTexture.Get(), &uavDesc, m_tempAlbedoAtlasUAV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_dilatedAlbedoTexture.Get(), &uavDesc, m_dilatedAlbedoTextureUAV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_dilatedNormalTexture.Get(), &uavDesc, m_dilatedNormalTextureUAV.GetAddressOf()));
-    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeAlbedoResultTexture.Get(), &uavDesc, m_bakeResultUAV.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeAlbedoResultTexture.Get(), &uavDesc, m_bakeAlbedoResultUAV.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakedNormalResultTexture.Get(), &uavDesc, m_bakeNormalResultUAV.GetAddressOf()));
 
     THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateShaderResourceView(m_normalAtlasTexture.Get(), &srvDesc, m_normalAtlasSRV.GetAddressOf()));
@@ -533,7 +535,16 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->CSSetShaderResources(0, 1, m_dilatedAlbedoTextureSRV.GetAddressOf());
         context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
         context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
-        context->CSSetUnorderedAccessViews(2, 1, m_bakeResultUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(2, 1, m_bakeAlbedoResultUAV.GetAddressOf(), nullptr);
+        context->Dispatch(x, y, z);
+
+        ResetStates();
+        context->CSSetShader(m_distanceAlphaFinalizeCS.Get(), nullptr, 0);
+        context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
+        context->CSSetShaderResources(0, 1, m_dilatedNormalTextureSRV.GetAddressOf());
+        context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
+        context->CSSetUnorderedAccessViews(2, 1, m_bakeNormalResultUAV.GetAddressOf(), nullptr);
         context->Dispatch(x, y, z);
 
         ResetStates();

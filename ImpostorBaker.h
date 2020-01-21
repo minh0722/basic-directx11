@@ -98,7 +98,8 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAlbedoAtlasUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_dilatedAlbedoTextureUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_dilatedNormalTextureUAV;
-    static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_bakeResultUAV;
+    static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_bakeAlbedoResultUAV;
+    static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_bakeNormalResultUAV;
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_distanceAlphaConstants;
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_dilateConstants;
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_minDistanceBuffer;
