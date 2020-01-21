@@ -539,15 +539,6 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
         context->Dispatch(x, y, z);
 
         ResetStates();
-        context->CSSetShader(m_distanceAlphaFinalizeCS.Get(), nullptr, 0);
-        context->CSSetConstantBuffers(0, 1, m_distanceAlphaConstants.GetAddressOf());
-        context->CSSetShaderResources(0, 1, m_dilatedNormalTextureSRV.GetAddressOf());
-        context->CSSetUnorderedAccessViews(0, 1, m_minDistanceBufferUAV.GetAddressOf(), nullptr);
-        context->CSSetUnorderedAccessViews(1, 1, m_maxDistanceBufferUAV.GetAddressOf(), nullptr);
-        context->CSSetUnorderedAccessViews(2, 1, m_bakeNormalResultUAV.GetAddressOf(), nullptr);
-        context->Dispatch(x, y, z);
-
-        ResetStates();
     }
     
     ResetStates();
