@@ -24,9 +24,11 @@ Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
 Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
+Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_normalDepthBakeCS;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAtlasTexture;
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakeResultTexture;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakeAlbedoResultTexture;
+Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakedNormalResultTexture;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAtlasSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_dilatedTextureSRV;
 Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
@@ -221,6 +223,13 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
         nullptr,
         m_distanceAlphaFinalizeCS.ReleaseAndGetAddressOf()));
 
+    THROW_IF_FAILED(D3DReadFileToBlob(L"", &blob));
+    THROW_IF_FAILED(device->CreateComputeShader(
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        nullptr,
+        m_normalDepthBakeCS.ReleaseAndGetAddressOf()));
+
     // temp atlas texture and srv
     D3D11_TEXTURE2D_DESC desc = {};
     m_albedoAtlasTexture->GetDesc(&desc);
@@ -229,7 +238,8 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 
     THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_tempAtlasTexture.GetAddressOf()));
     THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_dilatedTexture.GetAddressOf()));
-    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_bakeResultTexture.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_bakeAlbedoResultTexture.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_bakedNormalResultTexture.GetAddressOf()));
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Texture2D.MipLevels = 1;
@@ -246,7 +256,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     uavDesc.Texture2D.MipSlice = 0;
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_tempAtlasTexture.Get(), &uavDesc, m_tempAtlasUAV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_dilatedTexture.Get(), &uavDesc, m_dilatedTextureUAV.GetAddressOf()));
-    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeResultTexture.Get(), &uavDesc, m_bakeResultUAV.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeAlbedoResultTexture.Get(), &uavDesc, m_bakeResultUAV.GetAddressOf()));
 
     THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
 
@@ -315,7 +325,7 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     }
     DoProcessing(context);
 
-    return BakeResult{ m_albedoAtlasTexture, nullptr }; // nullptr for now, we havent done normal depth baking yet
+    return BakeResult{ m_bakeAlbedoResultTexture, nullptr }; // nullptr for now, we havent done normal depth baking yet
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
@@ -478,7 +488,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     
     ResetStates();
 
-    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeResultTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
+    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeAlbedoResultTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)

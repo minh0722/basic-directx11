@@ -77,9 +77,11 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_maxDistanceCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaFinalizeCS;
+    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_normalDepthBakeCS;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_dilatedTexture;
-    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_bakeResultTexture;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_bakeAlbedoResultTexture;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_bakedNormalResultTexture;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_dilatedTextureSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
