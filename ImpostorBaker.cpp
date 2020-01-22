@@ -72,6 +72,7 @@ struct DilateConst
 {
     uint32_t allChannels;
     uint32_t normalsDepth;
+    uint32_t frameCount;
 };
 
 void ImpostorBaker::Initialize(Renderer* renderer)
@@ -318,8 +319,8 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 
     THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_distanceAlphaConstants.GetAddressOf()));
 
-    bufferDesc.ByteWidth = 16;
-    bufferDesc.StructureByteStride = sizeof(uint32_t);
+    bufferDesc.ByteWidth = 32;
+    bufferDesc.StructureByteStride = 0;
     THROW_IF_FAILED(device->CreateBuffer(&bufferDesc, nullptr, m_dilateConstants.GetAddressOf()));
 
     bufferDesc.ByteWidth = 32;
@@ -452,13 +453,14 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 
     ResetStates();
 
-    auto SetDilateConstant = [&context](uint32_t allChannels, uint32_t normalsDepth)
+    auto SetDilateConstant = [&context](uint32_t _allChannels, uint32_t _normalsDepth)
     {
         D3D11_MAPPED_SUBRESOURCE mappedRes = {};
         THROW_IF_FAILED(context->Map(m_dilateConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
         DilateConst* dilateConstant = reinterpret_cast<DilateConst*>(mappedRes.pData);
-        dilateConstant->allChannels = allChannels;
-        dilateConstant->normalsDepth = normalsDepth;
+        dilateConstant->allChannels = _allChannels;
+        dilateConstant->normalsDepth = _normalsDepth;
+        dilateConstant->frameCount = ms_atlasFramesCount;
         context->Unmap(m_dilateConstants.Get(), 0);
     };
 

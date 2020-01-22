@@ -6,6 +6,7 @@ cbuffer FlagsConstants
 {
     uint AllChannels;
     uint NormalsDepth; // if true, alpha border uses 0.5 instead of 0.0
+    uint frameCount;
 };
 
 Texture2D<float4> source;
@@ -69,11 +70,22 @@ void main(uint3 id : SV_DispatchThreadID)
         }
     }
 
+    if (color.a == 0.0f && NormalsDepth)
+        color = float4(0.0f, 0.0f, 0.0f, 0.5f);
+
+    uint frameDimension = width / frameCount;
+    uint frameX = x / frameDimension;
+    uint frameY = y / frameDimension;
+    uint xStart = frameX * frameDimension;
+    uint yStart = frameY * frameDimension;
+    uint xEnd = xStart + frameDimension;
+    uint yEnd = yStart + frameDimension;
+
     // clear out 1 pixel border
-    if (x == 0 || x == width - 1 || y == 0 || y == width - 1)
+    if (x == xStart || x == xEnd || y == yStart || y == yEnd)
     {
         if (NormalsDepth)
-            color = float4(0.0f, 0.0f, 0.0f, 0.5f);
+            color = float4(0.0f, 0.0f, 0.0f, 0.0f);
         else
             color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     }
