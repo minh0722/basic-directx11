@@ -404,8 +404,6 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 
 		context->Draw(batch.verticesCount, 0);
 	}
-
-	//THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_albedoAtlasTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png"));
 }
 
 void ImpostorBaker::CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z)
@@ -553,6 +551,7 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     ResetStates();
 
     THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeAlbedoResultTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
+    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakedNormalResultTexture.Get(), GUID_ContainerFormatPng, L"NormalImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
