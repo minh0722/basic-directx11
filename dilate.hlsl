@@ -78,8 +78,8 @@ void main(uint3 id : SV_DispatchThreadID)
     uint frameY = y / frameDimension;
     uint xStart = frameX * frameDimension;
     uint yStart = frameY * frameDimension;
-    uint xEnd = xStart + frameDimension;
-    uint yEnd = yStart + frameDimension;
+    uint xEnd = xStart + frameDimension - 1;
+    uint yEnd = yStart + frameDimension - 1;
 
     // clear out 1 pixel border
     if (x == xStart || x == xEnd || y == yStart || y == yEnd)
