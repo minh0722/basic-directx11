@@ -836,7 +836,7 @@ void Renderer::SetupSpaceShip()
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
     graphicsComponent->InitSamplerState(m_Device.Get(), samplerDesc);
 
-    Vector4f worldPos(0.0f, 0.0f, 5.0f, 0.0f);
+    Vector4f worldPos(0.0f, 0.0f, -20.0f, 1.0f);
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
 
     graphicsComponent->SetBoundingBox(result.boundingBox);
