@@ -8,6 +8,7 @@
 #include "Hemioctahedron.h"
 #include "DebugDisplay.h"
 #include "ImpostorBaker.h"
+#include "ImpostorRenderer.h"
 #include "api/app/renderdoc_app.h"
 #include <cmath>
 
@@ -67,6 +68,7 @@ void Renderer::Initialize(HWND window)
     DebugDisplay::SetDebugDisplay(m_DebugDisplay);
 
 	ImpostorBaker::Initialize(this);
+    ImpostorRenderer::Initialize(this);
 }
 
 void Renderer::Render(InputClass* input)
