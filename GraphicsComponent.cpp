@@ -228,41 +228,6 @@ void GraphicsComponent::AddMaterial(ID3D11Device* device, uint32_t materialID, w
     m_MaterialBuffers[materialID] = buffer;
 }
 
-//void GraphicsComponent::ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices)
-//{
-//    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-//
-//    THROW_IF_FAILED(
-//        context->Map(
-//            m_VertexBuffer.Get(),
-//            0,
-//            D3D11_MAP_WRITE_DISCARD,
-//            0,
-//            &mappedResource));
-//
-//    memcpy(mappedResource.pData, vertices.data(), sizeof(Vertex) * vertices.size());
-//
-//    context->Unmap(m_VertexBuffer.Get(), 0);
-//}
-
-//void GraphicsComponent::ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices)
-//{
-//    D3D11_MAPPED_SUBRESOURCE mappedResource = {};
-//
-//    THROW_IF_FAILED(
-//        context->Map(                       // mapping the resource blocks gpu from accessing it
-//            m_IndexBuffer.Get(),            // the resource
-//            0,                              // the index of the subresource
-//            D3D11_MAP_WRITE_DISCARD,        // Resource is mapped for writing; the previous contents of the resource will be undefined
-//            0,                              // specifies what the CPU does when the GPU is busy (Optional)
-//            &mappedResource));
-//
-//    memcpy(mappedResource.pData, indices.data(), sizeof(uint32_t) * indices.size());        // copy the updated data to the mapped subresource
-//
-//    context->Unmap(m_IndexBuffer.Get(), 0);
-//
-//}
-
 void GraphicsComponent::ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj)
 {
     D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};

@@ -48,8 +48,6 @@ public:
     void SetWorldPosition(Vector4f pos);
     void LoadTexture(ID3D11Device* device, const wchar_t* texturePath);
 
-    //void ChangeVertexBufferData(ID3D11DeviceContext* context, const std::vector<Vertex>& vertices);
-    //void ChangeIndexBufferData(ID3D11DeviceContext* context, const std::vector<uint32_t>& indices);
     void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
 
     void InitSamplerState(ID3D11Device* device, D3D11_SAMPLER_DESC desc);

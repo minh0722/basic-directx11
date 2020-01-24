@@ -96,6 +96,9 @@
     <ClInclude Include="..\computeShadersCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\ImpostorRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Camera.cpp">
@@ -161,6 +164,9 @@
     <ClCompile Include="..\ImpostorBaker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ImpostorRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\pixelShader.hlsl" />
@@ -177,5 +183,7 @@
     <FxCompile Include="..\distanceAlphaFinalize.hlsl" />
     <FxCompile Include="..\impostorBakerPixelShader.hlsl" />
     <FxCompile Include="..\normalDepthMergeCS.hlsl" />
+    <FxCompile Include="..\ImpostorRenderPS.hlsl" />
+    <FxCompile Include="..\ImpostorRenderVS.hlsl" />
   </ItemGroup>
 </Project>
