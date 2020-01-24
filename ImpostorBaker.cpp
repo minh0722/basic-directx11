@@ -7,50 +7,52 @@
 #include <ScreenGrab.h>
 #include <wincodec.h>
 
+using Microsoft::WRL::ComPtr;
+
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
-Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
-Microsoft::WRL::ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
-Microsoft::WRL::ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_normalAtlasTexture;
-Microsoft::WRL::ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_normalAtlasRTV;
-Microsoft::WRL::ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
-Microsoft::WRL::ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
-Microsoft::WRL::ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
-Microsoft::WRL::ComPtr<ID3D11ComputeShader> ImpostorBaker::m_normalDepthMergeCS;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAlbedoAtlasTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempNormalAtlasTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedAlbedoTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_mergedNormalDepthTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakeAlbedoResultTexture;
-Microsoft::WRL::ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakedNormalResultTexture;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAlbedoAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempNormalAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_dilatedAlbedoTextureSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_mergedNormalDepthTextureSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_normalAtlasSRV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_minDistanceBufferUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_maxDistanceBufferUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAlbedoAtlasUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedAlbedoTextureUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_mergedNormalDepthTextureUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeAlbedoResultUAV;
-Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeNormalResultUAV;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_dilateConstants;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_maxDistanceBuffer;
-Microsoft::WRL::ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
+ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
+ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
+ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_normalAtlasTexture;
+ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_normalAtlasRTV;
+ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
+ComPtr<ID3D11VertexShader> ImpostorBaker::m_vertexShader;
+ComPtr<ID3D11PixelShader> ImpostorBaker::m_pixelShader;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_viewProjBuffer;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maskingCS;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_dilateCS;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaCS;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_maxDistanceCS;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_distanceAlphaFinalizeCS;
+ComPtr<ID3D11ComputeShader> ImpostorBaker::m_normalDepthMergeCS;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempAlbedoAtlasTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_tempNormalAtlasTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_dilatedAlbedoTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_mergedNormalDepthTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakeAlbedoResultTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_bakedNormalResultTexture;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempAlbedoAtlasSRV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_tempNormalAtlasSRV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_dilatedAlbedoTextureSRV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_mergedNormalDepthTextureSRV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_albedoAtlasSRV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_normalAtlasSRV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_minDistanceBufferUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_maxDistanceBufferUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_tempAlbedoAtlasUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_dilatedAlbedoTextureUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_mergedNormalDepthTextureUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeAlbedoResultUAV;
+ComPtr<ID3D11UnorderedAccessView> ImpostorBaker::m_bakeNormalResultUAV;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_distanceAlphaConstants;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_dilateConstants;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_maxDistanceBuffer;
+ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
 
 struct MaxDistanceConst
 {
@@ -173,7 +175,7 @@ void ImpostorBaker::InitRasterizerState(ID3D11Device* device)
 
 void ImpostorBaker::InitShaders(ID3D11Device* device)
 {
-	ID3DBlob* blob;
+	ComPtr<ID3DBlob> blob;
 	THROW_IF_FAILED(D3DReadFileToBlob(L"impostorBakerVertexShader.cso", &blob));
 
 	THROW_IF_FAILED(
