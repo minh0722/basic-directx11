@@ -14,4 +14,5 @@ public:
 private:
     static Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
     static Microsoft::WRL::ComPtr <ID3D11PixelShader> m_ps;
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexConstBuffer;
 };
