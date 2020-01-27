@@ -6,7 +6,7 @@ cbuffer WorldViewProj : register(b0)
 
 cbuffer VertexConstants : register(b1)
 {
-    matrix objectToWorld;
+    matrix worldToObject;
     float4 cameraWorldPos;
 };
 
@@ -23,8 +23,11 @@ float3 VertexIDToQuadVertex(uint vertexId)
     return float3(float((vertexId >> 1) ^ (vertexId & 1)) - 0.5f, 0.0f, float((vertexId >> 1) & 1) - 0.5f);
 }
 
-float3 ImpostorVertex(float3 vertex, float2 uv)
+float3 ImpostorVertex(float3 vertex, float2 texcoord)
 {
+    float4 cameraPosObjectSpace = mul(worldToObject, cameraWorldPos);
+    
+
     return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 

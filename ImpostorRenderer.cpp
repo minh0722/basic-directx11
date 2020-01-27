@@ -20,7 +20,7 @@ struct QuadVertexData
 
 struct VSConstant
 {
-    XMMATRIX objectToWorld;     // float4x4
+    XMMATRIX worldToObject;     // float4x4
     XMVECTOR cameraWorldPos;
 };
 
@@ -95,14 +95,14 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->VSSetConstantBuffers(0, 1, graphicComponent->GetWorldViewProjBuffer().GetAddressOf());
 
     Vector4f worldPos = graphicComponent->GetWorldPos();
-    XMMATRIX objectToWorld = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z));
+    XMMATRIX worldToObject = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z));
     
     const Camera& camera = renderer->GetCamera();
 
     D3D11_MAPPED_SUBRESOURCE mappedRes = {};
     THROW_IF_FAILED(context->Map(m_vsConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
     VSConstant* constant = reinterpret_cast<VSConstant*>(mappedRes.pData);
-    memcpy(&constant->objectToWorld, &objectToWorld, sizeof(XMMATRIX));
+    memcpy(&constant->worldToObject, &worldToObject, sizeof(XMMATRIX));
     constant->cameraWorldPos = camera.GetPosition();
     context->Unmap(m_vsConstants.Get(), 0);
 
