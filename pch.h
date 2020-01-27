@@ -141,3 +141,12 @@ namespace wavefront
 		return fileStr;
 	}
 }
+
+namespace Math
+{
+    template <typename T>
+    T RoundUpToMultiple(T num, T multiple)
+    {
+        return num >= 0 ? (std::floor(num / multiple) + T(1)) * multiple : (std::ceil(num / multiple) - T(1)) * multiple;
+    }
+}
