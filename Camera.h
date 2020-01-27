@@ -20,6 +20,7 @@ public:
     	
     DirectX::XMMATRIX GetViewMatrix() const;
 	DirectX::XMMATRIX GetProjectionMatrix() const;
+    DirectX::XMVECTOR GetPosition() const;
 
 	void UpdateCameraMatrices();
 

@@ -128,6 +128,11 @@ DirectX::XMMATRIX Camera::GetProjectionMatrix() const
 	return m_PerspectiveProjectionMatrix;
 }
 
+DirectX::XMVECTOR Camera::GetPosition() const
+{
+    return m_Position;
+}
+
 void Camera::UpdateCameraMatrices()
 {
 	if (m_NeedToUpdateMatrices)
