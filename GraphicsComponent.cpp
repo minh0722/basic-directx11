@@ -272,6 +272,16 @@ const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& Graphi
     return m_MaterialBuffers;
 }
 
+const Microsoft::WRL::ComPtr<ID3D11Buffer>& GraphicsComponent::GetWorldViewProjBuffer() const
+{
+    return m_WorldViewProjBuffer;
+}
+
+Vector4f GraphicsComponent::GetWorldPos() const
+{
+    return m_WorldPosition;
+}
+
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)
 {
 	ID3DBlob* blob;

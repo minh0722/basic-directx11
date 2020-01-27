@@ -56,6 +56,8 @@ public:
     const Microsoft::WRL::ComPtr<ID3D11InputLayout>& GetInputLayout() const;
     const std::unordered_map<uint32_t, Batch>& GetBatches() const;
     const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& GetMaterialBuffers() const;
+    const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetWorldViewProjBuffer() const;
+    Vector4f GetWorldPos() const;
 
 protected:
 
