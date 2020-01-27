@@ -8,6 +8,7 @@ cbuffer VertexConstants : register(b1)
 {
     matrix worldToObject;
     float4 cameraWorldPos;
+    uint framesCount;
 };
 
 ByteAddressBuffer VertexDataBuffer : register(t0);
@@ -25,8 +26,12 @@ float3 VertexIDToQuadVertex(uint vertexId)
 
 float3 ImpostorVertex(float3 vertex, float2 texcoord)
 {
-    float4 cameraPosObjectSpace = mul(worldToObject, cameraWorldPos);
+    float3 impostorPivotOffset = float3(0.0f, 0.0f, 0.0f);      // at 0,0,0 for now
+
+    float3 cameraPosObjectSpace = mul(worldToObject, cameraWorldPos).xyz;
+    float3 pivotToCameraRay = normalize(cameraPosObjectSpace - impostorPivotOffset);
     
+    texcoord *= (1.0f / framesCount);
 
     return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }

@@ -2,6 +2,7 @@
 #include "ImpostorRenderer.h"
 #include "renderer.h"
 #include "GraphicsComponent.h"
+#include "ImpostorBaker.h"
 
 using Microsoft::WRL::ComPtr;
 using DirectX::XMMATRIX;
@@ -22,6 +23,7 @@ struct VSConstant
 {
     XMMATRIX worldToObject;     // float4x4
     XMVECTOR cameraWorldPos;
+    uint32_t framesCount;
 };
 
 void ImpostorRenderer::Initialize(Renderer* renderer)
@@ -104,6 +106,7 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     VSConstant* constant = reinterpret_cast<VSConstant*>(mappedRes.pData);
     memcpy(&constant->worldToObject, &worldToObject, sizeof(XMMATRIX));
     constant->cameraWorldPos = camera.GetPosition();
+    constant->framesCount = ImpostorBaker::ms_atlasFramesCount;
     context->Unmap(m_vsConstants.Get(), 0);
 
     context->VSSetConstantBuffers(1, 1, m_vsConstants.GetAddressOf());
