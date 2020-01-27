@@ -9,10 +9,14 @@ class ImpostorRenderer
 public:
     static void Initialize(Renderer* renderer);
 
-    static void Render(GraphicsComponent* graphicComponent);
+    static void Render(Renderer* renderer, GraphicsComponent* graphicComponent);
 
 private:
     static Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
-    static Microsoft::WRL::ComPtr <ID3D11PixelShader> m_ps;
-	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexConstBuffer;
+    static Microsoft::WRL::ComPtr<ID3D11PixelShader> m_ps;
+
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_vertexDataSRV;
+	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexDataBuffer;
+
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsConstants;
 };
