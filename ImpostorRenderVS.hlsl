@@ -319,4 +319,8 @@ void main(uint vertexID : SV_VertexID)
 
     ImpostorVertex(imp);
 
+    float4 normal = float4(0.0f, 1.0f, 0.0f, 1.0f);
+    float4 tangent = float4(1.0f, 0.0f, 0.0f, 1.0f);
+
+
 }
