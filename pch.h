@@ -147,6 +147,6 @@ namespace Math
     template <typename T>
     T RoundUpToMultiple(T num, T multiple)
     {
-        return num >= 0 ? (std::floor(num / multiple) + T(1)) * multiple : (std::ceil(num / multiple) - T(1)) * multiple;
+        return num >= 0 ? (T(std::floor(num / multiple)) + T(1)) * multiple : (T(std::ceil(num / multiple)) - T(1)) * multiple;
     }
 }
