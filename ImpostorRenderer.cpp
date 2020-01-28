@@ -23,7 +23,8 @@ struct VSConstant
 {
     XMMATRIX worldToObject;     // float4x4
     XMVECTOR cameraWorldPos;
-    uint32_t framesCount;
+    float framesCount;
+    float radius;
 };
 
 void ImpostorRenderer::Initialize(Renderer* renderer)
@@ -100,13 +101,15 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     XMMATRIX worldToObject = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z));
     
     const Camera& camera = renderer->GetCamera();
+    const wavefront::AABB& boundingBox = graphicComponent->GetBoundingBox();
 
     D3D11_MAPPED_SUBRESOURCE mappedRes = {};
     THROW_IF_FAILED(context->Map(m_vsConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
     VSConstant* constant = reinterpret_cast<VSConstant*>(mappedRes.pData);
     memcpy(&constant->worldToObject, &worldToObject, sizeof(XMMATRIX));
     constant->cameraWorldPos = camera.GetPosition();
-    constant->framesCount = ImpostorBaker::ms_atlasFramesCount;
+    constant->framesCount = (float)ImpostorBaker::ms_atlasFramesCount;
+    constant->radius = boundingBox.GetRadius();
     context->Unmap(m_vsConstants.Get(), 0);
 
     context->VSSetConstantBuffers(1, 1, m_vsConstants.GetAddressOf());
