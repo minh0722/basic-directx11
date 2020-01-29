@@ -1,7 +1,10 @@
+#include "ImpostorShaderCommon.cginc"
 
 cbuffer WorldViewProj : register(b0)
 {
-    matrix worldViewProj;
+    matrix world;
+    matrix view;
+    matrix proj;
 };
 
 cbuffer VertexConstants : register(b1)
@@ -14,209 +17,9 @@ cbuffer VertexConstants : register(b1)
 
 ByteAddressBuffer VertexDataBuffer : register(t0);
 
-struct Ray
-{
-    float3 origin;
-    float3 direction;
-};
-
-struct ImpostorData
-{
-    float2 uv;
-    float2 grid;
-    float4 frame0;
-    float4 frame1;
-    float4 frame2;
-    float3 vertex;
-};
-
-static const bool g_ImposterFullSphere = true;
-
-// @param vertexID in range [0; 3]
-// returns a unit quad with following vertices <x, y, z>
-// 0 - <-0.5f, 0, -0.5f>
-// 1 - < 0.5f, 0, -0.5f>
-// 2 - < 0.5f, 0,  0.5f>
-// 3 - <-0.5f, 0,  0.5f>
-float3 VertexIDToQuadVertex(uint vertexId)
-{
-    return float3(float((vertexId >> 1) ^ (vertexId & 1)) - 0.5f, 0.0f, float((vertexId >> 1) & 1) - 0.5f);
-}
-
-float2 VirtualPlaneUV(float3 planeNormal, float3 planeX, float3 planeZ, float3 center, float2 uvScale, Ray rayLocal)
-{
-    half normalDotOrigin = dot(planeNormal, rayLocal.origin);
-    half normalDotCenter = dot(planeNormal, center);
-    half normalDotRay = dot(planeNormal, rayLocal.direction);
-
-    half planeDistance = normalDotOrigin - normalDotCenter;
-    planeDistance *= -1.0f;
-
-    half intersect = planeDistance / normalDotRay;
-
-    float3 intersection = ((rayLocal.direction * intersect) + rayLocal.origin) - center;
-
-    half dx = dot(planeX, intersection);
-    half dz = dot(planeZ, intersection);
-
-    float2 uv = float2(0.0f, 0.0f);
-
-    if (intersect > 0.0f)
-    {
-        uv = float2(dx, dz);
-    }
-    else
-    {
-        uv = float2(0.0f, 0.0f);
-    }
-
-    uv /= uvScale;
-    uv += float2(0.5f, 0.5f);
-    return uv;
-}
-
-float3 ITBasis(float3 vec, float3 basedX, float3 basedY, float3 basedZ)
-{
-    return float3(dot(basedX, vec), dot(basedY, vec), dot(basedZ, vec));
-}
-
-float3 FrameTransform(float3 projRay, float3 frameRay, out float3 worldX, out float3 worldZ)
-{
-    worldX = normalize(float3(-frameRay.z, 0, frameRay.x));
-    worldZ = normalize(cross(worldX, frameRay));
-
-    projRay *= -1.0f;
-
-    float3 local = normalize(ITBasis(projRay, worldX, frameRay, worldZ));
-    return local;
-}
-
-float4 TriangleInterpolate(float2 uv)
-{
-    uv = frac(uv);
-
-    float2 omuv = float2(1.0, 1.0) - uv.xy;
-
-    float4 res = float4(0, 0, 0, 0);
-    //frame 0
-    res.x = min(omuv.x, omuv.y);
-    //frame 1
-    res.y = abs(dot(uv, float2(1.0, -1.0)));
-    //frame 2
-    res.z = min(uv.x, uv.y);
-    //mask
-    res.w = saturate(ceil(uv.x - uv.y));
-
-    return res;
-}
-
-float3 OctaHemiEnc(float2 coord)
-{
-    coord = float2(coord.x + coord.y, coord.x - coord.y) * 0.5f;
-    float3 vec = float3(coord.x, 1.0f - dot(float2(1.0f, 1.0f), abs(coord)), coord.y);
-    return vec;
-}
-
-float3 OctaSphereEnc(float2 coord)
-{
-    float3 vec = float3(coord.x, 1.0f - dot(1.0f, abs(coord)), coord.y);
-    if (vec.y < 0.0f)
-    {
-        float2 flip = vec.xz >= 0.0f ? float2(1.0f, 1.0f) : float2(-1.0f, -1.0f);
-        vec.xz = (1.0f - abs(vec.zx)) * flip;
-    }
-    return vec;
-}
-
-float3 GridToVector(float2 coord)
-{
-    float3 vec;
-    if (g_ImposterFullSphere)
-    {
-        vec = OctaSphereEnc(coord);
-    }
-    else
-    {
-        vec = OctaHemiEnc(coord);
-    }
-    return vec;
-}
-
-float3 FrameXYToRay(float2 frame, float2 frameCountMinusOne)
-{
-    //divide frame x y by framecount minus one to get 0-1
-    float2 f = frame.xy / frameCountMinusOne;
-    //bias and scale to -1 to 1
-    f = (f - 0.5f) * 2.0f;
-    //convert to vector, either full sphere or hemi sphere
-    float3 vec = GridToVector(f);
-    vec = normalize(vec);
-    return vec;
-}
-
-
-float2 VecToHemiOct(float3 vec)
-{
-    vec.xz /= dot(1.0f, abs(vec));
-    return float2(vec.x + vec.z, vec.x - vec.z);
-}
-
-float2 VecToSphereOct(float3 vec)
-{
-    vec.xz /= dot(1.0f, abs(vec));
-    if (vec.y <= 0.0f)
-    {
-        float2 flip = vec.xz >= 0.0f ? float2(1.0f, 1.0f) : float2(-1.0f, -1.0f);
-        vec.xz = (1.0f - abs(vec.zx)) * flip;
-    }
-    return vec.xz;
-}
-
-float2 VectorToGrid(float3 vec)
-{
-    float2 coord;
-
-    if (g_ImposterFullSphere)
-    {
-        coord = VecToSphereOct(vec);
-    }
-    else
-    {
-        vec.y = max(0.001f, vec.y);
-        vec = normalize(vec);
-        coord = VecToHemiOct(vec);
-    }
-    return coord;
-}
-
-float3 SpriteProjection(float3 pivotToCameraRayLocal, float framesCount, float2 size, float2 coord)
-{
-    float3 gridVec = pivotToCameraRayLocal;
-
-    // octahedron vector, pivot to camera
-    float3 y = normalize(gridVec);
-
-    float3 x = normalize(cross(y, float3(0.0f, 1.0f, 0.0f)));
-    float3 z = normalize(cross(x, y));
-
-    float2 uv = ((coord * framesCount) - 0.5f) * 2.0f;   // -1 to 1
-
-    float3 newX = x * uv.x;
-    float3 newZ = z * uv.y;
-
-    float2 halfSize = size * 0.5f;
-
-    newX *= halfSize.x;
-    newZ *= halfSize.y;
-
-    float3 res = newX + newZ;
-
-    return res;
-}
-
 void ImpostorVertex(inout ImpostorData imp)
 {
-    float3 vertex = imp.vertex;
+    float4 vertex = imp.vertex;
     float2 texcoord = imp.uv;
 
     float3 impostorPivotOffset = float3(0.0f, 0.0f, 0.0f);      // at 0,0,0 for now
@@ -236,7 +39,7 @@ void ImpostorVertex(inout ImpostorData imp)
     float3 vertexOffset = projected + impostorPivotOffset;
     vertexOffset = normalize(cameraPosObjectSpace - vertexOffset);
     vertexOffset += projected;
-    vertexOffset -= vertex;
+    vertexOffset -= vertex.xyz;
     vertexOffset += impostorPivotOffset;
 
     // camera to projection vector
@@ -300,7 +103,7 @@ void ImpostorVertex(inout ImpostorData imp)
     float2 virtualUV2 = VirtualPlaneUV(plane2Normal, plane2X, plane2Z, planeCenter, size, rayLocal);
     virtualUV2 /= framesCount.xx;
 
-    imp.vertex += vertexOffset;
+    imp.vertex.xyz += vertexOffset;
     imp.uv = texcoord;
     imp.grid = grid;
     imp.frame0 = float4(virtualUV0, frame0Local.xz);
@@ -308,13 +111,13 @@ void ImpostorVertex(inout ImpostorData imp)
     imp.frame2 = float4(virtualUV2, frame2Local.xz);
 }
 
-void main(uint vertexID : SV_VertexID)
+VS_OUT main(uint vertexID : SV_VertexID)
 {
     float3 vertex = VertexIDToQuadVertex(vertexID);
     float2 uv = VertexDataBuffer.Load2(vertexID * 2 * 4);   // 2 float uv
 
     ImpostorData imp = (ImpostorData)0;
-    imp.vertex = vertex;
+    imp.vertex = float4(vertex, 1.0f);
     imp.uv = uv;
 
     ImpostorVertex(imp);
@@ -322,5 +125,28 @@ void main(uint vertexID : SV_VertexID)
     float4 normal = float4(0.0f, 1.0f, 0.0f, 1.0f);
     float4 tangent = float4(1.0f, 0.0f, 0.0f, 1.0f);
 
+    float3 normalWorld = normalize(mul((float3x3)world, normal.xyz));
+    float3 tangentWorld = normalize(mul((float3x3)world, tangent.xyz));
+    float3 bitangentWorld = cross(normalWorld, tangentWorld);
 
+    VS_OUT o;
+    o.vertex = mul(world, imp.vertex);
+    o.vertex = mul(view, o.vertex);
+    o.vertex = mul(proj, o.vertex);
+
+    o.tangentWorld = tangentWorld;
+    o.bitangentWorld = bitangentWorld;
+    o.normalWorld = normalWorld;
+    o.texcoord.xy = imp.uv;
+    o.texcoord.zw = imp.grid;
+    o.plane0 = imp.frame0;
+    o.plane1 = imp.frame1;
+    o.plane2 = imp.frame2;
+
+    float3 worldPos = mul(world, vertex).xyz;
+    o.tangentSpace0 = float4(tangentWorld.x, bitangentWorld.x, normalWorld.x, worldPos.x);
+    o.tangentSpace1 = float4(tangentWorld.y, bitangentWorld.y, normalWorld.y, worldPos.y);
+    o.tangentSpace2 = float4(tangentWorld.z, bitangentWorld.z, normalWorld.z, worldPos.z);
+
+    return o;
 }

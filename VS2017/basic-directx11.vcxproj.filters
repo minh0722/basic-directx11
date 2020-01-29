@@ -186,4 +186,7 @@
     <FxCompile Include="..\ImpostorRenderPS.hlsl" />
     <FxCompile Include="..\ImpostorRenderVS.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\ImpostorShaderCommon.cginc" />
+  </ItemGroup>
 </Project>

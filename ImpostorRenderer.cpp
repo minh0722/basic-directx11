@@ -102,6 +102,7 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     
     const Camera& camera = renderer->GetCamera();
     const wavefront::AABB& boundingBox = graphicComponent->GetBoundingBox();
+    XMVECTOR position = camera.GetPosition();
 
     D3D11_MAPPED_SUBRESOURCE mappedRes = {};
     THROW_IF_FAILED(context->Map(m_vsConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));

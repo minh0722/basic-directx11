@@ -1,4 +1,11 @@
-float4 main() : SV_TARGET
+#include "ImpostorShaderCommon.cginc"
+
+
+
+float4 main(VS_OUT input) : SV_TARGET
 {
-    return float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+
+
+    return float4(1.0f, 0.0f, 0.0f, 0.0f);
 }
