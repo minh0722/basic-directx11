@@ -111,7 +111,7 @@ void Renderer::Render(InputClass* input)
 
     m_DebugDisplay->Render(this);
     
-	static bool baked = true;
+	static bool baked = false;
 	if (!baked)
 	{
         RENDERDOC_BEGIN_CAPTURE
