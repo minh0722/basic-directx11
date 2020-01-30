@@ -12,6 +12,7 @@ ComPtr<ID3D11VertexShader> ImpostorRenderer::m_vs;
 ComPtr<ID3D11PixelShader> ImpostorRenderer::m_ps;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vertexDataBuffer;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vsConstants;
+ComPtr<ID3D11Buffer> ImpostorRenderer::m_psConstants;
 ComPtr<ID3D11ShaderResourceView> ImpostorRenderer::m_vertexDataSRV;
 
 struct QuadVertexData
@@ -25,6 +26,14 @@ struct VSConstant
     XMVECTOR cameraWorldPos;
     float framesCount;
     float radius;
+};
+
+struct PSConstant
+{
+    XMMATRIX worldMatrix;
+    float framesCount;
+    float atlasDimension;
+    float cutoff;
 };
 
 void ImpostorRenderer::Initialize(Renderer* renderer)
@@ -85,6 +94,9 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
     desc.StructureByteStride = 0;
     desc.Usage = D3D11_USAGE_DYNAMIC;
     THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_vsConstants.GetAddressOf()));
+
+    desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(PSConstant), 16);
+    THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_psConstants.GetAddressOf()));
 }
 
 void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComponent)
@@ -98,7 +110,8 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->VSSetConstantBuffers(0, 1, graphicComponent->GetWorldViewProjBuffer().GetAddressOf());
 
     Vector4f worldPos = graphicComponent->GetWorldPos();
-    XMMATRIX worldToObject = DirectX::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z));
+    XMMATRIX objectToWorld = DirectX::XMMatrixTranslation(worldPos.x, worldPos.y, worldPos.z);
+    XMMATRIX worldToObject = DirectX::XMMatrixInverse(nullptr, objectToWorld);
     
     const Camera& camera = renderer->GetCamera();
     const wavefront::AABB& boundingBox = graphicComponent->GetBoundingBox();
@@ -114,4 +127,14 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->Unmap(m_vsConstants.Get(), 0);
 
     context->VSSetConstantBuffers(1, 1, m_vsConstants.GetAddressOf());
+
+    THROW_IF_FAILED(context->Map(m_psConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+    PSConstant* psConstant = reinterpret_cast<PSConstant*>(mappedRes.pData);
+    psConstant->atlasDimension = (float)ImpostorBaker::ms_atlasDimension;
+    psConstant->cutoff = 0.4f;  // alpha cutoff
+    psConstant->framesCount = (float)ImpostorBaker::ms_atlasFramesCount;
+    memcpy(&psConstant->worldMatrix, &objectToWorld, sizeof(XMMATRIX));
+    context->Unmap(m_psConstants.Get(), 0);
+
+    context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
 }

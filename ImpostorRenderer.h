@@ -19,4 +19,5 @@ private:
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexDataBuffer;
 
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsConstants;
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> m_psConstants;
 };

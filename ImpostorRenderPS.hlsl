@@ -2,13 +2,10 @@
 
 cbuffer PixelConstants : register(b0)
 {
-    //matrix worldToObject;
-    //float4 cameraWorldPos;
     matrix WorldMatrix;
     float FramesCount;
     float AtlasDimension;
     float Cutoff;
-    //float radius;
 };
 
 Texture2D<float4> impostorNormalAtlas : register(t0);
