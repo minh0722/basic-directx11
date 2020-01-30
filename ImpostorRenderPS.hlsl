@@ -4,8 +4,10 @@ cbuffer PixelConstants : register(b0)
 {
     //matrix worldToObject;
     //float4 cameraWorldPos;
-    float framesCount;
-    float atlasDimension;
+    matrix WorldMatrix;
+    float FramesCount;
+    float AtlasDimension;
+    float Cutoff;
     //float radius;
 };
 
@@ -29,22 +31,22 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     float2 fracGrid = frac(imp.grid);
     float4 weights = TriangleInterpolate(fracGrid);
 
-    float2 gridSnap = floor(imp.grid) / framesCount;
+    float2 gridSnap = floor(imp.grid) / FramesCount;
 
     float2 frame0 = gridSnap;
-    float2 frame1 = gridSnap + (lerp(float2(0.0f, 1.0f), float2(1.0f, 0.0f), weights.w) / framesCount);
-    float2 frame2 = gridSnap + (float2(1.0f, 1.0f) / framesCount);
+    float2 frame1 = gridSnap + (lerp(float2(0.0f, 1.0f), float2(1.0f, 0.0f), weights.w) / FramesCount);
+    float2 frame2 = gridSnap + (float2(1.0f, 1.0f) / FramesCount);
 
     float2 vp0uv = frame0 + imp.frame0.xy;
     float2 vp1uv = frame1 + imp.frame1.xy;
     float2 vp2uv = frame2 + imp.frame2.xy;
 
     // resolution of atlas
-    float textureDims = atlasDimension;
+    float textureDims = AtlasDimension;
     // fractional frame size, ex 2048 / 12 = 170.6
-    float frameSize = textureDims / framesCount;
+    float frameSize = textureDims / FramesCount;
     // actual atlas resolution used, ex 170 * 12 = 2040
-    float actualDims = floor(frameSize) * framesCount;
+    float actualDims = floor(frameSize) * FramesCount;
     // the scale factor to apply to UV coord, ex 2048 / 2040 = 0.99609375
     float scaleFactor = actualDims / textureDims;
 
@@ -52,12 +54,12 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     vp1uv *= scaleFactor;
     vp2uv *= scaleFactor;
 
-    float texelSize = 1.0f / atlasDimension;
+    float texelSize = 1.0f / AtlasDimension;
     float borderClamp = 2.0f;
 
     // clamp out neighboring frames
-    float2 gridSize = 1.0f / framesCount;
-    gridSize *= atlasDimension;
+    float2 gridSize = 1.0f / FramesCount;
+    gridSize *= AtlasDimension;
     gridSize *= texelSize;
     float2 border = texelSize * borderClamp;
 
@@ -90,8 +92,16 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     baseTex = ImpostorBlendWeights(impostorBaseAtlas, impostorSampler, imp.uv, vp0uv, vp1uv, vp2uv, weights, ddxy);
 }
 
-float4 main(VS_OUT input) : SV_TARGET
+struct PS_OUTPUT
 {
+    float4 color : SV_TARGET;
+    float depth : SV_DEPTH;
+};
+
+PS_OUTPUT main(VS_OUT input)
+{
+    PS_OUTPUT output;
+
     ImpostorData imp;
     imp.uv = input.texcoord.xy;
     imp.grid = input.texcoord.zw;
@@ -103,6 +113,22 @@ float4 main(VS_OUT input) : SV_TARGET
     float4 normalTex;
 
     ImpostorSample(imp, baseTex, normalTex);
+    baseTex.a = saturate(pow(baseTex.a, Cutoff));
+    clip(baseTex.a - Cutoff);
 
-    return float4(1.0f, 0.0f, 0.0f, 0.0f);
+    // scale world normal back to -1 to 1
+    float3 worldNormal = normalTex.xyz * 2.0f - 1.0f;
+
+    worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
+
+    output.depth = normalTex.w;
+
+    //float3 t = input.tangentWorld;
+    //float3 b = input.bitangentWorld;
+    //float3 n = input.normalWorld;
+
+    //float3x3 tangentToWorld = float3x3(t, b, n);
+
+    output.color = float4(baseTex.rgb, 1.0f);
+    return output;
 }
