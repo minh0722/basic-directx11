@@ -118,6 +118,9 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
 {
     ID3D11DeviceContext* context = renderer->GetContext();
 
+    ID3D11ShaderResourceView* reset[] = { nullptr };
+    context->PSSetShaderResources(0, 1, reset);
+
     context->VSSetShader(m_vs.Get(), nullptr, 0);
     context->PSSetShader(m_ps.Get(), nullptr, 0);
 
@@ -150,9 +153,6 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     psConstant->framesCount = (float)ImpostorBaker::ms_atlasFramesCount;
     memcpy(&psConstant->worldMatrix, &objectToWorld, sizeof(XMMATRIX));
     context->Unmap(m_psConstants.Get(), 0);
-
-    ID3D11ShaderResourceView* reset[] = { nullptr, nullptr };
-    context->PSSetShaderResources(0, 2, reset);
 
     context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
     context->PSSetShaderResources(0, 1, graphicComponent->GetImpostorNormalDepthSRV().GetAddressOf());

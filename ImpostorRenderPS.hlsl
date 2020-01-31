@@ -127,6 +127,6 @@ PS_OUTPUT main(VS_OUT input)
     //float3x3 tangentToWorld = float3x3(t, b, n);
 
     //output.color = float4(baseTex.rgb, 1.0f);
-    output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+    output.color = float4(baseTex.rgb, 1.0f);
     return output;
 }

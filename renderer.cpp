@@ -111,13 +111,13 @@ void Renderer::Render(InputClass* input)
 
     m_DebugDisplay->Render(this);
     
-	static bool baked = true;
+	static bool baked = false;
 	if (!baked)
 	{
-        RENDERDOC_BEGIN_CAPTURE
+        //RENDERDOC_BEGIN_CAPTURE
 		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
-        RENDERDOC_END_CAPTURE
+        //RENDERDOC_END_CAPTURE
 	}
 
 	m_SwapChain->Present(0, 0);
