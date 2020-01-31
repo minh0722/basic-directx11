@@ -3,6 +3,8 @@
 #include "ObjLoader.h"
 #include "MaterialLoader.h"
 
+class Renderer;
+
 struct Batch
 {
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
@@ -29,7 +31,7 @@ public:
 
 	GraphicsComponent(const GraphicsComponentDesc& desc);
 
-	void Render(ID3D11DeviceContext* context, bool isInstanceRendering = false, uint32_t instanceCount = 1);
+	void Render(Renderer* renderer, bool isInstanceRendering = false, uint32_t instanceCount = 1);
     void BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* context);
 	void SetIndexBuffer(ID3D11Device* device, const std::vector<uint32_t>& indices);
 	void SetIndexBuffer(ID3D11Device* device, const void* indices, size_t indicesCount);

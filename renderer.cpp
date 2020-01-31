@@ -87,31 +87,31 @@ void Renderer::Render(InputClass* input)
 	SetRasterizerState(D3D11_FILL_SOLID);
 	//m_Triangle.Render(m_DeviceContext.Get());
     SetupPrimitiveForRender(hasInput);
-	m_Cube.Render(m_DeviceContext.Get(), true, 10000);
+	m_Cube.Render(this, true, 10000);
 	SetupPrimitiveForRender(hasInput, Line);
-    m_Axis.Render(m_DeviceContext.Get());
+    m_Axis.Render(this);
 	
 	SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_FRONT);
 	SetupPrimitiveForRender(hasInput, Sphere);
-	m_SphereMesh.Render(m_DeviceContext.Get());
+	m_SphereMesh.Render(this);
 
     SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_BACK);
     SetupPrimitiveForRender(hasInput, Octahedral);
-    m_OctahedronMesh.Render(m_DeviceContext.Get());
+    m_OctahedronMesh.Render(this);
     
     SetRasterizerState(D3D11_FILL_WIREFRAME, D3D11_CULL_NONE);
     SetupPrimitiveForRender(hasInput, Hemioctahedral);
-    m_HemioctahedronMesh.Render(m_DeviceContext.Get());
+    m_HemioctahedronMesh.Render(this);
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
 	SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
 	SetupSpaceShipForRender(hasInput);
-	m_SpaceShip.Render(m_DeviceContext.Get());
+	m_SpaceShip.Render(this);
 
     m_DebugDisplay->Render(this);
     
-	static bool baked = false;
+	static bool baked = true;
 	if (!baked)
 	{
         RENDERDOC_BEGIN_CAPTURE

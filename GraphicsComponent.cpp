@@ -4,6 +4,7 @@
 #include "WICTextureLoader.h"
 #include "DebugDisplay.h"
 #include "ImpostorBaker.h"
+#include "ImpostorRenderer.h"
 
 GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {
@@ -15,8 +16,15 @@ GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 	// TODO: handle exceptions here...
 }
 
-void GraphicsComponent::Render(ID3D11DeviceContext* context, bool isInstanceRendering /*= false*/, uint32_t instanceCount /*= 1*/)
+void GraphicsComponent::Render(Renderer* renderer, bool isInstanceRendering /*= false*/, uint32_t instanceCount /*= 1*/)
 {
+    if (m_ImpostorAlbedoAtlasSRV && m_ImpostorNormalAtlasSRV)
+    {
+        ImpostorRenderer::Render(renderer, this);
+        return;
+    }
+
+    ID3D11DeviceContext* context = renderer->GetContext();
     context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
     context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
 
