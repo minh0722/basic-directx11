@@ -35,11 +35,11 @@ static const bool g_ImposterFullSphere = true;
 // returns a unit quad with following vertices <x, y, z>
 // 0 - <-0.5f, 0, -0.5f>
 // 1 - < 0.5f, 0, -0.5f>
-// 2 - < 0.5f, 0,  0.5f>
-// 3 - <-0.5f, 0,  0.5f>
+// 2 - <-0.5f, 0,  0.5f>
+// 3 - < 0.5f, 0,  0.5f>
 float3 VertexIDToQuadVertex(uint vertexId)
 {
-    return float3(float((vertexId >> 1) ^ (vertexId & 1)) - 0.5f, 0.0f, float((vertexId >> 1) & 1) - 0.5f);
+    return float3(float((vertexId & 1)) - 0.5f, 0.0f, float((vertexId >> 1) & 1) - 0.5f);
 }
 
 float2 VirtualPlaneUV(float3 planeNormal, float3 planeX, float3 planeZ, float3 center, float2 uvScale, Ray rayLocal)

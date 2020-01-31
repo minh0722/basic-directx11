@@ -65,15 +65,15 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 	desc.ByteWidth = 4 * sizeof(QuadVertexData);          // 4 vertices quad
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
-	desc.StructureByteStride = sizeof(Vector2<float>);
+	desc.StructureByteStride = 0;
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
 
     QuadVertexData verticesData[] = 
     {
-        {{0.0f, 0.0f}},
-        {{1.0f, 0.0f}},
-        {{1.0f, 1.0f}},
-        {{0.0f, 1.0f}}
+        {{0.0f, 0.0f}}, // 0
+        {{1.0f, 0.0f}}, // 1
+        {{0.0f, 1.0f}}, // 3
+        {{1.0f, 1.0f}}  // 2
     };
 
     D3D11_SUBRESOURCE_DATA initData = {};
@@ -151,11 +151,16 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     memcpy(&psConstant->worldMatrix, &objectToWorld, sizeof(XMMATRIX));
     context->Unmap(m_psConstants.Get(), 0);
 
+    ID3D11ShaderResourceView* reset[] = { nullptr, nullptr };
+    context->PSSetShaderResources(0, 2, reset);
+
     context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
     context->PSSetShaderResources(0, 1, graphicComponent->GetImpostorNormalDepthSRV().GetAddressOf());
     context->PSSetShaderResources(1, 1, graphicComponent->GetImpostorAlbedoSRV().GetAddressOf());
 
     context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+    context->IASetInputLayout(nullptr);
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
     context->Draw(4, 0);
 }
