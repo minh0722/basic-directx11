@@ -361,7 +361,7 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     }
     DoProcessing(context);
 
-    return BakeResult{ m_bakeAlbedoResultTexture, m_bakedNormalResultTexture };
+    return BakeResult{ m_bakeAlbedoResultTexture.Detach(), m_bakedNormalResultTexture.Detach() };
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)

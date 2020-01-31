@@ -108,20 +108,24 @@ void GraphicsComponent::BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* 
 
         BakeResult result = ImpostorBaker::Bake(context, this);
 
+        m_ImpostorAlbedoAtlasTexture.Attach(result.m_AlbedoBakedTexture);
+        m_ImpostorNormalAtlasTexture.Attach(result.m_NormalDepthTexture);
+
         D3D11_TEXTURE2D_DESC desc = {};
-        result.m_AlbedoBakedTexture->GetDesc(&desc);
+        m_ImpostorAlbedoAtlasTexture->GetDesc(&desc);
 
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = desc.Format;
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MipLevels = 1;
+        srvDesc.Texture2D.MipLevels = desc.MipLevels;
         srvDesc.Texture2D.MostDetailedMip = 0;
 
-        THROW_IF_FAILED(device->CreateShaderResourceView(result.m_AlbedoBakedTexture.Get(), &srvDesc, m_ImpostorAlbedoAtlasSRV.GetAddressOf()));
+        THROW_IF_FAILED(device->CreateShaderResourceView(m_ImpostorAlbedoAtlasTexture.Get(), &srvDesc, m_ImpostorAlbedoAtlasSRV.GetAddressOf()));
 
-        result.m_NormalDepthTexture->GetDesc(&desc);
+        m_ImpostorNormalAtlasTexture->GetDesc(&desc);
         srvDesc.Format = desc.Format;
-        THROW_IF_FAILED(device->CreateShaderResourceView(result.m_NormalDepthTexture.Get(), &srvDesc, m_ImpostorNormalAtlasSRV.GetAddressOf()));
+        srvDesc.Texture2D.MipLevels = desc.MipLevels;
+        THROW_IF_FAILED(device->CreateShaderResourceView(m_ImpostorNormalAtlasTexture.Get(), &srvDesc, m_ImpostorNormalAtlasSRV.GetAddressOf()));
     }
 }
 

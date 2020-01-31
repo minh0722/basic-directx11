@@ -18,8 +18,8 @@ struct Snapshot
 
 struct BakeResult
 {
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_AlbedoBakedTexture;
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_NormalDepthTexture;
+    ID3D11Texture2D* m_AlbedoBakedTexture;
+    ID3D11Texture2D* m_NormalDepthTexture;
 };
 
 class ImpostorBaker
