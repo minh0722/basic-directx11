@@ -118,6 +118,9 @@ void GraphicsComponent::BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* 
         srvDesc.Texture2D.MostDetailedMip = 0;
 
         THROW_IF_FAILED(device->CreateShaderResourceView(result.m_AlbedoBakedTexture.Get(), &srvDesc, m_ImpostorAlbedoAtlasSRV.GetAddressOf()));
+
+        result.m_NormalDepthTexture->GetDesc(&desc);
+        srvDesc.Format = desc.Format;
         THROW_IF_FAILED(device->CreateShaderResourceView(result.m_NormalDepthTexture.Get(), &srvDesc, m_ImpostorNormalAtlasSRV.GetAddressOf()));
     }
 }
