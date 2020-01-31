@@ -92,7 +92,7 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 struct PS_OUTPUT
 {
     float4 color : SV_TARGET;
-    float depth : SV_DEPTH;
+    //float depth : SV_DEPTH;
 };
 
 PS_OUTPUT main(VS_OUT input)
@@ -111,14 +111,14 @@ PS_OUTPUT main(VS_OUT input)
 
     ImpostorSample(imp, baseTex, normalTex);
     baseTex.a = saturate(pow(baseTex.a, Cutoff));
-    clip(baseTex.a - Cutoff);
+    //clip(baseTex.a - Cutoff);
 
     // scale world normal back to -1 to 1
     float3 worldNormal = normalTex.xyz * 2.0f - 1.0f;
 
     worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
 
-    output.depth = normalTex.w;
+    //output.depth = normalTex.w;
 
     //float3 t = input.tangentWorld;
     //float3 b = input.bitangentWorld;
@@ -126,6 +126,7 @@ PS_OUTPUT main(VS_OUT input)
 
     //float3x3 tangentToWorld = float3x3(t, b, n);
 
-    output.color = float4(baseTex.rgb, 1.0f);
+    //output.color = float4(baseTex.rgb, 1.0f);
+    output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);
     return output;
 }
