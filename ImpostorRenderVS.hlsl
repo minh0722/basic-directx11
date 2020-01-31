@@ -25,7 +25,7 @@ void ImpostorVertex(inout ImpostorData imp)
     float3 impostorPivotOffset = float3(0.0f, 0.0f, 0.0f);      // at 0,0,0 for now
     float framesMinusOne = framesCount - 1;
 
-    float3 cameraPosObjectSpace = mul(worldToObject, cameraWorldPos).xyz;
+    float3 cameraPosObjectSpace = mul(cameraWorldPos, worldToObject).xyz;
     float3 pivotToCameraRay = normalize(cameraPosObjectSpace - impostorPivotOffset);
     
     // scale uv to single frame
@@ -114,7 +114,8 @@ void ImpostorVertex(inout ImpostorData imp)
 VS_OUT main(uint vertexID : SV_VertexID)
 {
     float3 vertex = VertexIDToQuadVertex(vertexID);
-    float2 uv = VertexDataBuffer.Load2(vertexID * 2 * 4);   // 2 float uv
+    uint perVertexSize = 8;    //2 float uv
+    float2 uv = asfloat(VertexDataBuffer.Load2(vertexID * perVertexSize));
 
     ImpostorData imp = (ImpostorData)0;
     imp.vertex = float4(vertex, 1.0f);
