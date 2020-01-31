@@ -58,6 +58,8 @@ public:
     const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& GetMaterialBuffers() const;
     const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetWorldViewProjBuffer() const;
     Vector4f GetWorldPos() const;
+    const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetImpostorAlbedoSRV() const;
+    const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetImpostorNormalDepthSRV() const;
 
 protected:
 

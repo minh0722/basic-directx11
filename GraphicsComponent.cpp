@@ -282,6 +282,16 @@ Vector4f GraphicsComponent::GetWorldPos() const
     return m_WorldPosition;
 }
 
+const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GraphicsComponent::GetImpostorAlbedoSRV() const
+{
+    return m_ImpostorAlbedoAtlasSRV;
+}
+
+const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GraphicsComponent::GetImpostorNormalDepthSRV() const
+{
+    return m_ImpostorNormalAtlasSRV;
+}
+
 void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)
 {
 	ID3DBlob* blob;

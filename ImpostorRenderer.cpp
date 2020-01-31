@@ -14,6 +14,7 @@ ComPtr<ID3D11Buffer> ImpostorRenderer::m_vertexDataBuffer;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vsConstants;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_psConstants;
 ComPtr<ID3D11ShaderResourceView> ImpostorRenderer::m_vertexDataSRV;
+ComPtr<ID3D11SamplerState> ImpostorRenderer::m_samplerState;
 
 struct QuadVertexData
 {
@@ -97,6 +98,20 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 
     desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(PSConstant), 16);
     THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_psConstants.GetAddressOf()));
+
+    D3D11_SAMPLER_DESC samplerDesc = {};
+    samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.MipLODBias = 0;
+    samplerDesc.MaxAnisotropy = 9;
+    samplerDesc.ComparisonFunc = D3D11_COMPARISON_GREATER;
+    memset(samplerDesc.BorderColor, 0, 4 * sizeof(float));
+    samplerDesc.MinLOD = -D3D11_FLOAT32_MAX;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    THROW_IF_FAILED(device->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf()));
 }
 
 void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComponent)
@@ -137,4 +152,10 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->Unmap(m_psConstants.Get(), 0);
 
     context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
+    context->PSSetShaderResources(0, 1, graphicComponent->GetImpostorNormalDepthSRV().GetAddressOf());
+    context->PSSetShaderResources(1, 1, graphicComponent->GetImpostorAlbedoSRV().GetAddressOf());
+
+    context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+
+    context->Draw(4, 0);
 }
