@@ -9,31 +9,20 @@
 #include "DebugDisplay.h"
 #include "ImpostorBaker.h"
 #include "ImpostorRenderer.h"
-#include "api/app/renderdoc_app.h"
+#include "Renderdoc.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
 float sin45 = (float)std::sin(PI / 4);
 
-RENDERDOC_API_1_4_0* renderdoc = nullptr;
 Renderer* Renderer::ms_Instance = nullptr;
-
-#define RENDERDOC_BEGIN_CAPTURE if(renderdoc) renderdoc->StartFrameCapture(nullptr, nullptr);
-#define RENDERDOC_END_CAPTURE if(renderdoc) renderdoc->EndFrameCapture(nullptr, nullptr);
 
 Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
 {
-    if (HMODULE mod = LoadLibrary("renderdoc.dll"))
-    {
-        pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_0, (void**)&renderdoc);
-        assert(ret == 1);
-
-        renderdoc->SetCaptureFilePathTemplate("renderdoc_captures/capture");
-    }
+	Renderdoc::Init();
     auto error = GetLastError();
 }
 
@@ -103,22 +92,23 @@ void Renderer::Render(InputClass* input)
     SetupPrimitiveForRender(hasInput, Hemioctahedral);
     m_HemioctahedronMesh.Render(this);
 
-	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
-	// to set define in the shader to not use color when we are rendering the spaceship
-	SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
-	SetupSpaceShipForRender(hasInput);
-	m_SpaceShip.Render(this);
-
-    m_DebugDisplay->Render(this);
-    
 	static bool baked = false;
-	if (!baked)
+	if (!baked && input->IsKeyDown('C'))
 	{
-        //RENDERDOC_BEGIN_CAPTURE
+		RENDERDOC_BEGIN_CAPTURE;
 		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
-        //RENDERDOC_END_CAPTURE
+
+		// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
+		// to set define in the shader to not use color when we are rendering the spaceship
+		SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
+		SetupSpaceShipForRender(hasInput);
+		m_SpaceShip.Render(this);
+
+		RENDERDOC_END_CAPTURE;
 	}
+
+    m_DebugDisplay->Render(this);
 
 	m_SwapChain->Present(0, 0);
 }

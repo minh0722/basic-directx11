@@ -157,6 +157,7 @@
     <ClInclude Include="..\Octahedron.h" />
     <ClInclude Include="..\OctahedronVertex.h" />
     <ClInclude Include="..\pch.h" />
+    <ClInclude Include="..\Renderdoc.h" />
     <ClInclude Include="..\renderer.h" />
     <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Shape.h" />
@@ -192,6 +193,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="..\Renderdoc.cpp" />
     <ClCompile Include="..\renderer.cpp" />
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Shape.cpp" />
