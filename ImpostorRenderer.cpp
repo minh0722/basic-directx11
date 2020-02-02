@@ -118,8 +118,8 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
 {
     ID3D11DeviceContext* context = renderer->GetContext();
 
-    ID3D11ShaderResourceView* reset[] = { nullptr };
-    context->PSSetShaderResources(0, 1, reset);
+    ID3D11ShaderResourceView* reset[] = { nullptr, nullptr };
+    context->PSSetShaderResources(0, 2, reset);
 
     context->VSSetShader(m_vs.Get(), nullptr, 0);
     context->PSSetShader(m_ps.Get(), nullptr, 0);
