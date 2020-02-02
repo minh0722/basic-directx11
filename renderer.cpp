@@ -93,19 +93,25 @@ void Renderer::Render(InputClass* input)
     m_HemioctahedronMesh.Render(this);
 
 	static bool baked = false;
+	static bool captured = false;
 	if (!baked && input->IsKeyDown('C'))
 	{
 		RENDERDOC_BEGIN_CAPTURE;
 		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
+		captured = true;
+	}
 
-		// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
-		// to set define in the shader to not use color when we are rendering the spaceship
-		SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
-		SetupSpaceShipForRender(hasInput);
-		m_SpaceShip.Render(this);
+	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
+	// to set define in the shader to not use color when we are rendering the spaceship
+	SetRasterizerState(D3D11_FILL_SOLID, D3D11_CULL_NONE);
+	SetupSpaceShipForRender(hasInput);
+	m_SpaceShip.Render(this);
 
+	if (captured)
+	{
 		RENDERDOC_END_CAPTURE;
+		captured = false;
 	}
 
     m_DebugDisplay->Render(this);
