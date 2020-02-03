@@ -35,6 +35,7 @@ struct PSConstant
     float framesCount;
     float atlasDimension;
     float cutoff;
+    float borderClamp;
 };
 
 void ImpostorRenderer::Initialize(Renderer* renderer)
@@ -146,11 +147,14 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
 
     context->VSSetConstantBuffers(1, 1, m_vsConstants.GetAddressOf());
 
+    static float cutoff = 0.4f;
+    static float borderClamp = 2.0f;
     THROW_IF_FAILED(context->Map(m_psConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
     PSConstant* psConstant = reinterpret_cast<PSConstant*>(mappedRes.pData);
     psConstant->atlasDimension = (float)ImpostorBaker::ms_atlasDimension;
-    psConstant->cutoff = 0.4f;  // alpha cutoff
+    psConstant->cutoff = cutoff;  // alpha cutoff
     psConstant->framesCount = (float)ImpostorBaker::ms_atlasFramesCount;
+    psConstant->borderClamp = borderClamp;
     memcpy(&psConstant->worldMatrix, &objectToWorld, sizeof(XMMATRIX));
     context->Unmap(m_psConstants.Get(), 0);
 

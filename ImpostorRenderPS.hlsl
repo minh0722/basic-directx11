@@ -6,6 +6,7 @@ cbuffer PixelConstants : register(b0)
     float FramesCount;
     float AtlasDimension;
     float Cutoff;
+    float BorderClamp;
 };
 
 Texture2D<float4> impostorNormalAtlas : register(t0);
@@ -52,13 +53,12 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     vp2uv *= scaleFactor;
 
     float texelSize = 1.0f / AtlasDimension;
-    float borderClamp = 2.0f;
 
     // clamp out neighboring frames
     float2 gridSize = 1.0f / FramesCount;
     gridSize *= AtlasDimension;
     gridSize *= texelSize;
-    float2 border = texelSize * borderClamp;
+    float2 border = texelSize * BorderClamp;
 
     // for parallax modify
     float4 n0 = impostorNormalAtlas.SampleLevel(impostorSampler, vp0uv, 1);
@@ -92,7 +92,7 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 struct PS_OUTPUT
 {
     float4 color : SV_TARGET;
-    //float depth : SV_DEPTH;
+    float depth : SV_DEPTH;
 };
 
 PS_OUTPUT main(VS_OUT input)
@@ -111,22 +111,21 @@ PS_OUTPUT main(VS_OUT input)
 
     ImpostorSample(imp, baseTex, normalTex);
     baseTex.a = saturate(pow(baseTex.a, Cutoff));
-    //clip(baseTex.a - Cutoff);
+    clip(baseTex.a - Cutoff);
 
     // scale world normal back to -1 to 1
     float3 worldNormal = normalTex.xyz * 2.0f - 1.0f;
 
     worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
 
-    //output.depth = normalTex.w;
+    output.depth = normalTex.w;
 
-    //float3 t = input.tangentWorld;
-    //float3 b = input.bitangentWorld;
-    //float3 n = input.normalWorld;
+    float3 t = input.tangentWorld;
+    float3 b = input.bitangentWorld;
+    float3 n = input.normalWorld;
 
-    //float3x3 tangentToWorld = float3x3(t, b, n);
+    float3x3 tangentToWorld = float3x3(t, b, n);
 
-    //output.color = float4(baseTex.rgb, 1.0f);
     output.color = float4(baseTex.rgb, 1.0f);
     return output;
 }

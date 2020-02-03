@@ -31,7 +31,7 @@ public:
 
     static void DoProcessing(ID3D11DeviceContext* context);
 
-	static const uint32_t ms_atlasFramesCount = 10;
+	static const uint32_t ms_atlasFramesCount = 16;
 	static const uint32_t ms_atlasDimension = 4096;
 
 private:
