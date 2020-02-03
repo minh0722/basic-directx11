@@ -36,6 +36,14 @@ void main(uint3 id : SV_DispatchThreadID)
         uint2(-1, -1)
     };
 
+    uint frameDimension = width / frameCount;
+    uint frameX = x / frameDimension;
+    uint frameY = y / frameDimension;
+    uint xStart = frameX * frameDimension;
+    uint yStart = frameY * frameDimension;
+    uint xEnd = xStart + frameDimension - 1;
+    uint yEnd = yStart + frameDimension - 1;
+
     float4 color = source.Load(uint3(x, y, 0));
     float mask = sourceMask.Load(uint3(x, y, 0)).r;
 
@@ -51,6 +59,10 @@ void main(uint3 id : SV_DispatchThreadID)
                 uint2 of = offsets[n];
 
                 uint3 xyz = uint3(x + (of.x * s), y + (of.y * s), 0);
+
+                if (xyz.x < xStart || xyz.x > xEnd + 1 || xyz.y < yStart || xyz.y > yEnd + 1)
+                    continue;
+
                 float neighborMask = sourceMask.Load(xyz).r;
 
                 // if neighbor filled use neighbor
@@ -72,14 +84,6 @@ void main(uint3 id : SV_DispatchThreadID)
 
     if (color.a == 0.0f && NormalsDepth)
         color = float4(0.0f, 0.0f, 0.0f, 0.5f);
-
-    uint frameDimension = width / frameCount;
-    uint frameX = x / frameDimension;
-    uint frameY = y / frameDimension;
-    uint xStart = frameX * frameDimension;
-    uint yStart = frameY * frameDimension;
-    uint xEnd = xStart + frameDimension - 1;
-    uint yEnd = yStart + frameDimension - 1;
 
     // clear out 1 pixel border
     if (x == xStart || x == xEnd || y == yStart || y == yEnd)
