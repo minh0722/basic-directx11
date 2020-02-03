@@ -62,7 +62,7 @@ float2 VirtualPlaneUV(float3 planeNormal, float3 planeX, float3 planeZ, float3 c
 
     if (intersect > 0.0f)
     {
-        uv = float2(dx, dz);
+        uv = float2(dx, -dz);
     }
     else
     {
