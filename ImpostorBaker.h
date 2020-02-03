@@ -18,8 +18,8 @@ struct Snapshot
 
 struct BakeResult
 {
-    ID3D11Texture2D* m_AlbedoBakedTexture;
-    ID3D11Texture2D* m_NormalDepthTexture;
+    const wchar_t* m_albedoBakedFileName;
+    const wchar_t* m_normalBakedFileName;
 };
 
 class ImpostorBaker

@@ -85,8 +85,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_VertexInputLayout = nullptr;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TextureSRV = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_ImpostorAlbedoAtlasTexture = nullptr;
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> m_ImpostorNormalAtlasTexture = nullptr;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_ImpostorAlbedoAtlasSRV = nullptr;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_ImpostorNormalAtlasSRV = nullptr;
 

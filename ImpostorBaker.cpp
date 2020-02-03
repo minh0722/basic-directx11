@@ -54,6 +54,9 @@ ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistanceBuffer;
 ComPtr<ID3D11Buffer> ImpostorBaker::m_maxDistanceBuffer;
 ComPtr<ID3D11Buffer> ImpostorBaker::m_minDistancesCountConstant;
 
+static const wchar_t* gs_bakedAlbedoFileName = L"AlbedoImpostorAtlas.png";
+static const wchar_t* gs_bakedNormalFileName = L"NormalImpostorAtlas.png";
+
 struct MaxDistanceConst
 {
     uint32_t atlasWidth;
@@ -361,7 +364,7 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     }
     DoProcessing(context);
 
-    return BakeResult{ m_bakeAlbedoResultTexture.Detach(), m_bakedNormalResultTexture.Detach() };
+    return BakeResult{ gs_bakedAlbedoFileName, gs_bakedNormalFileName };
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
@@ -554,8 +557,8 @@ void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
     
     ResetStates();
 
-    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeAlbedoResultTexture.Get(), GUID_ContainerFormatPng, L"AlbedoImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
-    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakedNormalResultTexture.Get(), GUID_ContainerFormatPng, L"NormalImpostorAtlas.png", &GUID_WICPixelFormat32bppBGRA));
+    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakeAlbedoResultTexture.Get(), GUID_ContainerFormatPng, gs_bakedAlbedoFileName, &GUID_WICPixelFormat32bppBGRA));
+    THROW_IF_FAILED(DirectX::SaveWICTextureToFile(context, m_bakedNormalResultTexture.Get(), GUID_ContainerFormatPng, gs_bakedNormalFileName, &GUID_WICPixelFormat32bppBGRA));
 }
 
 Vector3<float> ImpostorBaker::OctahedralCoordToVector(const Vector2<float>& vec)
