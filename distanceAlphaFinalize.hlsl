@@ -34,7 +34,6 @@ void main( uint3 id : SV_DispatchThreadID )
 
     float4 color = source.Load(uint3(x, y, 0));
     color.a = saturate(MinDistances[y * width + x] / (MaxDistances[0] * 0.5f));
-    MinDistances[0] = 0.0f;
 
     if (x == 0 || x == frameX * frameSize - 1 || y == 0 || y == frameY * frameSize - 1)
         color = float4(0.0f, 0.0f, 0.0f, 0.0f);
