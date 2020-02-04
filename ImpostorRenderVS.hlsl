@@ -25,7 +25,7 @@ void ImpostorVertex(inout ImpostorData imp)
     float3 impostorPivotOffset = float3(0.0f, 0.0f, 0.0f);      // at 0,0,0 for now
     float framesMinusOne = framesCount - 1;
 
-    float3 cameraPosObjectSpace = mul(cameraWorldPos, worldToObject).xyz;
+    float3 cameraPosObjectSpace = mul(worldToObject, float4(cameraWorldPos.xyz, 1.0f)).xyz;
     float3 pivotToCameraRay = normalize(cameraPosObjectSpace - impostorPivotOffset);
     
     // scale uv to single frame
