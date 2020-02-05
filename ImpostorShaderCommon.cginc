@@ -74,6 +74,7 @@ float2 VirtualPlaneUV(float3 planeNormal, float3 planeX, float3 planeZ, float3 c
     return uv;
 }
 
+// returns @vec in space of coord system with base vectors (basedX, basedY, basedZ)
 float3 ITBasis(float3 vec, float3 basedX, float3 basedY, float3 basedZ)
 {
     return float3(dot(basedX, vec), dot(basedY, vec), dot(basedZ, vec));
