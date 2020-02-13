@@ -108,12 +108,18 @@ void GraphicsComponent::BakeImpostor(ID3D11Device* device, ID3D11DeviceContext* 
 
         BakeResult result = ImpostorBaker::Bake(context, this);
 
-        THROW_IF_FAILED(
-            DirectX::CreateWICTextureFromFile(device, result.m_albedoBakedFileName, nullptr, m_ImpostorAlbedoAtlasSRV.ReleaseAndGetAddressOf())
+        THROW_IF_FAILED(DirectX::CreateWICTextureFromFileEx(
+            device, context, result.m_albedoBakedFileName, 
+            0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_GENERATE_MIPS, 
+            DirectX::WIC_LOADER_FLAGS::WIC_LOADER_DEFAULT, 
+            nullptr, m_ImpostorAlbedoAtlasSRV.ReleaseAndGetAddressOf())
         );
 
-        THROW_IF_FAILED(
-            DirectX::CreateWICTextureFromFile(device, result.m_normalBakedFileName, nullptr, m_ImpostorNormalAtlasSRV.ReleaseAndGetAddressOf())
+        THROW_IF_FAILED(DirectX::CreateWICTextureFromFileEx(
+            device, context, result.m_normalBakedFileName, 
+            0, D3D11_USAGE_DEFAULT, D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_GENERATE_MIPS,
+            DirectX::WIC_LOADER_FLAGS::WIC_LOADER_DEFAULT,
+            nullptr, m_ImpostorNormalAtlasSRV.ReleaseAndGetAddressOf())
         );
     }
 }
