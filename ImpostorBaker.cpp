@@ -11,12 +11,19 @@ using Microsoft::WRL::ComPtr;
 
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
+ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasMultisampledRTV;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTextureMultisampled;
 ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
 ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTextureMultisampled;
+ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasMultisampledDSV;
+ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasMultisampledSRV;
 ComPtr<ID3D11Texture2D> ImpostorBaker::m_depthAtlasTexture;
 ComPtr<ID3D11DepthStencilView> ImpostorBaker::m_depthAtlasDSV;
 ComPtr<ID3D11DepthStencilState> ImpostorBaker::m_depthStencilState;
 ComPtr<ID3D11ShaderResourceView> ImpostorBaker::m_depthAtlasSRV;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_normalAtlasTextureMultisampled;
+ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_normalAtlasMultisampledRTV;
 ComPtr<ID3D11Texture2D> ImpostorBaker::m_normalAtlasTexture;
 ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_normalAtlasRTV;
 ComPtr<ID3D11RasterizerState> ImpostorBaker::m_rasterizerState;
@@ -99,12 +106,26 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.SampleDesc = { 1, 0 };
+	desc.SampleDesc = { 2, 0 };
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
+    THROW_IF_FAILED(
+        device->CreateTexture2D(&desc, nullptr, m_albedoAtlasTextureMultisampled.GetAddressOf()));
+
+    THROW_IF_FAILED(
+        device->CreateRenderTargetView(m_albedoAtlasTextureMultisampled.Get(), nullptr, m_albedoAtlasMultisampledRTV.GetAddressOf())
+    );
+
+    THROW_IF_FAILED(
+        device->CreateTexture2D(&desc, nullptr, m_normalAtlasTextureMultisampled.GetAddressOf()));
+
+    THROW_IF_FAILED(
+        device->CreateRenderTargetView(m_normalAtlasTextureMultisampled.Get(), nullptr, m_normalAtlasMultisampledRTV.GetAddressOf()));
+
+    desc.SampleDesc = { 1, 0 };
 	THROW_IF_FAILED(
 		device->CreateTexture2D(&desc, nullptr, m_albedoAtlasTexture.GetAddressOf()));
 
@@ -120,15 +141,27 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 
 	desc.Format = DXGI_FORMAT_R32_TYPELESS;
 	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+    desc.SampleDesc = { 2, 0 };
 
+    THROW_IF_FAILED(
+        device->CreateTexture2D(&desc, nullptr, m_depthAtlasTextureMultisampled.GetAddressOf())
+    );
+
+    desc.SampleDesc = { 1,0 };
 	THROW_IF_FAILED(
 		device->CreateTexture2D(&desc, nullptr, m_depthAtlasTexture.GetAddressOf())
 	);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+    THROW_IF_FAILED(
+        device->CreateDepthStencilView(m_depthAtlasTextureMultisampled.Get(), &depthStencilViewDesc, m_depthAtlasMultisampledDSV.GetAddressOf())
+    );
+
+    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
 	THROW_IF_FAILED(
 		device->CreateDepthStencilView(m_depthAtlasTexture.Get(), &depthStencilViewDesc, m_depthAtlasDSV.GetAddressOf())
@@ -136,10 +169,13 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
     srvDesc.Texture2D.MipLevels = 1;
     srvDesc.Texture2D.MostDetailedMip = 0;
 
+    THROW_IF_FAILED(device->CreateShaderResourceView(m_depthAtlasTextureMultisampled.Get(), &srvDesc, m_depthAtlasMultisampledSRV.GetAddressOf()));
+
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     THROW_IF_FAILED(device->CreateShaderResourceView(m_depthAtlasTexture.Get(), &srvDesc, m_depthAtlasSRV.GetAddressOf()));
 }
 
@@ -169,7 +205,7 @@ void ImpostorBaker::InitRasterizerState(ID3D11Device* device)
 	desc.DepthClipEnable = true;
 	desc.FillMode = D3D11_FILL_SOLID;
 	desc.FrontCounterClockwise = true;
-	desc.MultisampleEnable = false;
+	desc.MultisampleEnable = true;
 	desc.ScissorEnable = false;
 	desc.SlopeScaledDepthBias = 0.0f;
 
@@ -292,6 +328,7 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakeAlbedoResultTexture.Get(), &uavDesc, m_bakeAlbedoResultUAV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateUnorderedAccessView(m_bakedNormalResultTexture.Get(), &uavDesc, m_bakeNormalResultUAV.GetAddressOf()));
 
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     THROW_IF_FAILED(device->CreateShaderResourceView(m_albedoAtlasTexture.Get(), &srvDesc, m_albedoAtlasSRV.GetAddressOf()));
     THROW_IF_FAILED(device->CreateShaderResourceView(m_normalAtlasTexture.Get(), &srvDesc, m_normalAtlasSRV.GetAddressOf()));
 
@@ -336,9 +373,12 @@ void ImpostorBaker::InitComputeStuff(ID3D11Device* device)
 void ImpostorBaker::PrepareBake(ID3D11DeviceContext* context)
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    context->ClearRenderTargetView(m_albedoAtlasMultisampledRTV.Get(), clearColor);
 	context->ClearRenderTargetView(m_albedoAtlasRTV.Get(), clearColor);
+    context->ClearRenderTargetView(m_normalAtlasRTV.Get(), clearColor);
+    context->ClearDepthStencilView(m_depthAtlasMultisampledDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	context->ClearDepthStencilView(m_depthAtlasDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	context->OMSetRenderTargets(1, m_albedoAtlasRTV.GetAddressOf(), m_depthAtlasDSV.Get());
+	context->OMSetRenderTargets(1, m_albedoAtlasMultisampledRTV.GetAddressOf(), m_depthAtlasMultisampledDSV.Get());
 	context->OMSetDepthStencilState(m_depthStencilState.Get(), 1);
 	context->RSSetState(m_rasterizerState.Get());
 }
@@ -433,6 +473,10 @@ void ImpostorBaker::CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& 
 
 void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
 {
+    context->ResolveSubresource(m_albedoAtlasTexture.Get(), 0, m_albedoAtlasTextureMultisampled.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+    context->ResolveSubresource(m_normalAtlasTexture.Get(), 0, m_normalAtlasTextureMultisampled.Get(), 0, DXGI_FORMAT_R8G8B8A8_UNORM);
+    context->ResolveSubresource(m_depthAtlasTexture.Get(), 0, m_depthAtlasTextureMultisampled.Get(), 0, DXGI_FORMAT_R32_TYPELESS);
+
     ID3D11ShaderResourceView* resetSRV[] = { nullptr, nullptr };
     ID3D11UnorderedAccessView* resetUAV[] = { nullptr };
 
@@ -600,11 +644,11 @@ void ImpostorBaker::SetRenderTargets(ID3D11DeviceContext* context)
 {
     ID3D11RenderTargetView* rtvs[] = 
     {
-        m_albedoAtlasRTV.Get(),
-        m_normalAtlasRTV.Get()
+        m_albedoAtlasMultisampledRTV.Get(),
+        m_normalAtlasMultisampledRTV.Get()
     };
 
-	context->OMSetRenderTargets(2, rtvs, m_depthAtlasDSV.Get());
+	context->OMSetRenderTargets(2, rtvs, m_depthAtlasMultisampledDSV.Get());
 }
 
 void ImpostorBaker::SetDepthStencilState(ID3D11DeviceContext* context)

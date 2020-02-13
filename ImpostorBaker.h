@@ -57,13 +57,20 @@ private:
     static void CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z);
 
 private:
+    static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasMultisampledRTV;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTextureMultisampled;
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;
 	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTexture;
 
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTextureMultisampled;
+    static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasMultisampledDSV;
+    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasMultisampledSRV;
 	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
 	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_normalAtlasTextureMultisampled;
+    static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_normalAtlasMultisampledRTV;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_normalAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_normalAtlasRTV;
 
