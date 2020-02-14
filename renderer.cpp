@@ -938,7 +938,7 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 		return false;
 	}
 
-	float threshHold = 0.05f;
+	float threshHold = 0.02f;
 	
 	bool hasInput = false;
 

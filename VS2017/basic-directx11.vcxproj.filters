@@ -188,7 +188,6 @@
     <FxCompile Include="..\maxDistance.hlsl" />
     <FxCompile Include="..\distanceAlphaFinalize.hlsl" />
     <FxCompile Include="..\impostorBakerPixelShader.hlsl" />
-    <FxCompile Include="..\normalDepthMergeCS.hlsl" />
     <FxCompile Include="..\ImpostorRenderPS.hlsl" />
     <FxCompile Include="..\ImpostorRenderVS.hlsl" />
   </ItemGroup>

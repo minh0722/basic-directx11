@@ -65,9 +65,6 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTextureMultisampled;
     static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasMultisampledDSV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasMultisampledSRV;
-	static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_depthAtlasTexture;
-	static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthAtlasDSV;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_depthAtlasSRV;
 
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_normalAtlasTextureMultisampled;
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_normalAtlasMultisampledRTV;
@@ -87,24 +84,20 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_maxDistanceCS;
     static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_distanceAlphaFinalizeCS;
-    static Microsoft::WRL::ComPtr<ID3D11ComputeShader> m_normalDepthMergeCS;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempAlbedoAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_tempNormalAtlasTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_dilatedAlbedoTexture;
-    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_mergedNormalDepthTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_bakeAlbedoResultTexture;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_bakedNormalResultTexture;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempAlbedoAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tempNormalAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_dilatedAlbedoTextureSRV;
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_mergedNormalDepthTextureSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_albedoAtlasSRV;
     static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_normalAtlasSRV;
 	static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_minDistanceBufferUAV;
 	static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_maxDistanceBufferUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_tempAlbedoAtlasUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_dilatedAlbedoTextureUAV;
-    static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_mergedNormalDepthTextureUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_bakeAlbedoResultUAV;
     static Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> m_bakeNormalResultUAV;
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_distanceAlphaConstants;
