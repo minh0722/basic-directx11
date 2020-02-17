@@ -797,7 +797,7 @@ void Renderer::SetupHemioctahedronMesh()
 
 void Renderer::SetupSpaceShip()
 {
-	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft4.obj");
+	wavefront::Obj result = wavefront::ObjLoader::Parse("../../../assets/Models/spaceCraft1.obj");
 
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
