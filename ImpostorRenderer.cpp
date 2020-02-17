@@ -71,10 +71,10 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 
     QuadVertexData verticesData[] = 
     {
-        {{0.0f, 1.0f}}, // 0
-        {{1.0f, 1.0f}}, // 1
-        {{0.0f, 0.0f}}, // 3
-        {{1.0f, 0.0f}}  // 2
+        {{0.0f, 0.0f}}, // 0
+        {{1.0f, 0.0f}}, // 1
+        {{0.0f, 1.0f}}, // 3
+        {{1.0f, 1.0f}}  // 2
     };
 
     D3D11_SUBRESOURCE_DATA initData = {};

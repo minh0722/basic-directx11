@@ -199,7 +199,9 @@ float3 SpriteProjection(float3 pivotToCameraRayLocal, float framesCount, float2 
     float3 x = normalize(cross(y, float3(0.0f, 1.0f, 0.0f)));
     float3 z = normalize(cross(x, y));
 
-    float2 uv = ((coord * framesCount) - 0.5f) * 2.0f;   // -1 to 1
+    uint2 frameUV = (coord * framesCount);  // single frame uv 0 to 1
+    uint idx = (frameUV.y << 1) | (frameUV.x << 0);
+    float2 uv = (float2(idx & 1, ~((idx & 2) >> 1) & 1) - 0.5f) * 2.0f;   // -1 to 1
 
     float3 newX = x * uv.x;
     float3 newZ = z * uv.y;
