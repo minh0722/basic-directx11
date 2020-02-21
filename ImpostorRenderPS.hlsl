@@ -21,6 +21,13 @@ float4 ImpostorBlendWeights(Texture2D<float4> atlas, SamplerState atlasSampler, 
 
     float4 result = samp0 * weights.x + samp1 * weights.y + samp2 * weights.z;
 
+    float samp0Visible = samp0.a > 0.0f ? 1.0f : 0.0f;
+    float samp1Visible = samp1.a > 0.0f ? 1.0f : 0.0f;
+    float samp2Visible = samp2.a > 0.0f ? 1.0f : 0.0f;
+    float isOpaque = samp0Visible + samp1Visible + samp2Visible > 1.0f ? 1.0f : 0.0f;
+
+    result.a *= isOpaque;
+
     return result;
 }
 
@@ -56,8 +63,6 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 
     // clamp out neighboring frames
     float2 gridSize = 1.0f / FramesCount;
-    gridSize *= AtlasDimension;
-    gridSize *= texelSize;
     float2 border = texelSize * BorderClamp;
 
     // for parallax modify
