@@ -51,8 +51,10 @@ float2 VirtualPlaneUV(float3 planeNormal, float3 planeX, float3 planeZ, float3 c
     half planeDistance = normalDotOrigin - normalDotCenter;
     planeDistance *= -1.0f;
 
+    // ratio of camera to plane vector and camera to quad vertex vector
     half intersect = planeDistance / normalDotRay;
 
+    // intersection of ray from camera to quad vertex with each of the view plane
     float3 intersection = ((rayLocal.direction * intersect) + rayLocal.origin) - center;
 
     half dx = dot(planeX, intersection);
@@ -93,8 +95,6 @@ float3 FrameTransform(float3 projRay, float3 frameRay, out float3 worldX, out fl
 
 float4 TriangleInterpolate(float2 uv)
 {
-    uv = frac(uv);
-
     float2 omuv = float2(1.0, 1.0) - uv.xy;
 
     float4 res = float4(0, 0, 0, 0);
