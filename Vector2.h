@@ -8,6 +8,7 @@ class Vector2
 
 public:
 	Vector2() = default;
+    Vector2(T v);
 	Vector2(T x, T y);
 	Vector2(const Vector2& other);
 	
@@ -40,6 +41,13 @@ public:
 		};
 	};
 };
+
+template <typename T>
+Vector2<T>::Vector2(T v)
+{
+    m_Values[0] = v;
+    m_Values[1] = v;
+}
 
 template <typename T>
 Vector2<T>::Vector2(T x, T y)

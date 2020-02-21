@@ -35,6 +35,7 @@ public:
 	static const uint32_t ms_atlasDimension = 4096;
 
 private:
+    static void CheckFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
     static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 
 	static void InitAtlasRenderTargets(ID3D11Device* device);
@@ -55,8 +56,15 @@ private:
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
     static void CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z);
+    static Vector2<float> Get2DIndex(int i, int res);
 
 private:
+    
+    // for finding maximum filled pixels in a frame, for maximizing atlas usage
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_singleFrameTexture;
+    static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_singleFrameStagingTexture;
+    static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_singleFrameTextureRTV;
+
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasMultisampledRTV;
     static Microsoft::WRL::ComPtr<ID3D11Texture2D> m_albedoAtlasTextureMultisampled;
 	static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_albedoAtlasRTV;

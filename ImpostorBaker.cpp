@@ -6,11 +6,15 @@
 #include "ObjLoader.h"
 #include <ScreenGrab.h>
 #include <wincodec.h>
+#include <algorithm>
 
 using Microsoft::WRL::ComPtr;
 
 const uint32_t ImpostorBaker::ms_atlasFramesCount;
 const uint32_t ImpostorBaker::ms_atlasDimension;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_singleFrameTexture;
+ComPtr<ID3D11Texture2D> ImpostorBaker::m_singleFrameStagingTexture;
+ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_singleFrameTextureRTV;
 ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasMultisampledRTV;
 ComPtr<ID3D11Texture2D> ImpostorBaker::m_albedoAtlasTextureMultisampled;
 ComPtr<ID3D11RenderTargetView> ImpostorBaker::m_albedoAtlasRTV;
@@ -93,17 +97,34 @@ void ImpostorBaker::Initialize(Renderer* renderer)
 
 void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 {
+    uint32_t singleFrameDimension = ms_atlasDimension / ms_atlasFramesCount;
+
 	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Width = ms_atlasDimension;
-	desc.Height = ms_atlasDimension;
+    desc.Width = singleFrameDimension;
+    desc.Height = singleFrameDimension;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.SampleDesc = { 2, 0 };
+    desc.SampleDesc = { 1, 0 };
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
+
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_singleFrameTexture.GetAddressOf()));
+    THROW_IF_FAILED(device->CreateRenderTargetView(m_singleFrameTexture.Get(), nullptr, m_singleFrameTextureRTV.GetAddressOf()));
+
+    desc.Usage = D3D11_USAGE_STAGING;
+    desc.BindFlags = 0;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+    THROW_IF_FAILED(device->CreateTexture2D(&desc, nullptr, m_singleFrameStagingTexture.GetAddressOf()));
+
+    desc.Width = ms_atlasDimension;
+    desc.Height = ms_atlasDimension;
+    desc.SampleDesc = { 8, 0 };
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = 0;
 
     THROW_IF_FAILED(
         device->CreateTexture2D(&desc, nullptr, m_albedoAtlasTextureMultisampled.GetAddressOf()));
@@ -134,7 +155,7 @@ void ImpostorBaker::InitAtlasRenderTargets(ID3D11Device* device)
 
 	desc.Format = DXGI_FORMAT_R32_TYPELESS;
 	desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-    desc.SampleDesc = { 2, 0 };
+    desc.SampleDesc = { 8, 0 };
 
     THROW_IF_FAILED(
         device->CreateTexture2D(&desc, nullptr, m_depthAtlasTextureMultisampled.GetAddressOf())
@@ -358,6 +379,19 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     const auto& batches = graphicsComponent->GetBatches();
     const auto& materialBuffers = graphicsComponent->GetMaterialBuffers();
 
+    for (auto it = batches.begin(); it != batches.end(); ++it)
+    {
+        const uint32_t materialID = it->first;
+        const Batch& batch = it->second;
+
+        context->IASetVertexBuffers(0, 1, batch.vertexBuffer.GetAddressOf(), &batch.vertexBufferStride, &offset);
+        context->IASetInputLayout(inputLayout.Get());
+        context->PSSetConstantBuffers(0, 1, materialBuffers.at(materialID).GetAddressOf());
+        context->IASetPrimitiveTopology(batch.m_topology);
+
+        CheckFilledPixels(context, graphicsComponent, batch);
+    }
+
     ImpostorBaker::PrepareBake(context);
     for (auto it = batches.begin(); it != batches.end(); ++it)
     {
@@ -375,20 +409,98 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     return BakeResult{ gs_bakedAlbedoFileName, gs_bakedNormalFileName };
 }
 
+void ImpostorBaker::CheckFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
+{
+    float framesMinusOne = (float)ms_atlasFramesCount - 1;
+
+    const auto& boundingBox = graphicsComponent->GetBoundingBox();
+    const Vector4f& center = boundingBox.m_center;
+    auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
+    float radius = boundingBox.GetRadius();
+    float diameter = radius * 2.0f;
+
+    /// render without clearing to check for miximum filled pixels in a frame
+    context->OMSetRenderTargets(1, m_singleFrameTextureRTV.GetAddressOf(), nullptr);
+    context->OMSetDepthStencilState(nullptr, 0);
+    SetRasterizerState(context);
+    SetShaders(context);
+
+    float singleFrameDimension = ms_atlasDimension / ms_atlasFramesCount;
+    for (float y = 0; y < ms_atlasFramesCount; ++y)
+    for (float x = 0; x < ms_atlasFramesCount; ++x)
+    {
+        Vector2<float> vec(
+            x / framesMinusOne * 2.0f - 1.0f,
+            y / framesMinusOne * 2.0f - 1.0f);
+
+        Vector3<float> ray = OctahedralCoordToVector(vec).Normalize();
+        DirectX::XMVECTOR xmRay = DirectX::XMVectorSet(ray.x, ray.y, ray.z, 1.0f);
+
+        const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
+
+        auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
+        auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+
+        if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(xmRay, globalUp), DirectX::XMVectorZero())))
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+
+        DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
+        DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
+
+        UpdateViewProjMatrix(context, viewMatrix, projMatrix);
+        SetViewProjMatrixBuffer(context);
+
+        D3D11_VIEWPORT viewport;
+        viewport.Width = singleFrameDimension;
+        viewport.Height = singleFrameDimension;
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+        viewport.TopLeftX = 0.0f;
+        viewport.TopLeftY = 0.0f;
+        context->RSSetViewports(1, &viewport);
+
+        context->Draw(batch.verticesCount, 0);
+    }
+
+    context->CopyResource(m_singleFrameStagingTexture.Get(), m_singleFrameTexture.Get());
+
+    Vector2<float> min(singleFrameDimension - 1);
+    Vector2<float> max(0);
+
+    D3D11_MAPPED_SUBRESOURCE mappedRes = {};
+    THROW_IF_FAILED(context->Map(m_singleFrameStagingTexture.Get(), 0, D3D11_MAP::D3D11_MAP_READ, 0, &mappedRes));
+    char* colors = reinterpret_cast<char*>(mappedRes.pData);
+    uint32_t rowPitch = mappedRes.RowPitch;
+
+    for (uint32_t i = 0; i < singleFrameDimension; ++i)
+    {
+        if (*colors != 0x00 && *(colors + 1) != 0x00 && *(colors + 2) != 0x00 && *(colors + 3) != 0x00)
+        {
+            auto texPos = Get2DIndex(i, singleFrameDimension);
+            min.x = std::min(min.x, texPos.x);
+            min.y = std::min(min.y, texPos.y);
+            max.x = std::max(max.x, texPos.x);
+            max.y = std::max(max.y, texPos.y);
+        }
+        colors += 4;
+    }
+    context->Unmap(m_singleFrameStagingTexture.Get(), 0);
+}
+
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
 {
+    float framesMinusOne = (float)ms_atlasFramesCount - 1;
+
+    const auto& boundingBox = graphicsComponent->GetBoundingBox();
+    const Vector4f& center = boundingBox.m_center;
+    auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
+    float radius = boundingBox.GetRadius();
+    float diameter = radius * 2.0f;
+
 	SetRenderTargets(context);
 	SetDepthStencilState(context);
 	SetRasterizerState(context);
 	SetShaders(context);
-
-	float framesMinusOne = (float)ms_atlasFramesCount - 1;
-
-	const auto& boundingBox = graphicsComponent->GetBoundingBox();
-	const Vector4f& center = boundingBox.m_center;
-	auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
-	float radius = boundingBox.GetRadius();
-	float diameter = radius * 2.0f;
 
 	for (float y = 0; y < ms_atlasFramesCount; ++y)
 	for (float x = 0; x < ms_atlasFramesCount; ++x)
@@ -438,6 +550,13 @@ void ImpostorBaker::CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& 
         y = (workSize - 1) / MAX_DIM_THREADS + 1;
         z = 1;
     }
+}
+
+Vector2<float> ImpostorBaker::Get2DIndex(int i, int res)
+{
+    float x = i % res;
+    float y = (i - x) / res;
+    return Vector2<float>(x, y);
 }
 
 void ImpostorBaker::DoProcessing(ID3D11DeviceContext* context)
