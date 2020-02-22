@@ -379,6 +379,9 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     const auto& batches = graphicsComponent->GetBatches();
     const auto& materialBuffers = graphicsComponent->GetMaterialBuffers();
 
+	float clear[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	context->ClearRenderTargetView(m_singleFrameTextureRTV.Get(), clear);
+
     for (auto it = batches.begin(); it != batches.end(); ++it)
     {
         const uint32_t materialID = it->first;
@@ -391,6 +394,8 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
 
         CheckFilledPixels(context, graphicsComponent, batch);
     }
+
+	float ratio = FindFilledPixelRatio(context);
 
     ImpostorBaker::PrepareBake(context);
     for (auto it = batches.begin(); it != batches.end(); ++it)
@@ -461,30 +466,48 @@ void ImpostorBaker::CheckFilledPixels(ID3D11DeviceContext* context, const Graphi
 
         context->Draw(batch.verticesCount, 0);
     }
+}
 
-    context->CopyResource(m_singleFrameStagingTexture.Get(), m_singleFrameTexture.Get());
+float ImpostorBaker::FindFilledPixelRatio(ID3D11DeviceContext* context)
+{
+	float singleFrameDimension = ms_atlasDimension / ms_atlasFramesCount;
 
-    Vector2<float> min(singleFrameDimension - 1);
-    Vector2<float> max(0);
+	context->CopyResource(m_singleFrameStagingTexture.Get(), m_singleFrameTexture.Get());
 
-    D3D11_MAPPED_SUBRESOURCE mappedRes = {};
-    THROW_IF_FAILED(context->Map(m_singleFrameStagingTexture.Get(), 0, D3D11_MAP::D3D11_MAP_READ, 0, &mappedRes));
-    char* colors = reinterpret_cast<char*>(mappedRes.pData);
-    uint32_t rowPitch = mappedRes.RowPitch;
+	Vector2<float> min(singleFrameDimension - 1);
+	Vector2<float> max(0);
 
-    for (uint32_t i = 0; i < singleFrameDimension; ++i)
-    {
-        if (*colors != 0x00 && *(colors + 1) != 0x00 && *(colors + 2) != 0x00 && *(colors + 3) != 0x00)
-        {
-            auto texPos = Get2DIndex(i, singleFrameDimension);
-            min.x = std::min(min.x, texPos.x);
-            min.y = std::min(min.y, texPos.y);
-            max.x = std::max(max.x, texPos.x);
-            max.y = std::max(max.y, texPos.y);
-        }
-        colors += 4;
-    }
-    context->Unmap(m_singleFrameStagingTexture.Get(), 0);
+	D3D11_MAPPED_SUBRESOURCE mappedRes = {};
+	THROW_IF_FAILED(context->Map(m_singleFrameStagingTexture.Get(), 0, D3D11_MAP::D3D11_MAP_READ, 0, &mappedRes));
+	char* colors = reinterpret_cast<char*>(mappedRes.pData);
+	uint32_t rowPitch = mappedRes.RowPitch;
+
+	uint32_t pixelsCount = singleFrameDimension * singleFrameDimension;
+	for (uint32_t i = 0; i < pixelsCount; ++i)
+	{
+		uint8_t r = *(colors + i * 4);
+		uint8_t g = *(colors + i * 4 + 1);
+		uint8_t b = *(colors + i * 4 + 2);
+		uint8_t a = *(colors + i * 4 + 3);
+
+		if (r != 0x00 || g != 0x00 || b != 0x00 || a != 0x00)
+		{
+			auto texPos = Get2DIndex(i, singleFrameDimension);
+			min.x = std::min(min.x, texPos.x);
+			min.y = std::min(min.y, texPos.y);
+			max.x = std::max(max.x, texPos.x);
+			max.y = std::max(max.y, texPos.y);
+		}
+	}
+
+	context->Unmap(m_singleFrameStagingTexture.Get(), 0);
+
+	Vector2<float> len(max.x - min.x, max.y - min.y);
+	float maxLen = std::max(len.x, len.y);
+
+	float ratio = maxLen / singleFrameDimension;
+
+	return ratio;
 }
 
 void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)

@@ -36,6 +36,7 @@ public:
 
 private:
     static void CheckFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
+	static float FindFilledPixelRatio(ID3D11DeviceContext* context);
     static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 
 	static void InitAtlasRenderTargets(ID3D11Device* device);
