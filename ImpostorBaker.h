@@ -57,7 +57,7 @@ private:
 
 	static Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec);
     static void CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& y, uint32_t& z);
-    static Vector2<float> Get2DIndex(int i, int res);
+    static Vector2<float> Get2DIndex(uint32_t i, uint32_t res);
 
 private:
     

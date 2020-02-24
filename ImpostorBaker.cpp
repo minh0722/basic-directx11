@@ -482,7 +482,7 @@ float ImpostorBaker::FindFilledPixelRatio(ID3D11DeviceContext* context)
 	char* colors = reinterpret_cast<char*>(mappedRes.pData);
 	uint32_t rowPitch = mappedRes.RowPitch;
 
-	uint32_t pixelsCount = singleFrameDimension * singleFrameDimension;
+	uint32_t pixelsCount = uint32_t(singleFrameDimension * singleFrameDimension);
 	for (uint32_t i = 0; i < pixelsCount; ++i)
 	{
 		uint8_t r = *(colors + i * 4);
@@ -492,7 +492,7 @@ float ImpostorBaker::FindFilledPixelRatio(ID3D11DeviceContext* context)
 
 		if (r != 0x00 || g != 0x00 || b != 0x00 || a != 0x00)
 		{
-			auto texPos = Get2DIndex(i, singleFrameDimension);
+			auto texPos = Get2DIndex(i, (uint32_t)singleFrameDimension);
 			min.x = std::min(min.x, texPos.x);
 			min.y = std::min(min.y, texPos.y);
 			max.x = std::max(max.x, texPos.x);
@@ -575,9 +575,9 @@ void ImpostorBaker::CalculateWorkSize(uint32_t workSize, uint32_t& x, uint32_t& 
     }
 }
 
-Vector2<float> ImpostorBaker::Get2DIndex(int i, int res)
+Vector2<float> ImpostorBaker::Get2DIndex(uint32_t i, uint32_t res)
 {
-    float x = i % res;
+    float x = float(i % res);
     float y = (i - x) / res;
     return Vector2<float>(x, y);
 }
