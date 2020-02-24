@@ -60,7 +60,7 @@ void main(uint3 id : SV_DispatchThreadID)
 
                 uint3 xyz = uint3(x + (of.x * s), y + (of.y * s), 0);
 
-                if (xyz.x < xStart || xyz.x > xEnd + 1 || xyz.y < yStart || xyz.y > yEnd + 1)
+                if (xyz.x < xStart || xyz.x > xEnd || xyz.y < yStart || xyz.y > yEnd)
                     continue;
 
                 float neighborMask = sourceMask.Load(xyz).r;
