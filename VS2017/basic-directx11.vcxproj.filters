@@ -99,7 +99,7 @@
     <ClInclude Include="..\ImpostorRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Renderdoc.h">
+    <ClInclude Include="..\GPUCapturer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,7 +170,7 @@
     <ClCompile Include="..\ImpostorRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Renderdoc.cpp">
+    <ClCompile Include="..\GPUCapturer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

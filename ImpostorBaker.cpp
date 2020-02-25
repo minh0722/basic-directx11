@@ -4,6 +4,7 @@
 #include "Vector2.h"
 #include "GraphicsComponent.h"
 #include "ObjLoader.h"
+#include "GPUCapturer.h"
 #include <ScreenGrab.h>
 #include <wincodec.h>
 #include <algorithm>
@@ -407,8 +408,9 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
         context->IASetInputLayout(inputLayout.Get());
         context->PSSetConstantBuffers(0, 1, materialBuffers.at(materialID).GetAddressOf());
         context->IASetPrimitiveTopology(batch.m_topology);
-        Bake(context, graphicsComponent, batch);
+        Bake(context, graphicsComponent, batch, ratio);
     }
+
     DoProcessing(context);
 
     return BakeResult{ gs_bakedAlbedoFileName, gs_bakedNormalFileName };
@@ -510,14 +512,14 @@ float ImpostorBaker::FindFilledPixelRatio(ID3D11DeviceContext* context)
 	return ratio;
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch, float radiusRatio)
 {
     float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
     const auto& boundingBox = graphicsComponent->GetBoundingBox();
     const Vector4f& center = boundingBox.m_center;
     auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
-    float radius = boundingBox.GetRadius();
+    float radius = boundingBox.GetRadius() * radiusRatio;
     float diameter = radius * 2.0f;
 
 	SetRenderTargets(context);

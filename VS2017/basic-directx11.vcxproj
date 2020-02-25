@@ -80,7 +80,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc;$(SolutionDir)\..\renderdoc\renderdoc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -95,7 +95,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\..\DirectXTK\Inc;$(SolutionDir)\..\renderdoc\renderdoc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -114,7 +114,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -133,7 +133,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -145,6 +145,7 @@
     <ClInclude Include="..\DebugDisplay.h" />
     <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
+    <ClInclude Include="..\GPUCapturer.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
     <ClInclude Include="..\GraphicsComponent.hpp" />
     <ClInclude Include="..\Hemioctahedron.h" />
@@ -157,7 +158,6 @@
     <ClInclude Include="..\Octahedron.h" />
     <ClInclude Include="..\OctahedronVertex.h" />
     <ClInclude Include="..\pch.h" />
-    <ClInclude Include="..\Renderdoc.h" />
     <ClInclude Include="..\renderer.h" />
     <ClInclude Include="..\Scene.h" />
     <ClInclude Include="..\Shape.h" />
@@ -172,6 +172,7 @@
     <ClCompile Include="..\DebugDisplay.cpp" />
     <ClCompile Include="..\experimental\renderer1.cpp" />
     <ClCompile Include="..\extern\fastcrc32\Crc32.cpp" />
+    <ClCompile Include="..\GPUCapturer.cpp" />
     <ClCompile Include="..\GraphicsComponent.cpp" />
     <ClCompile Include="..\Hemioctahedron.cpp" />
     <ClCompile Include="..\ImpostorBaker.cpp" />
@@ -193,7 +194,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\Renderdoc.cpp" />
     <ClCompile Include="..\renderer.cpp" />
     <ClCompile Include="..\Scene.cpp" />
     <ClCompile Include="..\Shape.cpp" />

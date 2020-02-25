@@ -9,7 +9,7 @@
 #include "DebugDisplay.h"
 #include "ImpostorBaker.h"
 #include "ImpostorRenderer.h"
-#include "Renderdoc.h"
+#include "GPUCapturer.h"
 #include <cmath>
 
 float cos45 = (float)std::cos(PI / 4);
@@ -22,7 +22,7 @@ Renderer::Renderer()
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
 {
-	Renderdoc::Init();
+	GPUCapturer::Init(CaptureType::Renderdoc);
     auto error = GetLastError();
 }
 
@@ -96,7 +96,7 @@ void Renderer::Render(InputClass* input)
 	static bool captured = false;
 	if (!baked && input->IsKeyDown('C'))
 	{
-		RENDERDOC_BEGIN_CAPTURE;
+		GPU_BEGIN_CAPTURE;
 		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
 		captured = true;
@@ -110,7 +110,7 @@ void Renderer::Render(InputClass* input)
 
 	if (captured)
 	{
-		RENDERDOC_END_CAPTURE;
+		GPU_END_CAPTURE;
 		captured = false;
 	}
 
