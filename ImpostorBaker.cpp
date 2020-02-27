@@ -446,13 +446,13 @@ void ImpostorBaker::CheckFilledPixels(ID3D11DeviceContext* context, const Graphi
         const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
 
         auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
-        auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+        auto globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
 
         if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(xmRay, globalUp), DirectX::XMVectorZero())))
-            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 
-        DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
-        DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
+        DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtRH(xmvecPos, lookat, globalUp);
+        DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicRH(diameter, diameter, 0.0f, diameter);
 
         UpdateViewProjMatrix(context, viewMatrix, projMatrix);
         SetViewProjMatrixBuffer(context);
@@ -540,13 +540,13 @@ void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* 
 		const Vector4f position = Vector4f(boundingBox.m_center.XYZ() + ray * radius, 1.0f);
 
 		auto xmvecPos = DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f);
-		auto globalUp = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+		auto globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
 
         if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(xmRay, globalUp), DirectX::XMVectorZero())))
-            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 
-		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(xmvecPos, lookat, globalUp);
-		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicLH(diameter, diameter, 0.0f, diameter);
+		DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtRH(xmvecPos, lookat, globalUp);
+		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicRH(diameter, diameter, 0.0f, diameter);
 
 		UpdateViewProjMatrix(context, viewMatrix, projMatrix);
 		SetViewProjMatrixBuffer(context);
