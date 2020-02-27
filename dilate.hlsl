@@ -89,7 +89,7 @@ void main(uint3 id : SV_DispatchThreadID)
     if (x == xStart || x == xEnd || y == yStart || y == yEnd)
     {
         if (NormalsDepth)
-            color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+            color = float4(0.0f, 0.0f, 0.0f, 0.5f);
         else
             color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     }
