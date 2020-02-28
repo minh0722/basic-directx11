@@ -15,7 +15,11 @@ cbuffer VertexConstants : register(b1)
     float radius;
 };
 
-ByteAddressBuffer VertexDataBuffer : register(t0);
+struct VertexInput
+{
+    float4 pos : POSITION0;
+    float4 uv : TEXCOORD0;
+};
 
 void ImpostorVertex(inout ImpostorData imp)
 {
@@ -111,11 +115,10 @@ void ImpostorVertex(inout ImpostorData imp)
     imp.frame2 = float4(virtualUV2, frame2Local.xz);
 }
 
-VS_OUT main(uint vertexID : SV_VertexID)
+VS_OUT main(VertexInput inputVertex)
 {
-    float3 vertex = VertexIDToQuadVertex(vertexID);
-    uint perVertexSize = 8;    //2 float uv
-    float2 uv = asfloat(VertexDataBuffer.Load2(vertexID * perVertexSize));
+    float3 vertex = inputVertex.pos.xyz;
+    float2 uv = inputVertex.uv.xy;
 
     ImpostorData imp = (ImpostorData)0;
     imp.vertex = float4(vertex, 1.0f);

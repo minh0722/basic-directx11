@@ -11,13 +11,15 @@ using DirectX::XMVECTOR;
 ComPtr<ID3D11VertexShader> ImpostorRenderer::m_vs;
 ComPtr<ID3D11PixelShader> ImpostorRenderer::m_ps;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vertexDataBuffer;
+ComPtr<ID3D11Buffer> ImpostorRenderer::m_indexBuffer;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vsConstants;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_psConstants;
-ComPtr<ID3D11ShaderResourceView> ImpostorRenderer::m_vertexDataSRV;
 ComPtr<ID3D11SamplerState> ImpostorRenderer::m_samplerState;
+ComPtr<ID3D11InputLayout> ImpostorRenderer::m_inputLayout;
 
 struct QuadVertexData
 {
+    Vector3<float> m_vertex;
     Vector2<float> m_uv;
 };
 
@@ -61,33 +63,26 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 
     // RESOURCE INITIALIZATION
 
-	D3D11_BUFFER_DESC desc = {};
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.ByteWidth = 4 * sizeof(QuadVertexData);          // 4 vertices quad
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
-	desc.StructureByteStride = 0;
-	desc.Usage = D3D11_USAGE_IMMUTABLE;
-
-    QuadVertexData verticesData[] = 
+    std::vector<QuadVertexData> verticesData =
     {
-        {{0.0f, 0.0f}}, // 0
-        {{1.0f, 0.0f}}, // 1
-        {{0.0f, 1.0f}}, // 3
-        {{1.0f, 1.0f}}  // 2
+        {{-0.5f, 0.0f, -0.5f }, {0.0f, 0.0f }},  // 0
+        {{ 0.5f, 0.0f, -0.5f }, {1.0f, 0.0f }},  // 1
+        {{-0.5f, 0.0f,  0.5f }, {0.0f, 1.0f }},  // 2
+        {{ 0.5f, 0.0f,  0.5f }, {1.0f, 1.0f }},  // 3
+        {{ 0.0f, 0.0f,  0.0f }, {0.5f, 0.5f }}   // 4
     };
 
-    D3D11_SUBRESOURCE_DATA initData = {};
-    initData.pSysMem = verticesData;
-	THROW_IF_FAILED(device->CreateBuffer(&desc, &initData, m_vertexDataBuffer.GetAddressOf()));
+	D3D11_BUFFER_DESC desc = {};
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.ByteWidth = (uint32_t)verticesData.size() * sizeof(QuadVertexData);          // 4 vertices quad
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = sizeof(QuadVertexData);
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
 
-    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-    srvDesc.BufferEx.FirstElement = 0;
-    srvDesc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
-    srvDesc.BufferEx.NumElements = desc.ByteWidth / sizeof(float);
-    THROW_IF_FAILED(device->CreateShaderResourceView(m_vertexDataBuffer.Get(), &srvDesc, m_vertexDataSRV.GetAddressOf()));
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = verticesData.data();
+	THROW_IF_FAILED(device->CreateBuffer(&desc, &initData, m_vertexDataBuffer.GetAddressOf()));
 
     desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(VSConstant), 16);
@@ -99,6 +94,19 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 
     desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(PSConstant), 16);
     THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_psConstants.GetAddressOf()));
+
+    std::vector<uint32_t> indices = { 0, 4, 1, 1, 4, 3, 3, 4, 2, 2, 4, 0 };
+
+    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    desc.ByteWidth = (uint32_t)indices.size() * sizeof(uint32_t);
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+    desc.StructureByteStride = sizeof(uint32_t);
+    desc.Usage = D3D11_USAGE_IMMUTABLE;
+
+    initData.pSysMem = indices.data();
+
+    THROW_IF_FAILED(device->CreateBuffer(&desc, &initData, m_indexBuffer.GetAddressOf()));
 
     D3D11_SAMPLER_DESC samplerDesc = {};
     samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -113,6 +121,33 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
     THROW_IF_FAILED(device->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf()));
+
+    std::vector<D3D11_INPUT_ELEMENT_DESC> vertexShaderInputLayout(2);
+    vertexShaderInputLayout[0].SemanticName = "POSITION";
+    vertexShaderInputLayout[0].SemanticIndex = 0;								// will use POSITION0 semantic
+    vertexShaderInputLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;			// format of the input vertex
+    vertexShaderInputLayout[0].InputSlot = 0;									// 0 ~ 15
+    vertexShaderInputLayout[0].AlignedByteOffset = 0;
+    vertexShaderInputLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;	// per vertex (per instance if for each geometry)
+    vertexShaderInputLayout[0].InstanceDataStepRate = 0;						// number of instances to draw using the same per-instance data before advancing in the buffer by one element
+
+    vertexShaderInputLayout[1].SemanticName = "TEXCOORD";
+    vertexShaderInputLayout[1].SemanticIndex = 0;
+    vertexShaderInputLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+    vertexShaderInputLayout[1].InputSlot = 0;
+    vertexShaderInputLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    vertexShaderInputLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    vertexShaderInputLayout[1].InstanceDataStepRate = 0;
+
+    ID3DBlob* vertexBlob;
+    THROW_IF_FAILED(D3DReadFileToBlob(L"ImpostorRenderVS.cso", &vertexBlob));
+
+    THROW_IF_FAILED(device->CreateInputLayout(
+        vertexShaderInputLayout.data(),
+        (UINT)vertexShaderInputLayout.size(),
+        vertexBlob->GetBufferPointer(),
+        vertexBlob->GetBufferSize(),
+        m_inputLayout.GetAddressOf()));
 }
 
 void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComponent)
@@ -125,7 +160,9 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->VSSetShader(m_vs.Get(), nullptr, 0);
     context->PSSetShader(m_ps.Get(), nullptr, 0);
 
-    context->VSSetShaderResources(0, 1, m_vertexDataSRV.GetAddressOf());
+    uint32_t stride = sizeof(QuadVertexData), offset = 0;
+    context->IASetVertexBuffers(0, 1, m_vertexDataBuffer.GetAddressOf(), &stride, &offset);
+    context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
     context->VSSetConstantBuffers(0, 1, graphicComponent->GetWorldViewProjBuffer().GetAddressOf());
 
     Vector4f worldPos = graphicComponent->GetWorldPos();
@@ -163,8 +200,8 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     context->PSSetShaderResources(1, 1, graphicComponent->GetImpostorAlbedoSRV().GetAddressOf());
 
     context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
-    context->IASetInputLayout(nullptr);
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    context->IASetInputLayout(m_inputLayout.Get());
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    context->Draw(4, 0);
+    context->DrawIndexed(12, 0, 0);
 }

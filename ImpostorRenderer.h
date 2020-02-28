@@ -15,11 +15,12 @@ private:
     static Microsoft::WRL::ComPtr<ID3D11VertexShader> m_vs;
     static Microsoft::WRL::ComPtr<ID3D11PixelShader> m_ps;
 
-    static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_vertexDataSRV;
 	static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vertexDataBuffer;
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> m_indexBuffer;
 
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsConstants;
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_psConstants;
 
     static Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
+    static Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 };
