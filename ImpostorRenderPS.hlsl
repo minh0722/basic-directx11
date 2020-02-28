@@ -34,6 +34,18 @@ float4 ImpostorBlendWeights(Texture2D<float4> atlas, SamplerState atlasSampler, 
     float samp2Visible = samp2.a > 0.0f ? 1.0f : 0.0f;
     float isOpaque = samp0Visible + samp1Visible + samp2Visible > 1.0f ? 1.0f : 0.0f;
 
+    // test
+    float frameDimension = 1.0f / FramesCount;
+    float2 singleFrameUV0 = (frame0 - floor(frame0 / frameDimension) * frameDimension) / frameDimension;
+    float2 singleFrameUV1 = (frame1 - floor(frame1 / frameDimension) * frameDimension) / frameDimension;
+    float2 singleFrameUV2 = (frame2 - floor(frame2 / frameDimension) * frameDimension) / frameDimension;
+
+
+
+    isOpaque += singleFrameUV0.x > 0.0f && singleFrameUV0.y > 0.0f ? 0.0f : 1.0f;
+    isOpaque += singleFrameUV1.x > 0.0f && singleFrameUV1.y > 0.0f ? 0.0f : 1.0f;
+    isOpaque += singleFrameUV2.x > 0.0f && singleFrameUV2.y > 0.0f ? 0.0f : 1.0f;
+
     result.a *= isOpaque;
 
     return result;
@@ -105,7 +117,7 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 struct PS_OUTPUT
 {
     float4 color : SV_TARGET;
-    float depth : SV_DEPTH;
+    //float depth : SV_DEPTH;
 };
 
 PS_OUTPUT main(VS_OUT input)
@@ -127,17 +139,17 @@ PS_OUTPUT main(VS_OUT input)
     clip(baseTex.a - Cutoff);
 
     // scale world normal back to -1 to 1
-    float3 worldNormal = normalTex.xyz * 2.0f - 1.0f;
+    //float3 worldNormal = normalTex.xyz * 2.0f - 1.0f;
 
-    worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
+    //worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
 
-    output.depth = normalTex.w;
+    //output.depth = normalTex.a;
 
-    float3 t = input.tangentWorld;
-    float3 b = input.bitangentWorld;
-    float3 n = input.normalWorld;
+    //float3 t = input.tangentWorld;
+    //float3 b = input.bitangentWorld;
+    //float3 n = input.normalWorld;
 
-    float3x3 tangentToWorld = float3x3(t, b, n);
+    //float3x3 tangentToWorld = float3x3(t, b, n);
 
     output.color = float4(baseTex.rgb, 1.0f);
     return output;
