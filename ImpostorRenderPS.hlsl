@@ -9,6 +9,14 @@ cbuffer PixelConstants : register(b0)
     float BorderClamp;
 };
 
+cbuffer InvMatrixConstants : register(b1)
+{
+    matrix projMatrixInv;
+    matrix viewMatrixInv0;
+    matrix viewMatrixInv1;
+    matrix viewMatrixInv2;
+};
+
 Texture2D<float4> impostorNormalAtlas : register(t0);
 Texture2D<float4> impostorBaseAtlas : register(t1);
 SamplerState impostorSampler : register(s0);

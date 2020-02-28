@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include "GraphicsComponent.h"
 #include "ImpostorBaker.h"
+#include <cmath>
 
 using Microsoft::WRL::ComPtr;
 using DirectX::XMMATRIX;
@@ -14,6 +15,7 @@ ComPtr<ID3D11Buffer> ImpostorRenderer::m_vertexDataBuffer;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_indexBuffer;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_vsConstants;
 ComPtr<ID3D11Buffer> ImpostorRenderer::m_psConstants;
+ComPtr<ID3D11Buffer> ImpostorRenderer::m_invMatricesConstants;
 ComPtr<ID3D11SamplerState> ImpostorRenderer::m_samplerState;
 ComPtr<ID3D11InputLayout> ImpostorRenderer::m_inputLayout;
 
@@ -38,6 +40,124 @@ struct PSConstant
     float atlasDimension;
     float cutoff;
     float borderClamp;
+};
+
+Vector2<float> VecToSphereOct(Vector3<float> vec)
+{
+    float s = dot(1.0f, abs(vec));
+    vec.x /= s;
+    vec.z /= s;
+    if (vec.y <= 0.0f)
+    {
+        Vector2<float> flip;
+        flip.x = vec.x >= 0.0f ? 1.0f : -1.0f;
+        flip.y = vec.z >= 0.0f ? 1.0f : -1.0f;
+        vec.x = (1.0f - abs(vec.z)) * flip.x;
+        vec.z = (1.0f - abs(vec.x)) * flip.y;
+    }
+    return { vec.x, vec.z };
+}
+
+Vector2<float> VecToHemiOct(Vector3<float> vec)
+{
+    return { 0.0f, 0.0f };
+}
+
+static const bool gs_impostorFullSphere = true;
+
+Vector2<float> VectorToGrid(Vector3<float> vec)
+{
+    if (gs_impostorFullSphere)
+        return VecToSphereOct(vec);
+    else
+        return VecToHemiOct(vec);
+}
+
+float lerp(float a, float b, float t)
+{
+    return a + t * (b - a);
+}
+
+Vector3<float> OctahedralCoordToVector(const Vector2<float>& vec)
+{
+    Vector3<float> n(vec.x, 1.0f - std::abs(vec.x) - std::abs(vec.y), vec.y);
+    float t = std::clamp(-n.y, 0.0f, 1.0f);
+    n.x += n.x >= 0.0f ? -t : t;
+    n.z += n.z >= 0.0f ? -t : t;
+    return n;
+}
+
+struct InvMatricesConst
+{
+    XMMATRIX projMatrixInv;
+    XMMATRIX viewMatrixInv0;
+    XMMATRIX viewMatrixInv1;
+    XMMATRIX viewMatrixInv2;
+
+    void FillData(Renderer* renderer, const XMMATRIX& worldToObject, const GraphicsComponent* gc)
+    {
+        const Camera& camera = renderer->GetCamera();
+        const auto position = camera.GetPosition();
+
+        const auto cameraObjectSpace = DirectX::XMVector4Transform(position, worldToObject);
+        const auto pivotToCameraRay = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(cameraObjectSpace, DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f)));
+
+        Vector2<float> grid = VectorToGrid(Vector3<float>(pivotToCameraRay));
+        grid.x = std::clamp((grid.x + 1.0f) * 0.5f, 0.0f, 1.0f);
+        grid.y = std::clamp((grid.y + 1.0f) * 0.5f, 0.0f, 1.0f);
+        grid *= 15; // hardcode for now
+
+        Vector2<float> gridFloor = Vector2<float>{ std::floor(grid.x), std::floor(grid.y) };
+        Vector2<float> gridFrac(grid.x - gridFloor.x, grid.y - gridFloor.y);
+
+        float weight = std::clamp(std::ceil(gridFrac.x - gridFrac.y), 0.0f, 1.0f);
+        Vector2<float> frame0 = gridFloor;
+        Vector2<float> frame1 = gridFloor + Vector2<float>(lerp(0.0f, 1.0f, weight), lerp(1.0f, 0.0f, weight));
+        Vector2<float> frame2 = gridFloor + Vector2<float>(1.0f, 1.0f);
+
+        float framesMinusOne = 15;
+        frame0 = { frame0.x / framesMinusOne * 2.0f - 1.0f, frame0.y / framesMinusOne * 2.0f - 1.0f };
+        frame1 = { frame1.x / framesMinusOne * 2.0f - 1.0f, frame1.y / framesMinusOne * 2.0f - 1.0f };
+        frame2 = { frame2.x / framesMinusOne * 2.0f - 1.0f, frame2.y / framesMinusOne * 2.0f - 1.0f };
+
+        Vector3<float> ray0 = OctahedralCoordToVector(frame0).Normalize();
+        Vector3<float> ray1 = OctahedralCoordToVector(frame1).Normalize();
+        Vector3<float> ray2 = OctahedralCoordToVector(frame2).Normalize();
+
+        const auto& boundingBox = gc->GetBoundingBox();
+        float radius = gc->GetOctRadius();
+        float diameter = radius * 2.0f;
+        const Vector4f& center = boundingBox.m_center;
+        auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
+        const DirectX::XMVECTOR position0 = Vector4f(boundingBox.m_center.XYZ() + ray0 * radius, 1.0f).ToXMVector();
+        const DirectX::XMVECTOR position1 = Vector4f(boundingBox.m_center.XYZ() + ray1 * radius, 1.0f).ToXMVector();
+        const DirectX::XMVECTOR position2 = Vector4f(boundingBox.m_center.XYZ() + ray2 * radius, 1.0f).ToXMVector();
+        
+        DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicRH(diameter, diameter, 0.0f, diameter);
+
+        auto globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
+        if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(ray0.ToXMVector(), globalUp), DirectX::XMVectorZero())))
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+
+        DirectX::XMMATRIX viewMatrix0 = DirectX::XMMatrixLookAtRH(position0, lookat, globalUp);
+
+        globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
+        if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(ray1.ToXMVector(), globalUp), DirectX::XMVectorZero())))
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+
+        DirectX::XMMATRIX viewMatrix1 = DirectX::XMMatrixLookAtRH(position1, lookat, globalUp);
+
+        globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
+        if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(ray2.ToXMVector(), globalUp), DirectX::XMVectorZero())))
+            globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+
+        DirectX::XMMATRIX viewMatrix2 = DirectX::XMMatrixLookAtRH(position1, lookat, globalUp);
+
+        projMatrixInv = DirectX::XMMatrixInverse(nullptr, projMatrix);
+        viewMatrixInv0 = DirectX::XMMatrixInverse(nullptr, viewMatrix0);
+        viewMatrixInv1 = DirectX::XMMatrixInverse(nullptr, viewMatrix1);
+        viewMatrixInv2 = DirectX::XMMatrixInverse(nullptr, viewMatrix2);
+    }
 };
 
 void ImpostorRenderer::Initialize(Renderer* renderer)
@@ -94,6 +214,9 @@ void ImpostorRenderer::Initialize(Renderer* renderer)
 
     desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(PSConstant), 16);
     THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_psConstants.GetAddressOf()));
+
+    desc.ByteWidth = Math::RoundUpToMultiple<uint32_t>(sizeof(InvMatricesConst), 16);
+    THROW_IF_FAILED(device->CreateBuffer(&desc, nullptr, m_invMatricesConstants.GetAddressOf()));
 
     std::vector<uint32_t> indices = { 0, 4, 1, 1, 4, 3, 3, 4, 2, 2, 4, 0 };
 
@@ -195,7 +318,14 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
     memcpy(&psConstant->worldMatrix, &objectToWorld, sizeof(XMMATRIX));
     context->Unmap(m_psConstants.Get(), 0);
 
+    InvMatricesConst invMatrixcesConstants = {};
+    invMatrixcesConstants.FillData(renderer, worldToObject, graphicComponent);
+    THROW_IF_FAILED(context->Map(m_invMatricesConstants.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+    memcpy(mappedRes.pData, &invMatrixcesConstants, sizeof(InvMatricesConst));
+    context->Unmap(m_invMatricesConstants.Get(), 0);
+
     context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
+    context->PSSetConstantBuffers(1, 1, m_invMatricesConstants.GetAddressOf());
     context->PSSetShaderResources(0, 1, graphicComponent->GetImpostorNormalDepthSRV().GetAddressOf());
     context->PSSetShaderResources(1, 1, graphicComponent->GetImpostorAlbedoSRV().GetAddressOf());
 

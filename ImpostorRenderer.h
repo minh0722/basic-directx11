@@ -20,6 +20,7 @@ private:
 
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsConstants;
     static Microsoft::WRL::ComPtr<ID3D11Buffer> m_psConstants;
+    static Microsoft::WRL::ComPtr<ID3D11Buffer> m_invMatricesConstants;
 
     static Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
     static Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
