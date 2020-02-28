@@ -48,6 +48,7 @@ public:
     void SetDrawType(wavefront::DrawType drawType);
     void SetBoundingBox(const wavefront::AABB& boundingBox);
     void SetWorldPosition(Vector4f pos);
+    void SetOctRadius(float r) const;
     void LoadTexture(ID3D11Device* device, const wchar_t* texturePath);
 
     void ChangeWorldViewProjBufferData(ID3D11DeviceContext* context, const WorldViewProj& worldViewProj);
@@ -60,6 +61,7 @@ public:
     const std::unordered_map<uint32_t, Microsoft::WRL::ComPtr<ID3D11Buffer>>& GetMaterialBuffers() const;
     const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetWorldViewProjBuffer() const;
     Vector4f GetWorldPos() const;
+    float GetOctRadius() const;
     const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetImpostorAlbedoSRV() const;
     const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetImpostorNormalDepthSRV() const;
 
@@ -100,6 +102,7 @@ private:
     wavefront::DrawType m_drawType = wavefront::DrawType::DrawIndexed;
     wavefront::AABB m_BoundingBox;
     Vector4f m_WorldPosition;
+    mutable float m_octRadius = 0;   // set during baking
 };
 
 #include "GraphicsComponent.hpp"

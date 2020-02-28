@@ -204,11 +204,17 @@ void GraphicsComponent::SetDrawType(wavefront::DrawType drawType)
 void GraphicsComponent::SetBoundingBox(const wavefront::AABB& boundingBox)
 {
     m_BoundingBox = boundingBox;
+    m_octRadius = m_BoundingBox.GetRadius(); // initially equal to bounding box radius
 }
 
 void GraphicsComponent::SetWorldPosition(Vector4f pos)
 {
     m_WorldPosition = pos;
+}
+
+void GraphicsComponent::SetOctRadius(float r) const
+{
+    m_octRadius = r;
 }
 
 void GraphicsComponent::LoadTexture(ID3D11Device* device, const wchar_t* texturePath)
@@ -290,6 +296,11 @@ const Microsoft::WRL::ComPtr<ID3D11Buffer>& GraphicsComponent::GetWorldViewProjB
 Vector4f GraphicsComponent::GetWorldPos() const
 {
     return m_WorldPosition;
+}
+
+float GraphicsComponent::GetOctRadius() const
+{
+    return m_octRadius;
 }
 
 const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GraphicsComponent::GetImpostorAlbedoSRV() const
