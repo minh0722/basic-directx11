@@ -35,9 +35,9 @@ public:
 	static const uint32_t ms_atlasDimension = 4096;
 
 private:
-    static void CheckFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
+    static void RenderFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 	static float FindFilledPixelRatio(ID3D11DeviceContext* context);
-    static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch, float radiusRatio);
+    static void Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch);
 
 	static void InitAtlasRenderTargets(ID3D11Device* device);
 	static void InitDepthStencilState(ID3D11Device* device);

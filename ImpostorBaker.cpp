@@ -393,10 +393,11 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
         context->PSSetConstantBuffers(0, 1, materialBuffers.at(materialID).GetAddressOf());
         context->IASetPrimitiveTopology(batch.m_topology);
 
-        CheckFilledPixels(context, graphicsComponent, batch);
+        RenderFilledPixels(context, graphicsComponent, batch);
     }
 
 	float ratio = FindFilledPixelRatio(context);
+    graphicsComponent->SetOctRadius(graphicsComponent->GetBoundingBox().GetRadius() * ratio);
 
     ImpostorBaker::PrepareBake(context);
     for (auto it = batches.begin(); it != batches.end(); ++it)
@@ -408,7 +409,7 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
         context->IASetInputLayout(inputLayout.Get());
         context->PSSetConstantBuffers(0, 1, materialBuffers.at(materialID).GetAddressOf());
         context->IASetPrimitiveTopology(batch.m_topology);
-        Bake(context, graphicsComponent, batch, ratio);
+        Bake(context, graphicsComponent, batch);
     }
 
     DoProcessing(context);
@@ -416,14 +417,14 @@ BakeResult ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsCompo
     return BakeResult{ gs_bakedAlbedoFileName, gs_bakedNormalFileName };
 }
 
-void ImpostorBaker::CheckFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
+void ImpostorBaker::RenderFilledPixels(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
 {
     float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
     const auto& boundingBox = graphicsComponent->GetBoundingBox();
     const Vector4f& center = boundingBox.m_center;
     auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
-    float radius = boundingBox.GetRadius();
+    float radius = graphicsComponent->GetOctRadius();
     float diameter = radius * 2.0f;
 
     /// render without clearing to check for miximum filled pixels in a frame
@@ -512,14 +513,14 @@ float ImpostorBaker::FindFilledPixelRatio(ID3D11DeviceContext* context)
 	return ratio;
 }
 
-void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch, float radiusRatio)
+void ImpostorBaker::Bake(ID3D11DeviceContext* context, const GraphicsComponent* graphicsComponent, const Batch& batch)
 {
     float framesMinusOne = (float)ms_atlasFramesCount - 1;
 
     const auto& boundingBox = graphicsComponent->GetBoundingBox();
     const Vector4f& center = boundingBox.m_center;
     auto lookat = DirectX::XMVectorSet(center.x, center.y, center.z, 1.0f);
-    float radius = boundingBox.GetRadius() * radiusRatio;
+    float radius = graphicsComponent->GetOctRadius();
     float diameter = radius * 2.0f;
 
 	SetRenderTargets(context);
