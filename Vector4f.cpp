@@ -125,6 +125,11 @@ Vector4f Vector4f::CrossProduct(const Vector4f& other) const
 		1.0f);
 }
 
+DirectX::XMVECTOR Vector4f::ToXMVector() const
+{
+    return DirectX::XMVectorSet(x, y, z, w);
+}
+
 float Vector4f::DotProduct(const Vector4f& other) const
 {
 	return m_fValues[0] * other.m_fValues[0] +

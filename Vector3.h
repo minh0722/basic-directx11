@@ -10,6 +10,7 @@ public:
 	Vector3<T>() = default;
 	Vector3<T>(T x, T y, T z);
 	Vector3<T>(const Vector3<T>& other);
+    Vector3<T>(const DirectX::XMVECTOR& v);
 	Vector3<T>& operator=(const Vector3<T>& other);
 	Vector3<T> operator-(const Vector3<T>& other) const;
 	Vector3<T> operator+(const Vector3<T>& other) const;
@@ -20,6 +21,7 @@ public:
 	Vector3<T> operator-() const;
 	Vector3<T> CrossProduct(const Vector3<T>& other) const;
 	T DotProduct(const Vector3<T>& other) const;
+    DirectX::XMVECTOR ToXMVector() const;
 
 	T& operator[](uint16_t index);
 	T operator[](uint16_t index) const;
@@ -44,6 +46,18 @@ public:
 };
 
 template <typename T>
+Vector3<T> abs(const Vector3<T>& v)
+{
+    return { abs(v.x), abs(v.y), abs(v.z) };
+}
+
+template <typename T>
+T dot(T n, const Vector3<T>& v)
+{
+    return v.DotProduct({ n, n, n });
+}
+
+template <typename T>
 Vector3<T>::Vector3(T x, T y, T z)
 {
 	m_Values[0] = x;
@@ -57,6 +71,14 @@ Vector3<T>::Vector3(const Vector3<T>& other)
 	m_Values[0] = other.m_Values[0];
 	m_Values[1] = other.m_Values[1];
 	m_Values[2] = other.m_Values[2];
+}
+
+template <typename T>
+Vector3<T>::Vector3(const DirectX::XMVECTOR& v)
+{
+    x = DirectX::XMVectorGetX(v);
+    y = DirectX::XMVectorGetY(v);
+    z = DirectX::XMVectorGetZ(v);
 }
 
 template <typename T>
@@ -147,6 +169,12 @@ T Vector3<T>::DotProduct(const Vector3<T>& other) const
 	return m_Values[0] * other.m_Values[0] +
 		m_Values[1] * other.m_Values[1] +
 		m_Values[2] * other.m_Values[2];
+}
+
+template <typename T>
+DirectX::XMVECTOR Vector3<T>::ToXMVector() const
+{
+    return DirectX::XMVectorSet(x, y, z, 1.0f);
 }
 
 template <typename T>

@@ -27,6 +27,7 @@ public:
     Vector4f CrossProduct(const Vector4f& other) const;
 	float DotProduct(const Vector4f& other) const;
     float DotProduct3(const Vector4f& other) const;
+    DirectX::XMVECTOR ToXMVector() const;
 
     float& operator[](uint16_t index);
     float operator[](uint16_t index) const;
