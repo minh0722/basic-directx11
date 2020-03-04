@@ -21,6 +21,32 @@ Texture2D<float4> impostorNormalAtlas : register(t0);
 Texture2D<float4> impostorBaseAtlas : register(t1);
 SamplerState impostorSampler : register(s0);
 
+float3 DepthToWorldPos(float depth, float2 texcoord, matrix viewMatrixInv)
+{
+    float z = depth /** 2.0f - 1.0f*/;
+
+    float4 projSpacePos = float4(texcoord * 2.0f - 1.0f, z, 1.0f);
+    
+    // perspective division
+    projSpacePos /= projSpacePos.w;
+
+    float4 clipSpacePos = mul(projMatrixInv, projSpacePos);
+
+    float4 worldSpacePos = mul(viewMatrixInv, clipSpacePos);
+    return worldSpacePos.xyz;
+}
+
+float3 GetWorldPosFromDepth(float2 frameAtlasUV, float2 ddxy, matrix viewMatrixInv)
+{
+    float depth = impostorNormalAtlas.SampleGrad(impostorSampler, frameAtlasUV, ddxy.xx, ddxy.yy).a;
+
+    float frameDimension = 1.0f / FramesCount;
+    float2 singleFrameUV = (frameAtlasUV - floor(frameAtlasUV / frameDimension) * frameDimension) / frameDimension;
+    float3 worldPos = DepthToWorldPos(depth, singleFrameUV, viewMatrixInv);
+
+    return worldPos;
+}
+
 float4 ImpostorBlendWeights(Texture2D<float4> atlas, SamplerState atlasSampler, float2 uv, float2 frame0, float2 frame1, float2 frame2, float4 weights, float2 ddxy)
 {
     float4 samp0 = atlas.SampleGrad(atlasSampler, frame0, ddxy.xx, ddxy.yy);
@@ -33,18 +59,6 @@ float4 ImpostorBlendWeights(Texture2D<float4> atlas, SamplerState atlasSampler, 
     float samp1Visible = samp1.a > 0.0f ? 1.0f : 0.0f;
     float samp2Visible = samp2.a > 0.0f ? 1.0f : 0.0f;
     float isOpaque = samp0Visible + samp1Visible + samp2Visible > 1.0f ? 1.0f : 0.0f;
-
-    // test
-    float frameDimension = 1.0f / FramesCount;
-    float2 singleFrameUV0 = (frame0 - floor(frame0 / frameDimension) * frameDimension) / frameDimension;
-    float2 singleFrameUV1 = (frame1 - floor(frame1 / frameDimension) * frameDimension) / frameDimension;
-    float2 singleFrameUV2 = (frame2 - floor(frame2 / frameDimension) * frameDimension) / frameDimension;
-
-
-
-    isOpaque += singleFrameUV0.x > 0.0f && singleFrameUV0.y > 0.0f ? 0.0f : 1.0f;
-    isOpaque += singleFrameUV1.x > 0.0f && singleFrameUV1.y > 0.0f ? 0.0f : 1.0f;
-    isOpaque += singleFrameUV2.x > 0.0f && singleFrameUV2.y > 0.0f ? 0.0f : 1.0f;
 
     result.a *= isOpaque;
 
@@ -112,6 +126,18 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 
     worldNormal = ImpostorBlendWeights(impostorNormalAtlas, impostorSampler, imp.uv, vp0uv, vp1uv, vp2uv, weights, ddxy);
     baseTex = ImpostorBlendWeights(impostorBaseAtlas, impostorSampler, imp.uv, vp0uv, vp1uv, vp2uv, weights, ddxy);
+    float3 worldPos0 = GetWorldPosFromDepth(vp0uv, ddxy, viewMatrixInv0);
+    float3 worldPos1 = GetWorldPosFromDepth(vp1uv, ddxy, viewMatrixInv1);
+    float3 worldPos2 = GetWorldPosFromDepth(vp2uv, ddxy, viewMatrixInv2);
+
+    float dot0 = dot(float3(1.0f, 1.0f, 1.0f), worldPos0);
+    float dot1 = dot(float3(1.0f, 1.0f, 1.0f), worldPos1);
+    float dot2 = dot(float3(1.0f, 1.0f, 1.0f), worldPos2);
+
+    // to not optimize away this code
+    baseTex.a += dot0 != 0.0f ? 0.0f : dot0;
+    baseTex.a += dot1 != 0.0f ? 0.0f : dot1;
+    baseTex.a += dot2 != 0.0f ? 0.0f : dot2;
 }
 
 struct PS_OUTPUT
