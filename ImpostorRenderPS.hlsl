@@ -17,11 +17,18 @@ cbuffer InvMatrixConstants : register(b1)
     matrix viewMatrixInv2;
 };
 
+cbuffer WorldViewProj : register(b2)
+{
+    matrix world;
+    matrix view;
+    matrix proj;
+};
+
 Texture2D<float4> impostorNormalAtlas : register(t0);
 Texture2D<float4> impostorBaseAtlas : register(t1);
 SamplerState impostorSampler : register(s0);
 
-float3 DepthToWorldPos(float depth, float2 texcoord, matrix viewMatrixInv)
+float4 DepthToWorldPos(float depth, float2 texcoord, matrix viewMatrixInv)
 {
     float z = depth /** 2.0f - 1.0f*/;
 
@@ -33,16 +40,16 @@ float3 DepthToWorldPos(float depth, float2 texcoord, matrix viewMatrixInv)
     float4 clipSpacePos = mul(projMatrixInv, projSpacePos);
 
     float4 worldSpacePos = mul(viewMatrixInv, clipSpacePos);
-    return worldSpacePos.xyz;
+    return worldSpacePos;
 }
 
-float3 GetWorldPosFromDepth(float2 frameAtlasUV, float2 ddxy, matrix viewMatrixInv)
+float4 GetWorldPosFromDepth(float2 frameAtlasUV, float2 ddxy, matrix viewMatrixInv)
 {
     float depth = impostorNormalAtlas.SampleGrad(impostorSampler, frameAtlasUV, ddxy.xx, ddxy.yy).a;
 
     float frameDimension = 1.0f / FramesCount;
     float2 singleFrameUV = (frameAtlasUV - floor(frameAtlasUV / frameDimension) * frameDimension) / frameDimension;
-    float3 worldPos = DepthToWorldPos(depth, singleFrameUV, viewMatrixInv);
+    float4 worldPos = DepthToWorldPos(depth, singleFrameUV, viewMatrixInv);
 
     return worldPos;
 }
@@ -126,24 +133,35 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 
     worldNormal = ImpostorBlendWeights(impostorNormalAtlas, impostorSampler, imp.uv, vp0uv, vp1uv, vp2uv, weights, ddxy);
     baseTex = ImpostorBlendWeights(impostorBaseAtlas, impostorSampler, imp.uv, vp0uv, vp1uv, vp2uv, weights, ddxy);
-    float3 worldPos0 = GetWorldPosFromDepth(vp0uv, ddxy, viewMatrixInv0);
-    float3 worldPos1 = GetWorldPosFromDepth(vp1uv, ddxy, viewMatrixInv1);
-    float3 worldPos2 = GetWorldPosFromDepth(vp2uv, ddxy, viewMatrixInv2);
+    float4 worldPos0 = GetWorldPosFromDepth(vp0uv, ddxy, viewMatrixInv0);
+    float4 worldPos1 = GetWorldPosFromDepth(vp1uv, ddxy, viewMatrixInv1);
+    float4 worldPos2 = GetWorldPosFromDepth(vp2uv, ddxy, viewMatrixInv2);
 
-    float dot0 = dot(float3(1.0f, 1.0f, 1.0f), worldPos0);
-    float dot1 = dot(float3(1.0f, 1.0f, 1.0f), worldPos1);
-    float dot2 = dot(float3(1.0f, 1.0f, 1.0f), worldPos2);
+    float4 viewPos0 = mul(view, worldPos0);
+    float4 viewPos1 = mul(view, worldPos1);
+    float4 viewPos2 = mul(view, worldPos2);
 
-    // to not optimize away this code
-    baseTex.a += dot0 != 0.0f ? 0.0f : dot0;
-    baseTex.a += dot1 != 0.0f ? 0.0f : dot1;
-    baseTex.a += dot2 != 0.0f ? 0.0f : dot2;
+    float4 projPos0 = mul(proj, viewPos0);
+    float4 projPos1 = mul(proj, viewPos1);
+    float4 projPos2 = mul(proj, viewPos2);
+
+    projPos0 /= projPos0.w;
+    projPos1 /= projPos1.w;
+    projPos2 /= projPos2.w;
+
+    float depth0 = projPos0.z;
+    float depth1 = projPos1.z;
+    float depth2 = projPos2.z;
+    float quadDepth = worldNormal.a;
+    quadDepth = min(depth0, min(depth1, depth2));
+
+    worldNormal.a = quadDepth;
 }
 
 struct PS_OUTPUT
 {
     float4 color : SV_TARGET;
-    //float depth : SV_DEPTH;
+    float depth : SV_DEPTH;
 };
 
 PS_OUTPUT main(VS_OUT input)
@@ -169,7 +187,7 @@ PS_OUTPUT main(VS_OUT input)
 
     //worldNormal = mul(WorldMatrix, float4(worldNormal, 0.0f)).xyz;
 
-    //output.depth = normalTex.a;
+    output.depth = normalTex.a;
 
     //float3 t = input.tangentWorld;
     //float3 b = input.bitangentWorld;

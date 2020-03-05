@@ -327,6 +327,7 @@ void ImpostorRenderer::Render(Renderer* renderer, GraphicsComponent* graphicComp
 
     context->PSSetConstantBuffers(0, 1, m_psConstants.GetAddressOf());
     context->PSSetConstantBuffers(1, 1, m_invMatricesConstants.GetAddressOf());
+    context->PSSetConstantBuffers(2, 1, graphicComponent->GetWorldViewProjBuffer().GetAddressOf());
     context->PSSetShaderResources(0, 1, graphicComponent->GetImpostorNormalDepthSRV().GetAddressOf());
     context->PSSetShaderResources(1, 1, graphicComponent->GetImpostorAlbedoSRV().GetAddressOf());
 
