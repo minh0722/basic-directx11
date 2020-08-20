@@ -96,7 +96,7 @@ void Renderer::Render(InputClass* input)
 	static bool captured = false;
 	if (!baked && input->IsKeyDown('C'))
 	{
-		GPU_BEGIN_CAPTURE;
+		//GPU_BEGIN_CAPTURE;
 		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
 		baked = true;
 		captured = true;
@@ -110,7 +110,7 @@ void Renderer::Render(InputClass* input)
 
 	if (captured)
 	{
-		GPU_END_CAPTURE;
+		//GPU_END_CAPTURE;
 		captured = false;
 	}
 
