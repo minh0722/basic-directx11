@@ -134,8 +134,6 @@ struct InvMatricesConst
         const DirectX::XMVECTOR position1 = Vector4f((worldPos + boundingBox.m_center).XYZ() + ray1 * radius, 1.0f).ToXMVector();
         const DirectX::XMVECTOR position2 = Vector4f((worldPos + boundingBox.m_center).XYZ() + ray2 * radius, 1.0f).ToXMVector();
         
-        DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicRH(diameter, diameter, 0.0f, diameter);
-
         auto globalUp = DirectX::XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
         if (DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualR(DirectX::XMVector3Cross(ray0.ToXMVector(), globalUp), DirectX::XMVectorZero())))
             globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
@@ -153,6 +151,8 @@ struct InvMatricesConst
             globalUp = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 
         DirectX::XMMATRIX viewMatrix2 = DirectX::XMMatrixLookAtRH(position2, lookat, globalUp);
+
+		DirectX::XMMATRIX projMatrix = DirectX::XMMatrixOrthographicRH(diameter, diameter, 0.0f, diameter);
 
         projMatrixInv = DirectX::XMMatrixInverse(nullptr, projMatrix);
         viewMatrixInv0 = DirectX::XMMatrixInverse(nullptr, viewMatrix0);
