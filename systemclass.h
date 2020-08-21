@@ -1,45 +1,25 @@
-////////////////////////////////////////////////////////////////////////////////
-// Filename: systemclass.h
-////////////////////////////////////////////////////////////////////////////////
-#ifndef _SYSTEMCLASS_H_
-#define _SYSTEMCLASS_H_
+#pragma once
 
-
-///////////////////////////////
-// PRE-PROCESSING DIRECTIVES //
-///////////////////////////////
 #define WIN32_LEAN_AND_MEAN
 
-
-//////////////
-// INCLUDES //
-//////////////
 #include <windows.h>
-
-
-///////////////////////
-// MY CLASS INCLUDES //
-///////////////////////
 #include "inputclass.h"
 #include "renderer.h"
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Class name: SystemClass
-////////////////////////////////////////////////////////////////////////////////
 class SystemClass
 {
 public:
 	SystemClass();
 	~SystemClass();
 
-	bool Initialize();
-	void Shutdown();
 	void Run();
 
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
+    void Initialize();
+    void Shutdown();
+
 	bool Frame();
 	void InitializeWindows(int, int);
 	void ShutdownWindows();
@@ -49,8 +29,7 @@ private:
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
 
-	InputClass* m_Input;
-	//GraphicsClass* m_Graphics;
+	InputClass* m_Input = nullptr;
 	Renderer m_Renderer;
 };
 
@@ -65,6 +44,3 @@ static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 // GLOBALS //
 /////////////
 static SystemClass* g_ApplicationHandle = 0;
-
-
-#endif

@@ -1,32 +1,20 @@
 #include "pch.h"
+
+#include <Windowsx.h>
 #include "systemclass.h"
 #include "imgui_impl_win32.h"
-#include <Windowsx.h>
-
 
 SystemClass::SystemClass()
 {
-	m_Input = nullptr;
-
-	// Initialize the windows api.
-	InitializeWindows(screenWidth, screenHeight);
-
-	// Create the input object.  This object will be used to handle reading the keyboard input from the user.
-	m_Input = new InputClass;
-	THROW_IF_NULL(m_Input);
-
-	// Initialize the input object.
-	m_Input->Initialize();
-
-	// Initialize the renderer
-	m_Renderer.Initialize(m_hwnd);
+    Initialize();
 }
 
 SystemClass::~SystemClass()
 {
+    Shutdown();
 }
 
-bool SystemClass::Initialize()
+void SystemClass::Initialize()
 {
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
 	// Initialize the windows api.
@@ -34,33 +22,23 @@ bool SystemClass::Initialize()
 
 	// Create the input object.  This object will be used to handle reading the keyboard input from the user.
 	m_Input = new InputClass;
-	if(!m_Input)
-	{
-		return false;
-	}
+    THROW_IF_NULL(m_Input);
 
 	// Initialize the input object.
 	m_Input->Initialize();
 
 	// Initialize the renderer
 	m_Renderer.Initialize(m_hwnd);
-	
-	return true;
 }
 
 void SystemClass::Shutdown()
 {
-	// Release the input object.
 	if(m_Input)
 	{
 		delete m_Input;
-		m_Input = nullptr;
 	}
 
-	// Shutdown the window.
 	ShutdownWindows();
-	
-	return;
 }
 
 void SystemClass::Run()
