@@ -77,7 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc;$(SolutionDir)\..\extern\imgui;$(SolutionDir)\..\extern\imgui\examples</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc;$(SolutionDir)\..\extern\imgui;$(SolutionDir)\..\extern\imgui\examples</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -109,7 +109,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc;$(SolutionDir)\..\extern\imgui;$(SolutionDir)\..\extern\imgui\examples</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc;$(SolutionDir)\..\extern\imgui;$(SolutionDir)\..\extern\imgui\examples</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -145,10 +145,19 @@
     <ClInclude Include="..\DebugDisplay.h" />
     <ClInclude Include="..\experimental\renderer1.h" />
     <ClInclude Include="..\extern\fastcrc32\Crc32.h" />
+    <ClInclude Include="..\extern\imgui\examples\imgui_impl_dx11.h" />
+    <ClInclude Include="..\extern\imgui\examples\imgui_impl_win32.h" />
+    <ClInclude Include="..\extern\imgui\imconfig.h" />
+    <ClInclude Include="..\extern\imgui\imgui.h" />
+    <ClInclude Include="..\extern\imgui\imgui_internal.h" />
+    <ClInclude Include="..\extern\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\extern\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\extern\imgui\imstb_truetype.h" />
     <ClInclude Include="..\GPUCapturer.h" />
     <ClInclude Include="..\GraphicsComponent.h" />
     <ClInclude Include="..\GraphicsComponent.hpp" />
     <ClInclude Include="..\Hemioctahedron.h" />
+    <ClInclude Include="..\ImguiRenderer.h" />
     <ClInclude Include="..\ImpostorBaker.h" />
     <ClInclude Include="..\ImpostorRenderer.h" />
     <ClInclude Include="..\inputclass.h" />
@@ -172,9 +181,16 @@
     <ClCompile Include="..\DebugDisplay.cpp" />
     <ClCompile Include="..\experimental\renderer1.cpp" />
     <ClCompile Include="..\extern\fastcrc32\Crc32.cpp" />
+    <ClCompile Include="..\extern\imgui\examples\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\extern\imgui\examples\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\extern\imgui\imgui.cpp" />
+    <ClCompile Include="..\extern\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\extern\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\extern\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\GPUCapturer.cpp" />
     <ClCompile Include="..\GraphicsComponent.cpp" />
     <ClCompile Include="..\Hemioctahedron.cpp" />
+    <ClCompile Include="..\ImguiRenderer.cpp" />
     <ClCompile Include="..\ImpostorBaker.cpp" />
     <ClCompile Include="..\ImpostorRenderer.cpp" />
     <ClCompile Include="..\inputclass.cpp" />

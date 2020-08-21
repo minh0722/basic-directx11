@@ -3,6 +3,7 @@
 #include "Shape.h"
 #include "Camera.h"
 #include "Vector4f.h"
+#include "ImguiRenderer.h"
 
 class InputClass;
 class DebugDisplay;
@@ -123,6 +124,8 @@ private:
     Shape m_HemioctahedronMesh;
 
     Camera m_Camera;
+
+    ImguiRenderer m_imguiRenderer;
 };
 
 #define g_Renderer Renderer::GetInstance()

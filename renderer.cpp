@@ -58,6 +58,8 @@ void Renderer::Initialize(HWND window)
 
 	ImpostorBaker::Initialize(this);
     ImpostorRenderer::Initialize(this);
+
+    m_imguiRenderer.Initialize(window, m_Device.Get(), m_DeviceContext.Get(), m_RenderTargetView);
 }
 
 void Renderer::Render(InputClass* input)
@@ -115,6 +117,7 @@ void Renderer::Render(InputClass* input)
 	}
 
     m_DebugDisplay->Render(this);
+    m_imguiRenderer.Render();
 
 	m_SwapChain->Present(0, 0);
 }

@@ -45,3 +45,15 @@ void GPUCapturer::EndCapture()
     if (gs_pixCapturer)
         gs_pixCapturer->EndCapture();
 }
+
+void GPUCapturer::ShowOverlay()
+{
+    if (gs_renderdocCapturer)
+        gs_renderdocCapturer->MaskOverlayBits(eRENDERDOC_Overlay_None, eRENDERDOC_Overlay_Default);
+}
+
+void GPUCapturer::HideOverlay()
+{
+    if (gs_renderdocCapturer)
+        gs_renderdocCapturer->MaskOverlayBits(eRENDERDOC_Overlay_None, eRENDERDOC_Overlay_None);
+}

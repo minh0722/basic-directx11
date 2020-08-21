@@ -12,6 +12,8 @@ public:
 
     static void BeginCapture();
     static void EndCapture();
+    static void ShowOverlay();
+    static void HideOverlay();
 };
 
 #define GPU_BEGIN_CAPTURE GPUCapturer::BeginCapture()
