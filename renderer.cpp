@@ -32,6 +32,17 @@ Renderer::~Renderer()
     delete m_DebugDisplay;
 }
 
+Renderer& Renderer::GetInstance()
+{
+    // not thread safe
+    if (!ms_Instance)
+    {
+        ms_Instance = new Renderer;
+    }
+
+    return *ms_Instance;
+}
+
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
@@ -95,15 +106,17 @@ void Renderer::Render(InputClass* input)
     SetupPrimitiveForRender(hasInput, Hemioctahedral);
     m_HemioctahedronMesh.Render(this);
 
-	static bool baked = false;
-	static bool captured = false;
-	if (!baked && input->IsKeyDown('C'))
-	{
-		//GPU_BEGIN_CAPTURE;
-		m_SpaceShip.BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
-		baked = true;
-		captured = true;
-	}
+	//static bool captured = false;
+ //   //GPU_BEGIN_CAPTURE;
+	//captured = true;
+
+
+    while (!m_impostorBakeQueue.empty())
+    {
+        Shape* shape = m_impostorBakeQueue.back();
+        shape->BakeImpostor(m_Device.Get(), m_DeviceContext.Get());
+        m_impostorBakeQueue.pop_back();
+    }
 
 	// TODO: spaceship vertex buffer input layout doesnt use color so create a new shader or find a way 
 	// to set define in the shader to not use color when we are rendering the spaceship
@@ -111,11 +124,11 @@ void Renderer::Render(InputClass* input)
 	SetupSpaceShipForRender(hasInput);
 	m_SpaceShip.Render(this);
 
-	if (captured)
-	{
-		//GPU_END_CAPTURE;
-		captured = false;
-	}
+	//if (captured)
+	//{
+	//	//GPU_END_CAPTURE;
+	//	captured = false;
+	//}
 
     m_DebugDisplay->Render(this);
     m_imguiRenderer.Render();
@@ -291,6 +304,11 @@ void Renderer::SetRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, 
 	THROW_IF_FAILED(m_Device->CreateRasterizerState(&desc, m_RasterizerState.ReleaseAndGetAddressOf()));
 
 	m_DeviceContext->RSSetState(m_RasterizerState.Get());
+}
+
+void Renderer::AddShapeToBakeImpostor()
+{
+    m_impostorBakeQueue.push_back(&m_SpaceShip);
 }
 
 void Renderer::SetViewPort()

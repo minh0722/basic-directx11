@@ -2,6 +2,7 @@
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "GPUCapturer.h"
+#include "renderer.h"
 
 ImguiRenderer::~ImguiRenderer()
 {
@@ -82,10 +83,10 @@ void ImguiRenderer::ShowGraphicsMenu()
         if (ImGui::BeginMenu("Impostor"))
         {
             static bool baked = false;
-            if (ImGui::MenuItem("Begin impostor bake (one time usage)", nullptr, &baked))
+            if (ImGui::MenuItem("Bake space ship impostor (one time usage)", nullptr, &baked))
             {
                 if (baked)
-                    ;
+                    Renderer::GetInstance().AddShapeToBakeImpostor();
                 else
                     baked = true;
             }

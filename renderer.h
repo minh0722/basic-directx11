@@ -45,16 +45,7 @@ public:
 	Renderer();
 	~Renderer();
 
-    static Renderer& GetInstance()
-    {
-        // not thread safe
-        if (!ms_Instance)
-        {
-            ms_Instance = new Renderer;
-        }
-
-        return *ms_Instance;
-    }
+    static Renderer& GetInstance();
 
 	void Initialize(HWND window);
 	
@@ -68,6 +59,7 @@ public:
 	Renderer& operator=(const Renderer&) = delete;
 
     void SetRasterizerState(D3D11_FILL_MODE fillMode = D3D11_FILL_SOLID, D3D11_CULL_MODE cullMode = D3D11_CULL_BACK);
+    void AddShapeToBakeImpostor();
 
 private:
 	void InitDeviceSwapChainAndDeviceContext(HWND window);
@@ -122,6 +114,8 @@ private:
 	Shape m_SpaceShip;
     Shape m_OctahedronMesh;
     Shape m_HemioctahedronMesh;
+
+    std::vector<Shape*> m_impostorBakeQueue;
 
     Camera m_Camera;
 
