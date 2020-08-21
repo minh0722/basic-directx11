@@ -28,7 +28,8 @@ void SystemClass::Initialize()
 	m_Input->Initialize();
 
 	// Initialize the renderer
-	m_Renderer.Initialize(m_hwnd);
+    m_Renderer = &Renderer::GetInstance();
+	m_Renderer->Initialize(m_hwnd);
 }
 
 void SystemClass::Shutdown()
@@ -71,7 +72,7 @@ void SystemClass::Run()
 				done = true;
 			}
 		}
-		m_Renderer.Render(m_Input);
+		m_Renderer->Render(m_Input);
         m_Input->ResetMouseWheel();
         m_Input->ResetPanningDirection();
         m_Input->ResetRotatingDirection();

@@ -30,7 +30,7 @@ private:
 	HWND m_hwnd;
 
 	InputClass* m_Input = nullptr;
-	Renderer m_Renderer;
+	Renderer* m_Renderer = nullptr;
 };
 
 
