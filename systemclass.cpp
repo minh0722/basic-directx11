@@ -6,8 +6,7 @@
 
 SystemClass::SystemClass()
 {
-	m_Input = 0;
-	//m_Graphics = 0;
+	m_Input = nullptr;
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
@@ -21,20 +20,11 @@ SystemClass::SystemClass()
 
 	// Initialize the renderer
 	m_Renderer.Initialize(m_hwnd);
-
-	//// Create the graphics object.  This object will handle rendering all the graphics for this application.
-	//m_Graphics = new GraphicsClass;
-	//THROW_IF_NULL(m_Graphics);
-
-	//// Initialize the graphics object.
-	//result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
-	//THROW_IF_FALSE(result);
 }
 
 SystemClass::~SystemClass()
 {
 }
-
 
 bool SystemClass::Initialize()
 {
@@ -54,35 +44,12 @@ bool SystemClass::Initialize()
 
 	// Initialize the renderer
 	m_Renderer.Initialize(m_hwnd);
-
-	//// Create the graphics object.  This object will handle rendering all the graphics for this application.
-	//m_Graphics = new GraphicsClass;
-	//if(!m_Graphics)
-	//{
-	//	return false;
-	//}
-
-	//// Initialize the graphics object.
-	//result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
-	//if(!result)
-	//{
-	//	return false;
-	//}
 	
 	return true;
 }
 
-
 void SystemClass::Shutdown()
 {
-	//// Release the graphics object.
-	//if(m_Graphics)
-	//{
-	//	m_Graphics->Shutdown();
-	//	delete m_Graphics;
-	//	m_Graphics = 0;
-	//}
-
 	// Release the input object.
 	if(m_Input)
 	{
@@ -95,7 +62,6 @@ void SystemClass::Shutdown()
 	
 	return;
 }
-
 
 void SystemClass::Run()
 {
@@ -134,7 +100,6 @@ void SystemClass::Run()
 	}
 }
 
-
 bool SystemClass::Frame()
 {
 	// Check if the user pressed escape and wants to exit the application.
@@ -143,16 +108,8 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-	//// Do the frame processing for the graphics object.
-	//result = m_Graphics->Frame();
-	//if(!result)
-	//{
-	//	return false;
-	//}
-
 	return true;
 }
-
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
@@ -300,7 +257,6 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 }
 
-
 void SystemClass::InitializeWindows(int screenWidth, int screenHeight)
 {
 	WNDCLASSEX wc;
@@ -376,7 +332,6 @@ void SystemClass::InitializeWindows(int screenWidth, int screenHeight)
 
 	return;
 }
-
 
 void SystemClass::ShutdownWindows()
 {
