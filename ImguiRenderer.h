@@ -18,4 +18,6 @@ private:
 
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_mainRenderTargetView;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_deviceContext;
+
+    void(*m_onImpostorBake)() = nullptr;
 };

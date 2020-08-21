@@ -65,7 +65,7 @@ void ImguiRenderer::ShowGraphicsMenu()
         {
             if (ImGui::BeginMenu("Renderdoc"))
             {
-                static bool activated = true;
+                static bool activated = false;
                 if (ImGui::MenuItem("Enable/Disable renderdoc overlay", nullptr, &activated))
                 {
                     if (activated)

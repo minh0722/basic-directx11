@@ -23,6 +23,7 @@ Renderer::Renderer()
 		60.0f)												// fov
 {
 	GPUCapturer::Init(CaptureType::Renderdoc);
+    GPUCapturer::HideOverlay();
     auto error = GetLastError();
 }
 
