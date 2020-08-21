@@ -31,13 +31,15 @@ void ImguiRenderer::Deinit()
 
 void ImguiRenderer::Render()
 {
+    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!");
+
     // Start the Dear ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
     // all the imgui menus and items
-    ShowMainMenu();
+    ShowMainMenuBar();
 
     // render the imgui elements
     ImGui::Render();
@@ -45,38 +47,51 @@ void ImguiRenderer::Render()
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ImguiRenderer::ShowMainMenu()
+void ImguiRenderer::ShowMainMenuBar()
 {
-    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!");
-
     if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("Sample menu 0"))
-        {
-            if (ImGui::MenuItem("Menu item 0"))
-            {
-                OutputDebugString("MenuItem0 selected");
-            }
-            if (ImGui::MenuItem("Menu item 1"))
-            {
-                OutputDebugString("MenuItem1 selected");
-            }
-            ImGui::EndMenu();
-        }
-        
-        if (ImGui::BeginMenu("Renderdoc"))
-        {
-            static bool activated = true;
-            if (ImGui::MenuItem("Enable/Disable renderdoc overlay", nullptr, &activated))
-            {
-                if (activated)
-                    GPUCapturer::ShowOverlay();
-                else
-                    GPUCapturer::HideOverlay();
-            }
-            ImGui::EndMenu();
-        }
+    {        
+        ShowGraphicsMenu();
 
         ImGui::EndMainMenuBar();
+    }
+}
+
+void ImguiRenderer::ShowGraphicsMenu()
+{
+    if ((ImGui::BeginMenu("Graphics")))
+    {
+        if (ImGui::BeginMenu("Debug"))
+        {
+            if (ImGui::BeginMenu("Renderdoc"))
+            {
+                static bool activated = true;
+                if (ImGui::MenuItem("Enable/Disable renderdoc overlay", nullptr, &activated))
+                {
+                    if (activated)
+                        GPUCapturer::ShowOverlay();
+                    else
+                        GPUCapturer::HideOverlay();
+                }
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Impostor"))
+        {
+            static bool baked = false;
+            if (ImGui::MenuItem("Begin impostor bake (one time usage)", nullptr, &baked))
+            {
+                if (baked)
+                    ;
+                else
+                    baked = true;
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenu();
     }
 }
