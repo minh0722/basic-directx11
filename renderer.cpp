@@ -58,10 +58,6 @@ void Renderer::Initialize(HWND window)
 
 	SetupSpaceShip();
 
-    LARGE_INTEGER freq;
-    QueryPerformanceFrequency(&freq);
-    long long f = freq.QuadPart;
-
     m_DebugDisplay = new DebugDisplay(m_Device.Get(), m_DeviceContext.Get());
     DebugDisplay::SetDebugDisplay(m_DebugDisplay);
 
