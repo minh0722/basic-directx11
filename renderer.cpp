@@ -12,9 +12,6 @@
 #include "GPUCapturer.h"
 #include <cmath>
 
-float cos45 = (float)std::cos(PI / 4);
-float sin45 = (float)std::sin(PI / 4);
-
 Renderer* Renderer::ms_Instance = nullptr;
 
 Renderer::Renderer()
