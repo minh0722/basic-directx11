@@ -64,7 +64,7 @@ void Renderer::Initialize(HWND window)
 	ImpostorBaker::Initialize(this);
     ImpostorRenderer::Initialize(this);
 
-    m_imguiRenderer.Initialize(window, m_Device.Get(), m_DeviceContext.Get(), m_RenderTargetView);
+    m_imguiRenderer.Initialize(window, m_Device.Get(), m_DeviceContext.Get(), m_BackBufferRTV);
 }
 
 void Renderer::Render(InputClass* input)
@@ -74,9 +74,9 @@ void Renderer::Render(InputClass* input)
     m_Camera.UpdateCameraMatrices();
 
 	FLOAT color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
+	m_DeviceContext->ClearRenderTargetView(m_BackBufferRTV.Get(), color);
 	m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-	m_DeviceContext->OMSetRenderTargets(1, m_RenderTargetView.GetAddressOf(), m_DepthStencilView.Get());
+	m_DeviceContext->OMSetRenderTargets(1, m_BackBufferRTV.GetAddressOf(), m_DepthStencilView.Get());
 	m_DeviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 1);
 	SetViewPort();
 
@@ -214,7 +214,7 @@ void Renderer::InitRenderTargetView(IDXGISwapChain * swapChain)
 		m_Device->CreateRenderTargetView(
 			backBufferTexture.Get(),
 			nullptr,
-			m_RenderTargetView.ReleaseAndGetAddressOf()));
+			m_BackBufferRTV.ReleaseAndGetAddressOf()));
 }
 
 void Renderer::InitDepthStencilBufferAndView()

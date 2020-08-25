@@ -100,7 +100,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain> m_SwapChain;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_RenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_BackBufferRTV;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_DepthStencilView;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_RasterizerState;
