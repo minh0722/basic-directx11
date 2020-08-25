@@ -1,16 +1,16 @@
 struct VS_OUT
 {
     float4 vertex : SV_POSITION;
-    float3 tangentWorld : TEXCOORD0;
-    float3 bitangentWorld : TEXCOORD1;
-    float3 normalWorld : TEXCOORD2;
-    float4 texcoord : TEXCOORD3;
-    float4 plane0 : TEXCOORD4;
-    float4 plane1 : TEXCOORD5;
-    float4 plane2 : TEXCOORD6;
-    float4 tangentSpace0 : TEXCOORD7;
-    float4 tangentSpace1 : TEXCOORD8;
-    float4 tangentSpace2 : TEXCOORD9;
+    float3 tangentWorld : TANGENT;
+    float3 bitangentWorld : BITANGENT;
+    float3 normalWorld : NORMAL;
+    float4 texcoord : TEXCOORD0;
+    float4 plane0 : PLANE0;
+    float4 plane1 : PLANE1;
+    float4 plane2 : PLANE2;
+    float4 tangentSpace0 : TANGENTSPACE0;
+    float4 tangentSpace1 : TANGENTSPACE1;
+    float4 tangentSpace2 : TANGENTSPACE2;
 };
 
 struct Ray

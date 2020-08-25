@@ -102,10 +102,6 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
 
     float texelSize = 1.0f / AtlasDimension;
 
-    // clamp out neighboring frames
-    float2 gridSize = 1.0f / FramesCount;
-    float2 border = texelSize * BorderClamp;
-
     // for parallax modify
     float4 n0 = impostorNormalAtlas.SampleLevel(impostorSampler, vp0uv, 1);
     float4 n1 = impostorNormalAtlas.SampleLevel(impostorSampler, vp1uv, 1);
@@ -125,6 +121,9 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     vp2uv += n2p;
 
     // clamp out neighboring frames
+    float2 gridSize = 1.0f / FramesCount;
+    float2 border = texelSize * BorderClamp;
+    
     vp0uv = clamp(vp0uv, frame0 + border, frame0 + gridSize - border);
     vp1uv = clamp(vp1uv, frame1 + border, frame1 + gridSize - border);
     vp2uv = clamp(vp2uv, frame2 + border, frame2 + gridSize - border);
