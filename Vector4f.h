@@ -46,7 +46,7 @@ public:
 public:
     union
     {
-		DirectX::XMVECTOR m_v;
+		DirectX::XMVECTOR m_xmValues;
         float m_fValues[4];
         struct  
         {

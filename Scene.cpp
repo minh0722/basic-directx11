@@ -92,7 +92,7 @@ void Scene::AddCube()
     for (size_t i = 0; i < vertices.size(); ++i)
     {
         // multiply by world view proj matrix and divide by w
-        //DirectX::XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_v, worldViewProj.m_matrix);
+        //DirectX::XMVECTOR pos = XMVector3TransformCoord(vertices[i].pos.m_xmValues, worldViewProj.m_matrix);
 
         Vector4f pos = (vertices[i].pos * worldViewProj);
         pos = pos / pos.w;

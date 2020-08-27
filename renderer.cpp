@@ -18,6 +18,7 @@ Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
+    , m_GlobalLightSetting({ { -100.0f, 100.0f, -100.0f, 1.0f }, {1.0f, 1.0f, 1.0f} })
 {
 	GPUCapturer::Init(CaptureType::Renderdoc);
     GPUCapturer::HideOverlay();
@@ -924,6 +925,11 @@ void Renderer::SetLightingBuffer()
     m_DeviceContext->Unmap(m_GlobalLightingBuffer.Get(), 0);
 
     m_DeviceContext->PSSetConstantBuffers(1, 1, m_GlobalLightingBuffer.GetAddressOf());
+}
+
+const LightSourceSettings& Renderer::GetGlobalLightSettings() const
+{
+    return m_GlobalLightSetting;
 }
 
 void Renderer::SetupPrimitiveForRender(bool hasInput, Primitive prim/*= Triangle*/)

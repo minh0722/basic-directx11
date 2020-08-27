@@ -69,6 +69,7 @@ public:
     void AddShapeToBakeImpostor();
     void SetGlobalLightPosition(float x, float y, float z);
     void SetGlobalLightColor(float r, float g, float b);
+    const LightSourceSettings& GetGlobalLightSettings() const;
 
 private:
 	void InitDeviceSwapChainAndDeviceContext(HWND window);
