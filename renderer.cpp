@@ -65,6 +65,8 @@ void Renderer::Initialize(HWND window)
     ImpostorRenderer::Initialize(this);
 
     m_imguiRenderer.Initialize(window, m_Device.Get(), m_DeviceContext.Get(), m_BackBufferRTV);
+
+    SetupLightingBuffer();
 }
 
 void Renderer::Render(InputClass* input)
@@ -302,6 +304,20 @@ void Renderer::SetRasterizerState(D3D11_FILL_MODE mode /* = D3D11_FILL_SOLID*/, 
 void Renderer::AddShapeToBakeImpostor()
 {
     m_impostorBakeQueue.push_back(&m_SpaceShip);
+}
+
+void Renderer::SetGlobalLightPosition(float x, float y, float z)
+{
+    m_GlobalLightSetting.m_LightPos.x = x;
+    m_GlobalLightSetting.m_LightPos.y = y;
+    m_GlobalLightSetting.m_LightPos.z = z;
+}
+
+void Renderer::SetGlobalLightColor(float r, float g, float b)
+{
+    m_GlobalLightSetting.m_lightColor.r = r;
+    m_GlobalLightSetting.m_lightColor.g = g;
+    m_GlobalLightSetting.m_lightColor.b = b;
 }
 
 void Renderer::SetViewPort()
@@ -864,6 +880,8 @@ void Renderer::SetupSpaceShip()
 
 void Renderer::SetupSpaceShipForRender(bool hasInput)
 {
+    SetLightingBuffer();
+
     Vector4f pos(0.0f, 0.0f, -20.0f, 1.0f);
 	DirectX::XMMATRIX worldMatrix = DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 
@@ -881,6 +899,31 @@ void Renderer::SetupSpaceShipForRender(bool hasInput)
 			m_DeviceContext.Get(),
 			{ worldMatrix, m_Camera.GetViewMatrix(), m_Camera.GetProjectionMatrix() });
 	}
+}
+
+void Renderer::SetupLightingBuffer()
+{
+    D3D11_BUFFER_DESC desc = {};
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.ByteWidth = sizeof(LightSourceSettings);
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.StructureByteStride = sizeof(LightSourceSettings);
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+
+    THROW_IF_FAILED(m_Device->CreateBuffer(&desc, nullptr, m_GlobalLightingBuffer.GetAddressOf()));
+}
+
+void Renderer::SetLightingBuffer()
+{
+    D3D11_MAPPED_SUBRESOURCE mapRes = {};
+    m_DeviceContext->Map(m_GlobalLightingBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
+    LightSourceSettings* lightSettings = reinterpret_cast<LightSourceSettings*>(mapRes.pData);
+    lightSettings->m_LightPos = m_GlobalLightSetting.m_LightPos;
+    lightSettings->m_lightColor = m_GlobalLightSetting.m_lightColor;
+
+    m_DeviceContext->Unmap(m_GlobalLightingBuffer.Get(), 0);
+
+    m_DeviceContext->PSSetConstantBuffers(1, 1, m_GlobalLightingBuffer.GetAddressOf());
 }
 
 void Renderer::SetupPrimitiveForRender(bool hasInput, Primitive prim/*= Triangle*/)

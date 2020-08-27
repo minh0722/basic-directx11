@@ -3,6 +3,7 @@
 #include "Shape.h"
 #include "Camera.h"
 #include "Vector4f.h"
+#include "Vector3.h"
 #include "ImguiRenderer.h"
 
 class InputClass;
@@ -39,6 +40,12 @@ struct Vertex
 	}
 };
 
+struct LightSourceSettings
+{
+    Vector4f m_LightPos;
+    Vector3<float> m_lightColor;
+};
+
 class Renderer
 {
 public:
@@ -60,6 +67,8 @@ public:
 
     void SetRasterizerState(D3D11_FILL_MODE fillMode = D3D11_FILL_SOLID, D3D11_CULL_MODE cullMode = D3D11_CULL_BACK);
     void AddShapeToBakeImpostor();
+    void SetGlobalLightPosition(float x, float y, float z);
+    void SetGlobalLightColor(float r, float g, float b);
 
 private:
 	void InitDeviceSwapChainAndDeviceContext(HWND window);
@@ -87,6 +96,9 @@ private:
 
     void SetupPrimitiveForRender(bool hasInput, Primitive prim = Triangle);
 	void SetupSpaceShipForRender(bool hasInput);
+
+    void SetupLightingBuffer();
+    void SetLightingBuffer();
 
 	bool onInput(InputClass* input, Camera& camera);
 
@@ -118,6 +130,10 @@ private:
     Camera m_Camera;
 
     ImguiRenderer m_imguiRenderer;
+
+    // global lighting source
+    Microsoft::WRL::ComPtr<ID3D11Buffer> m_GlobalLightingBuffer;
+    LightSourceSettings m_GlobalLightSetting;
 };
 
 #define g_Renderer Renderer::GetInstance()

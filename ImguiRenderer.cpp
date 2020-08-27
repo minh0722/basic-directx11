@@ -93,6 +93,18 @@ void ImguiRenderer::ShowGraphicsMenu()
             ImGui::EndMenu();
         }
 
+        if (ImGui::BeginMenu("Global Lighting"))
+        {
+            static float pos[3];
+            static float color[3];
+
+            ImGui::SliderFloat3("Light position", pos, -100.0f, 100.0f);
+            ImGui::ColorEdit3("Light color", color);
+            Renderer::GetInstance().SetGlobalLightPosition(pos[0], pos[1], pos[2]);
+            Renderer::GetInstance().SetGlobalLightColor(color[0], color[1], color[2]);
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMenu();
     }
 }
