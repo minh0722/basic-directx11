@@ -21,7 +21,8 @@ public:
     static void SetDebugDisplay(DebugDisplay* debugDisplay) { ms_DebudDisplay = debugDisplay; }
     static DebugDisplay& GetDebugDisplay() { return *ms_DebudDisplay; }
 
-    static void ToggleDebugDisplay();
+    static void ToggleDebugDisplay(bool isEnabled);
+    static bool IsEnabled();
 
     void Draw3DBox(Vector3<float> pos, Vector3<float> center, Vector3<float> extent);
 

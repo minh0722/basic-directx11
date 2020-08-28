@@ -3,6 +3,7 @@
 #include "imgui_impl_win32.h"
 #include "GPUCapturer.h"
 #include "renderer.h"
+#include "DebugDisplay.h"
 
 ImguiRenderer::~ImguiRenderer()
 {
@@ -75,6 +76,12 @@ void ImguiRenderer::ShowGraphicsMenu()
                         GPUCapturer::HideOverlay();
                 }
                 ImGui::EndMenu();
+            }
+
+            static bool debugDisplayActivated = DebugDisplay::IsEnabled();
+            if (ImGui::MenuItem("Toggle debug display", nullptr, &debugDisplayActivated))
+            {
+                DebugDisplay::ToggleDebugDisplay(debugDisplayActivated);
             }
 
             ImGui::EndMenu();

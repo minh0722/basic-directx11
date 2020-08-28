@@ -192,7 +192,12 @@ void DebugDisplay::OnNewFrame()
     m_3DBoxesCount = 0;
 }
 
-void DebugDisplay::ToggleDebugDisplay()
+void DebugDisplay::ToggleDebugDisplay(bool isEnabled)
 {
-    ms_EnableDebugDisplay = !ms_EnableDebugDisplay;
+    ms_EnableDebugDisplay = isEnabled;
+}
+
+bool DebugDisplay::IsEnabled()
+{
+    return ms_EnableDebugDisplay;
 }

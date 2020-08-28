@@ -1080,11 +1080,6 @@ bool Renderer::onInput(InputClass* input, Camera& camera)
 
 		hasInput = true;
 	}
-    if (input->IsKeyDown('B'))
-    {
-        DebugDisplay::ToggleDebugDisplay();
-        hasInput = false;
-    }
 	else if (input->IsKeyDown(VK_UP))
 	{
 		DirectX::XMVECTOR moveUpVec = DirectX::XMVectorSet(0.0, threshHold, 0.0f, 0.0f);
