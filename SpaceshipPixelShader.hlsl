@@ -16,8 +16,10 @@ cbuffer MaterialBuffer : register(b0)
 cbuffer LightingBuffer : register(b1)
 {
     float4 lightSourcePos;
+    float4 cameraPos;
     float3 lightColor;
     float ambientStrength;
+    float shininess;
 }
 
 Texture2D<float4> checkerboardTexture : register(t0);
@@ -35,8 +37,13 @@ float4 main(InputPixel inputPixel) : SV_TARGET
     float diff = max(dot(normal, lightDir), 0.0f);
     float3 diffuse = diff * lightColor;
 
-    float3 finalColor = (diffuse + ambience) * diffuseColor.rgb;
-    
+    // calculate specular lighting
+    float3 viewDir = normalize(cameraPos - inputPixel.worldPos);
+    float3 lightReflectDir = reflect(-lightDir, inputPixel.normal);
+    float spec = pow(max(dot(viewDir, lightReflectDir), 0.0f), shininess);
+    float3 specularValue = specular.rgb * spec * lightColor;
+
+    float3 finalColor = (diffuse + ambience + specularValue) * diffuseColor.rgb;
 
     return float4(finalColor, 1.0f);
 }

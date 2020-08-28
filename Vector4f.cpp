@@ -44,6 +44,12 @@ Vector4f& Vector4f::operator=(const Vector4f& other)
 	return *this;
 }
 
+Vector4f& Vector4f::operator=(const DirectX::XMVECTOR& other)
+{
+    m_xmValues = other;
+    return *this;
+}
+
 Vector4f Vector4f::operator-(const Vector4f& other) const
 {
     return Vector4f(

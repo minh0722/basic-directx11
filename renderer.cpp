@@ -18,7 +18,7 @@ Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
-    , m_GlobalLightSetting({ { -100.0f, 100.0f, -100.0f, 1.0f }, {1.0f, 1.0f, 1.0f}, 0.1f })
+    , m_GlobalLightSetting({ { -100.0f, 100.0f, -100.0f, 1.0f }, {m_Camera.GetPosition()}, {1.0f, 1.0f, 1.0f}, 0.1f, 32.0f })
 {
 	GPUCapturer::Init(CaptureType::Renderdoc);
     GPUCapturer::HideOverlay();
@@ -324,6 +324,11 @@ void Renderer::SetGlobalLightColor(float r, float g, float b)
 void Renderer::SetGlobalLightAmbient(float ambientStrength)
 {
     m_GlobalLightSetting.m_ambientStrength = ambientStrength;
+}
+
+void Renderer::SetShininess(float shininess)
+{
+    m_GlobalLightSetting.m_shininess = shininess;
 }
 
 void Renderer::SetViewPort()
@@ -925,8 +930,10 @@ void Renderer::SetLightingBuffer()
     m_DeviceContext->Map(m_GlobalLightingBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
     LightSourceSettings* lightSettings = reinterpret_cast<LightSourceSettings*>(mapRes.pData);
     lightSettings->m_lightPos = m_GlobalLightSetting.m_lightPos;
+    lightSettings->m_cameraPos = m_Camera.GetPosition();
     lightSettings->m_lightColor = m_GlobalLightSetting.m_lightColor;
     lightSettings->m_ambientStrength = m_GlobalLightSetting.m_ambientStrength;
+    lightSettings->m_shininess = m_GlobalLightSetting.m_shininess;
 
     m_DeviceContext->Unmap(m_GlobalLightingBuffer.Get(), 0);
 

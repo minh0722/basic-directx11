@@ -43,8 +43,10 @@ struct Vertex
 struct LightSourceSettings
 {
     Vector4f m_lightPos;
+    Vector4f m_cameraPos;
     Vector3<float> m_lightColor;
     float m_ambientStrength;
+    float m_shininess;
 };
 
 class Renderer
@@ -71,6 +73,7 @@ public:
     void SetGlobalLightPosition(float x, float y, float z);
     void SetGlobalLightColor(float r, float g, float b);
     void SetGlobalLightAmbient(float ambientStrength);
+    void SetShininess(float shininess);
     const LightSourceSettings& GetGlobalLightSettings() const;
 
 private:

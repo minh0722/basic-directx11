@@ -102,18 +102,22 @@ void ImguiRenderer::ShowGraphicsMenu()
 
         if (ImGui::BeginMenu("Global Lighting"))
         {
-            static const LightSourceSettings& globalLightSourceSettings = Renderer::GetInstance().GetGlobalLightSettings();
+            Renderer& renderer = Renderer::GetInstance();
+            static const LightSourceSettings& globalLightSourceSettings = renderer.GetGlobalLightSettings();
 
             static Vector4f pos = globalLightSourceSettings.m_lightPos;
             static Vector3<float> color = globalLightSourceSettings.m_lightColor;
             static float ambient = globalLightSourceSettings.m_ambientStrength;
+            static float shininess = globalLightSourceSettings.m_shininess;
 
             ImGui::SliderFloat3("Light position", pos.m_fValues, -100.0f, 100.0f);
             ImGui::SliderFloat("Light ambience", &ambient, 0.0f, 1.0f);
+            ImGui::SliderFloat("Shininess", &shininess, 0.0f, 2048.0f);
             ImGui::ColorEdit3("Light color", color.m_Values);
-            Renderer::GetInstance().SetGlobalLightPosition(pos[0], pos[1], pos[2]);
-            Renderer::GetInstance().SetGlobalLightColor(color[0], color[1], color[2]);
-            Renderer::GetInstance().SetGlobalLightAmbient(ambient);
+            renderer.SetGlobalLightPosition(pos[0], pos[1], pos[2]);
+            renderer.SetGlobalLightColor(color[0], color[1], color[2]);
+            renderer.SetGlobalLightAmbient(ambient);
+            renderer.SetShininess(shininess);
             ImGui::EndMenu();
         }
 
