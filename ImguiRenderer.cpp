@@ -97,13 +97,16 @@ void ImguiRenderer::ShowGraphicsMenu()
         {
             static const LightSourceSettings& globalLightSourceSettings = Renderer::GetInstance().GetGlobalLightSettings();
 
-            static Vector4f pos = globalLightSourceSettings.m_LightPos;
+            static Vector4f pos = globalLightSourceSettings.m_lightPos;
             static Vector3<float> color = globalLightSourceSettings.m_lightColor;
+            static float ambient = globalLightSourceSettings.m_ambientStrength;
 
             ImGui::SliderFloat3("Light position", pos.m_fValues, -100.0f, 100.0f);
+            ImGui::SliderFloat("Light ambience", &ambient, 0.0f, 1.0f);
             ImGui::ColorEdit3("Light color", color.m_Values);
             Renderer::GetInstance().SetGlobalLightPosition(pos[0], pos[1], pos[2]);
             Renderer::GetInstance().SetGlobalLightColor(color[0], color[1], color[2]);
+            Renderer::GetInstance().SetGlobalLightAmbient(ambient);
             ImGui::EndMenu();
         }
 

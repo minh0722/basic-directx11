@@ -42,8 +42,9 @@ struct Vertex
 
 struct LightSourceSettings
 {
-    Vector4f m_LightPos;
+    Vector4f m_lightPos;
     Vector3<float> m_lightColor;
+    float m_ambientStrength;
 };
 
 class Renderer
@@ -69,6 +70,7 @@ public:
     void AddShapeToBakeImpostor();
     void SetGlobalLightPosition(float x, float y, float z);
     void SetGlobalLightColor(float r, float g, float b);
+    void SetGlobalLightAmbient(float ambientStrength);
     const LightSourceSettings& GetGlobalLightSettings() const;
 
 private:

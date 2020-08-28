@@ -17,6 +17,7 @@ cbuffer LightingBuffer : register(b1)
 {
     float4 lightSourcePos;
     float3 lightColor;
+    float ambientStrength;
 }
 
 Texture2D<float4> checkerboardTexture : register(t0);
@@ -25,8 +26,7 @@ SamplerState wrapSampler : register(s0);
 float4 main(InputPixel inputPixel) : SV_TARGET
 {
     // calculating ambient lighting
-    float ambientStrength = 0.1f;
-    float3 ambient = ambientStrength * diffuseColor;
+    float3 ambience = ambientStrength * diffuseColor.rgb;
     
     // calculating diffuse lighting
     float3 normal = normalize(inputPixel.normal);
@@ -35,7 +35,7 @@ float4 main(InputPixel inputPixel) : SV_TARGET
     float diff = max(dot(normal, lightDir), 0.0f);
     float3 diffuse = diff * lightColor;
 
-    float3 finalColor = (diffuse + ambient) * diffuseColor.rgb;
+    float3 finalColor = (diffuse + ambience) * diffuseColor.rgb;
     
 
     return float4(finalColor, 1.0f);

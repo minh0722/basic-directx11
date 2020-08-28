@@ -18,7 +18,7 @@ Renderer::Renderer()
 	: m_Camera(
 		DirectX::XMVectorSet(0.0f, 3.0f, 0.0f, 1.0f),		// camera position
 		60.0f)												// fov
-    , m_GlobalLightSetting({ { -100.0f, 100.0f, -100.0f, 1.0f }, {1.0f, 1.0f, 1.0f} })
+    , m_GlobalLightSetting({ { -100.0f, 100.0f, -100.0f, 1.0f }, {1.0f, 1.0f, 1.0f}, 0.1f })
 {
 	GPUCapturer::Init(CaptureType::Renderdoc);
     GPUCapturer::HideOverlay();
@@ -309,9 +309,9 @@ void Renderer::AddShapeToBakeImpostor()
 
 void Renderer::SetGlobalLightPosition(float x, float y, float z)
 {
-    m_GlobalLightSetting.m_LightPos.x = x;
-    m_GlobalLightSetting.m_LightPos.y = y;
-    m_GlobalLightSetting.m_LightPos.z = z;
+    m_GlobalLightSetting.m_lightPos.x = x;
+    m_GlobalLightSetting.m_lightPos.y = y;
+    m_GlobalLightSetting.m_lightPos.z = z;
 }
 
 void Renderer::SetGlobalLightColor(float r, float g, float b)
@@ -319,6 +319,11 @@ void Renderer::SetGlobalLightColor(float r, float g, float b)
     m_GlobalLightSetting.m_lightColor.r = r;
     m_GlobalLightSetting.m_lightColor.g = g;
     m_GlobalLightSetting.m_lightColor.b = b;
+}
+
+void Renderer::SetGlobalLightAmbient(float ambientStrength)
+{
+    m_GlobalLightSetting.m_ambientStrength = ambientStrength;
 }
 
 void Renderer::SetViewPort()
@@ -919,8 +924,9 @@ void Renderer::SetLightingBuffer()
     D3D11_MAPPED_SUBRESOURCE mapRes = {};
     m_DeviceContext->Map(m_GlobalLightingBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapRes);
     LightSourceSettings* lightSettings = reinterpret_cast<LightSourceSettings*>(mapRes.pData);
-    lightSettings->m_LightPos = m_GlobalLightSetting.m_LightPos;
+    lightSettings->m_lightPos = m_GlobalLightSetting.m_lightPos;
     lightSettings->m_lightColor = m_GlobalLightSetting.m_lightColor;
+    lightSettings->m_ambientStrength = m_GlobalLightSetting.m_ambientStrength;
 
     m_DeviceContext->Unmap(m_GlobalLightingBuffer.Get(), 0);
 
