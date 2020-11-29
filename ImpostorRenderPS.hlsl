@@ -151,8 +151,8 @@ void ImpostorSample(in ImpostorData imp, out float4 baseTex, out float4 worldNor
     float depth0 = projPos0.z;
     float depth1 = projPos1.z;
     float depth2 = projPos2.z;
-    float quadDepth = worldNormal.a;
-    quadDepth = min(depth0, min(depth1, depth2));
+    //float quadDepth = worldNormal.a;
+    float quadDepth = min(depth0, min(depth1, depth2));
 
     worldNormal.a = quadDepth;
 }
