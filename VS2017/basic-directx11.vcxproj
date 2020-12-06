@@ -93,6 +93,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\extern\DirectXTK\Inc;$(SolutionDir)\..\extern\renderdoc\renderdoc;$(SolutionDir)\..\extern\imgui;$(SolutionDir)\..\extern\imgui\examples</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>D3DCompiler.lib;D3D11.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -169,6 +170,7 @@
     <ClInclude Include="..\pch.h" />
     <ClInclude Include="..\renderer.h" />
     <ClInclude Include="..\Scene.h" />
+    <ClInclude Include="..\ShaderCompiler.h" />
     <ClInclude Include="..\Shape.h" />
     <ClInclude Include="..\systemclass.h" />
     <ClInclude Include="..\TaskScheduler.h" />
@@ -212,6 +214,7 @@
     </ClCompile>
     <ClCompile Include="..\renderer.cpp" />
     <ClCompile Include="..\Scene.cpp" />
+    <ClCompile Include="..\ShaderCompiler.cpp" />
     <ClCompile Include="..\Shape.cpp" />
     <ClCompile Include="..\systemclass.cpp" />
     <ClCompile Include="..\TaskScheduler.cpp" />
