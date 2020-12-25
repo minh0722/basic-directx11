@@ -9,10 +9,10 @@ HRESULT __stdcall D3DInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileNam
 
     switch (IncludeType)
     {
-    case D3D_INCLUDE_LOCAL:
+    case D3D_INCLUDE_LOCAL:         // include with ""
         filePath = m_shaderDir + "\\" + pFileName;
         break;
-    case D3D_INCLUDE_SYSTEM:
+    case D3D_INCLUDE_SYSTEM:        // include with <>
         filePath = m_systemDir + "\\" + pFileName;
         break;
     default:
@@ -47,11 +47,14 @@ ComPtr<ID3DBlob> ShaderCompiler::CompileShader(const char* filePath, const std::
 
     const u32 definesCount = shaderDefines.size();
     std::vector<D3D_SHADER_MACRO> defines;
-    defines.resize(definesCount);
+    defines.resize(definesCount + 1);
     for (u32 i = 0; i < definesCount; ++i)
     {
         defines[i] = { shaderDefines[i], "" };
     }
+    defines[definesCount] = { NULL, NULL };
+
+
 
 
     //D3DCompileFromFile((LPCWSTR)filePath, defines.data(), )
