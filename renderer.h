@@ -5,6 +5,7 @@
 #include "Vector4f.h"
 #include "Vector3.h"
 #include "ImguiRenderer.h"
+#include "ShaderCompiler.h"
 
 class InputClass;
 class DebugDisplay;
@@ -111,6 +112,8 @@ private:
 private:
     static Renderer* ms_Instance;
     DebugDisplay* m_DebugDisplay;
+
+    ShaderCompiler m_ShaderCompiler;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> m_Device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_DeviceContext;

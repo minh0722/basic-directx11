@@ -4,7 +4,7 @@
 #include <d3dcommon.h>
 
 
-class D3DInclude : ID3DInclude
+class D3DInclude : public ID3DInclude
 {
 public:
     /* 
@@ -23,8 +23,28 @@ private:
     std::string m_systemDir;
 };
 
+enum class ShaderType
+{
+    CS,
+    VS,
+    PS,
+    GS,
+    DS,
+    HS,
+    Count
+};
+
 class ShaderCompiler
 {
 public:
-    static Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(const char* filePath, const std::vector<const char*> shaderDefines);
+    ShaderCompiler();
+
+    Microsoft::WRL::ComPtr<ID3DBlob> CompileShader(
+        const char* filePath, 
+        const std::vector<const char*> shaderDefines, 
+        const char* entryPoint, 
+        ShaderType shaderType);
+
+private:
+    ID3DInclude* m_Include = nullptr;
 };
