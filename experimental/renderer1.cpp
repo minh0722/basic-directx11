@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "renderer1.h"
 
 RenderTarget::RenderTarget(Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain)
