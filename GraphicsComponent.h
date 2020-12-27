@@ -68,12 +68,11 @@ public:
 protected:
 
     void InitWorldViewProjBuffer(ID3D11Device* device);
-	void InitVertexShader(ID3D11Device* device, const LPCWSTR filePath);
 	void InitPixelShader(ID3D11Device* device, const LPCWSTR filePath);
-	void InitVertexInputLayout(
-		ID3D11Device* device,
-		const LPCWSTR filePath,
-		const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
+	void InitVertexShaderAndInputLayout(
+        ID3D11Device* device, 
+        const LPCWSTR vertexShaderFilePath, 
+        const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> m_VertexShader = nullptr;

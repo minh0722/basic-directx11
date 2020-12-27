@@ -41,6 +41,11 @@ Renderer& Renderer::GetInstance()
     return *ms_Instance;
 }
 
+ShaderCompiler& Renderer::GetShaderCompiler()
+{
+    return m_ShaderCompiler;
+}
+
 void Renderer::Initialize(HWND window)
 {
 	m_Window = window;
@@ -366,8 +371,8 @@ void Renderer::SetupTriangle()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"vertexShader.cso",
-		L"pixelShader.cso",
+		L"../../../vertexShader.hlsl",
+		L"../../../pixelShader.hlsl",
 		std::move(vertexShaderInputLayout)
 	};
 
@@ -409,8 +414,8 @@ void Renderer::SetupCube()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"CubeInstancing_Vs.cso",
-		L"pixelShader.cso",
+		L"../../../CubeInstancing_Vs.hlsl",
+		L"../../../pixelShader.hlsl",
 		std::move(vertexShaderInputLayout)
 	};
 
@@ -486,8 +491,8 @@ void Renderer::SetupAxis()
     GraphicsComponent::GraphicsComponentDesc desc =
     {
         m_Device.Get(),
-        L"vertexShader.cso",
-        L"pixelShader.cso",
+        L"../../../vertexShader.hlsl",
+        L"../../../pixelShader.hlsl",
         std::move(vertexShaderInputLayout)
     };
 	    
@@ -555,8 +560,8 @@ void Renderer::SetupSphereMesh()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"vertexShader.cso",
-		L"pixelShader.cso",
+		L"../../../vertexShader.hlsl",
+		L"../../../pixelShader.hlsl",
 		std::move(vertexShaderInputLayout)
 	};
 
@@ -722,8 +727,8 @@ void Renderer::SetupOctahedronMesh()
     GraphicsComponent::GraphicsComponentDesc desc =
     {
         m_Device.Get(),
-        L"vertexShader.cso",
-        L"pixelShader.cso",
+        L"../../../vertexShader.hlsl",
+        L"../../../pixelShader.hlsl",
         std::move(vertexShaderInputLayout)
     };
 
@@ -789,8 +794,8 @@ void Renderer::SetupHemioctahedronMesh()
     GraphicsComponent::GraphicsComponentDesc desc =
     {
         m_Device.Get(),
-        L"vertexShader.cso",
-        L"pixelShader.cso",
+        L"../../../vertexShader.hlsl",
+        L"../../../pixelShader.hlsl",
         std::move(vertexShaderInputLayout)
     };
 
@@ -844,8 +849,8 @@ void Renderer::SetupSpaceShip()
 	GraphicsComponent::GraphicsComponentDesc desc =
 	{
 		m_Device.Get(),
-		L"SpaceshipVertexShader.cso",
-		L"SpaceshipPixelShader.cso",
+		L"../../../SpaceshipVertexShader.hlsl",
+		L"../../../SpaceshipPixelShader.hlsl",
         std::move(result.vertexShaderInputLayout)
 	};
 

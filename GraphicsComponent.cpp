@@ -6,11 +6,12 @@
 #include "ImpostorBaker.h"
 #include "ImpostorRenderer.h"
 
+using Microsoft::WRL::ComPtr;
+
 GraphicsComponent::GraphicsComponent(const GraphicsComponentDesc& desc)
 {
-	InitVertexShader(desc.device, desc.vertexShaderFilePath);
+	InitVertexShaderAndInputLayout(desc.device, desc.vertexShaderFilePath, desc.vertexInputLayout);
 	InitPixelShader(desc.device, desc.pixelShaderFilePath);
-	InitVertexInputLayout(desc.device, desc.vertexShaderFilePath, desc.vertexInputLayout);
     InitWorldViewProjBuffer(desc.device);
 
 	// TODO: handle exceptions here...
@@ -313,42 +314,36 @@ const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GraphicsComponent::GetIm
     return m_ImpostorNormalAtlasSRV;
 }
 
-void GraphicsComponent::InitVertexShader(ID3D11Device* device, const LPCWSTR filePath)
+void GraphicsComponent::InitVertexShaderAndInputLayout(ID3D11Device* device, const LPCWSTR filePath, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc)
 {
-	ID3DBlob* blob;
-	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &blob));
+    ShaderCompiler& shaderCompiler = Renderer::GetInstance().GetShaderCompiler();
+    ComPtr<ID3DBlob> compiledBlob = shaderCompiler.CompileShader((const char*)filePath, {}, "main", ShaderType::VS);
 
 	THROW_IF_FAILED(
 		device->CreateVertexShader(
-			blob->GetBufferPointer(),
-			blob->GetBufferSize(),
+			compiledBlob->GetBufferPointer(),
+			compiledBlob->GetBufferSize(),
 			nullptr,
 			m_VertexShader.ReleaseAndGetAddressOf()));
+
+    THROW_IF_FAILED(
+        device->CreateInputLayout(
+            inputLayoutDesc.data(),
+            (UINT)inputLayoutDesc.size(),
+            compiledBlob->GetBufferPointer(),
+            compiledBlob->GetBufferSize(),
+            m_VertexInputLayout.GetAddressOf()));
 }
 
 void GraphicsComponent::InitPixelShader(ID3D11Device* device, const LPCWSTR filePath)
 {
-	ID3DBlob* blob;
-	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &blob));
+    ShaderCompiler& shaderCompiler = Renderer::GetInstance().GetShaderCompiler();
+    ComPtr<ID3DBlob> compiledBlob = shaderCompiler.CompileShader((const char*)filePath, {}, "main", ShaderType::PS);
 
 	THROW_IF_FAILED(
 		device->CreatePixelShader(
-			blob->GetBufferPointer(),
-			blob->GetBufferSize(),
+			compiledBlob->GetBufferPointer(),
+			compiledBlob->GetBufferSize(),
 			nullptr,
 			m_PixelShader.ReleaseAndGetAddressOf()));
-}
-
-void GraphicsComponent::InitVertexInputLayout(ID3D11Device* device, const LPCWSTR filePath, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputLayoutDesc)
-{
-	ID3DBlob* vertexBlob;
-	THROW_IF_FAILED(D3DReadFileToBlob(filePath, &vertexBlob));
-
-	THROW_IF_FAILED(
-		device->CreateInputLayout(
-			inputLayoutDesc.data(),
-			(UINT)inputLayoutDesc.size(),
-			vertexBlob->GetBufferPointer(),
-			vertexBlob->GetBufferSize(),
-			m_VertexInputLayout.GetAddressOf()));
 }

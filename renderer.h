@@ -57,6 +57,7 @@ public:
 	~Renderer();
 
     static Renderer& GetInstance();
+    ShaderCompiler& GetShaderCompiler();
 
 	void Initialize(HWND window);
 	

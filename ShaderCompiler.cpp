@@ -12,10 +12,10 @@ HRESULT __stdcall D3DInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileNam
     switch (IncludeType)
     {
     case D3D_INCLUDE_LOCAL:         // include with ""
-        filePath = m_shaderDir + "\\" + pFileName;
+        filePath = m_shaderDir + "/" + pFileName;
         break;
     case D3D_INCLUDE_SYSTEM:        // include with <>
-        filePath = m_systemDir + "\\" + pFileName;
+        filePath = m_systemDir + "/" + pFileName;
         break;
     default:
         return E_FAIL;
