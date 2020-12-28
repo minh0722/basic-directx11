@@ -108,6 +108,9 @@ project "basic-directx11"
     pchsource "src/pch.cpp"
 
     files{"src/**"}
+    vpaths {
+       ["Source/*"] = "*"
+    }
     
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
