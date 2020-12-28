@@ -107,7 +107,7 @@ project "basic-directx11"
     pchheader "pch.h"
     pchsource "src/pch.cpp"
 
-    files {"src/**.h", "src/**.cpp", "src/**.hpp", "src/shaders/**.hlsl", "src/shaders/**.cginc"}
+    files{"src/**"}
     
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
