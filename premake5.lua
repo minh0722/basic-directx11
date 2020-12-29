@@ -130,6 +130,17 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
+            externalproject "NV"
+                location "extern/renderdoc/renderdoc/driver/ihv/nv"
+                uuid "40349AD9-5558-4DF4-84E2-11934DE90A11"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }            
+
         group "ExternLibs/renderdoc/DLL/drivers/shaders"
             externalproject "spirv"
                 filename "renderdoc_spirv"
