@@ -179,6 +179,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "vulkan"
+            filename "renderdoc_vulkan"
+            location "extern/renderdoc/renderdoc/driver/vulkan"
+            uuid "88C5DAC6-30A0-4CFD-AF51-540A977D1F3F"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
