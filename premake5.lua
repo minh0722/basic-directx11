@@ -262,7 +262,19 @@ group "ExternLibs"
                         ["Debug"] = "Development",
                         ["Release"] = "Release"
                     }
-                
+
+        group "ExternLibs/renderdoc/Utility"
+            externalproject "version"
+                filename "renderdoc_version"
+                location "extern/renderdoc/renderdoc"
+                uuid "257FD75C-4D17-4A23-A754-23BFD85887A0"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
 
 group ""
 
