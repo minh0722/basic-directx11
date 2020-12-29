@@ -167,6 +167,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "gl"
+            filename "renderdoc_gl"
+            location "extern/renderdoc/renderdoc/driver/gl"
+            uuid "F92FCDA6-A261-4EEC-9CD0-73A11FBCC459"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
