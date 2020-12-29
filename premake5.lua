@@ -1,5 +1,12 @@
 workspace "basic-directx11"
     configurations {"Debug", "Release"}
+    platforms {"x86", "x64"}
+
+    filter "platforms:x86"
+        architecture "x86"
+
+    filter "platforms:x64"
+        architecture "x86_64"
 
 DIRECT_XTK_INC = "extern/DirectXTK/Inc/"
 
@@ -99,18 +106,43 @@ group "ExternLibs"
         cppdialect "C++14"
         includedirs {DIRECT_XTK_INC}
 
-    group "ExternLibs/renderdoc/DLL/drivers/IHV"
-        externalproject "Intel"
-            location "extern/renderdoc/renderdoc/driver/ihv/intel"
-            uuid "7FCB5FC5-1DBD-4DA6-83A0-6BA4E945BDA5"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            includedirs "%{wks.location}/extern/renderdoc"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
+    group "ExternLibs/renderdoc/DLL"
+        group "ExternLibs/renderdoc/DLL/drivers/IHV"
+            externalproject "Intel"
+                location "extern/renderdoc/renderdoc/driver/ihv/intel"
+                uuid "7FCB5FC5-1DBD-4DA6-83A0-6BA4E945BDA5"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
+            externalproject "AMD"
+                location "extern/renderdoc/renderdoc/driver/ihv/amd"
+                uuid "5DE5A561-548A-4DD7-90F0-06A2B39EAE9A"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
+        group "ExternLibs/renderdoc/DLL/drivers/shaders"
+            externalproject "spirv"
+                filename "renderdoc_spirv"
+                location "extern/renderdoc/renderdoc/driver/shaders/spirv"
+                uuid "0AAE0AD1-371B-4A36-9ED1-80E10E960605"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+                
 
 group ""
 
