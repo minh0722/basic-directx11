@@ -107,6 +107,18 @@ group "ExternLibs"
         includedirs {DIRECT_XTK_INC}
 
     group "ExternLibs/renderdoc/DLL"
+        externalproject "d3d11"
+            filename "renderdoc_d3d11"
+            location "extern/renderdoc/renderdoc/driver/d3d11"
+            uuid "F1E59A05-60D4-4927-9E57-DD191EAE90EF"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
