@@ -143,6 +143,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "d3d9"
+            filename "renderdoc_d3d9"
+            location "extern/renderdoc/renderdoc/driver/d3d9"
+            uuid "44044776-9469-4079-B587-ABFFF6574AA4"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
