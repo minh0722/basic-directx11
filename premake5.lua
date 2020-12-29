@@ -139,9 +139,33 @@ group "ExternLibs"
                 configmap {
                     ["Debug"] = "Development",
                     ["Release"] = "Release"
-                }            
+                }
 
         group "ExternLibs/renderdoc/DLL/drivers/shaders"
+            externalproject "dxbc"
+                filename "renderdoc_dxbc"
+                location "extern/renderdoc/renderdoc/driver/shaders/dxbc"
+                uuid "C43FF27E-A155-4852-88EC-5CE9334C07A8"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
+            externalproject "dxil"
+                filename "renderdoc_dxil"
+                location "extern/renderdoc/renderdoc/driver/shaders/dxil"
+                uuid "8AE46EC2-EA46-441F-BEE2-94097101D6A3"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
             externalproject "spirv"
                 filename "renderdoc_spirv"
                 location "extern/renderdoc/renderdoc/driver/shaders/spirv"
