@@ -131,6 +131,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "d3d8"
+            filename "renderdoc_d3d8"
+            location "extern/renderdoc/renderdoc/driver/d3d8"
+            uuid "9C4487E8-EEB0-4A7F-BD81-23F81CD24E22"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
