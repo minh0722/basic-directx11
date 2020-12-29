@@ -119,6 +119,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "d3d12"
+            filename "renderdoc_d3d12"
+            location "extern/renderdoc/renderdoc/driver/d3d12"
+            uuid "9E6B10A2-84B4-434D-ABDB-43BE4EA650F4"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
