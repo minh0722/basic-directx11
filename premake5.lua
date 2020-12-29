@@ -106,95 +106,12 @@ group "ExternLibs"
         cppdialect "C++14"
         includedirs {DIRECT_XTK_INC}
 
-    group "ExternLibs/renderdoc/DLL"
-        externalproject "d3d11"
-            filename "renderdoc_d3d11"
-            location "extern/renderdoc/renderdoc/driver/d3d11"
-            uuid "F1E59A05-60D4-4927-9E57-DD191EAE90EF"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "d3d12"
-            filename "renderdoc_d3d12"
-            location "extern/renderdoc/renderdoc/driver/d3d12"
-            uuid "9E6B10A2-84B4-434D-ABDB-43BE4EA650F4"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "d3d8"
-            filename "renderdoc_d3d8"
-            location "extern/renderdoc/renderdoc/driver/d3d8"
-            uuid "9C4487E8-EEB0-4A7F-BD81-23F81CD24E22"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "d3d9"
-            filename "renderdoc_d3d9"
-            location "extern/renderdoc/renderdoc/driver/d3d9"
-            uuid "44044776-9469-4079-B587-ABFFF6574AA4"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "dxgi"
-            filename "renderdoc_dxgi"
-            location "extern/renderdoc/renderdoc/driver/dxgi"
-            uuid "2A793574-BD3C-46D4-9788-C339D9550CE1"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "gl"
-            filename "renderdoc_gl"
-            location "extern/renderdoc/renderdoc/driver/gl"
-            uuid "F92FCDA6-A261-4EEC-9CD0-73A11FBCC459"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        externalproject "vulkan"
-            filename "renderdoc_vulkan"
-            location "extern/renderdoc/renderdoc/driver/vulkan"
-            uuid "88C5DAC6-30A0-4CFD-AF51-540A977D1F3F"
-            kind "StaticLib"
-            language "C++"
-            cppdialect "C++17"
-            configmap {
-                ["Debug"] = "Development",
-                ["Release"] = "Release"
-            }
-
-        group "ExternLibs/renderdoc/DLL/drivers/IHV"
-            externalproject "Intel"
-                location "extern/renderdoc/renderdoc/driver/ihv/intel"
-                uuid "7FCB5FC5-1DBD-4DA6-83A0-6BA4E945BDA5"
+    group "ExternLibs/renderdoc"
+        group "ExternLibs/renderdoc/DLL"
+            externalproject "d3d11"
+                filename "renderdoc_d3d11"
+                location "extern/renderdoc/renderdoc/driver/d3d11"
+                uuid "F1E59A05-60D4-4927-9E57-DD191EAE90EF"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -203,9 +120,10 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
-            externalproject "AMD"
-                location "extern/renderdoc/renderdoc/driver/ihv/amd"
-                uuid "5DE5A561-548A-4DD7-90F0-06A2B39EAE9A"
+            externalproject "d3d12"
+                filename "renderdoc_d3d12"
+                location "extern/renderdoc/renderdoc/driver/d3d12"
+                uuid "9E6B10A2-84B4-434D-ABDB-43BE4EA650F4"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -214,9 +132,10 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
-            externalproject "NV"
-                location "extern/renderdoc/renderdoc/driver/ihv/nv"
-                uuid "40349AD9-5558-4DF4-84E2-11934DE90A11"
+            externalproject "d3d8"
+                filename "renderdoc_d3d8"
+                location "extern/renderdoc/renderdoc/driver/d3d8"
+                uuid "9C4487E8-EEB0-4A7F-BD81-23F81CD24E22"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -225,11 +144,10 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
-        group "ExternLibs/renderdoc/DLL/drivers/shaders"
-            externalproject "dxbc"
-                filename "renderdoc_dxbc"
-                location "extern/renderdoc/renderdoc/driver/shaders/dxbc"
-                uuid "C43FF27E-A155-4852-88EC-5CE9334C07A8"
+            externalproject "d3d9"
+                filename "renderdoc_d3d9"
+                location "extern/renderdoc/renderdoc/driver/d3d9"
+                uuid "44044776-9469-4079-B587-ABFFF6574AA4"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -238,10 +156,10 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
-            externalproject "dxil"
-                filename "renderdoc_dxil"
-                location "extern/renderdoc/renderdoc/driver/shaders/dxil"
-                uuid "8AE46EC2-EA46-441F-BEE2-94097101D6A3"
+            externalproject "dxgi"
+                filename "renderdoc_dxgi"
+                location "extern/renderdoc/renderdoc/driver/dxgi"
+                uuid "2A793574-BD3C-46D4-9788-C339D9550CE1"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -250,10 +168,10 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
-            externalproject "spirv"
-                filename "renderdoc_spirv"
-                location "extern/renderdoc/renderdoc/driver/shaders/spirv"
-                uuid "0AAE0AD1-371B-4A36-9ED1-80E10E960605"
+            externalproject "gl"
+                filename "renderdoc_gl"
+                location "extern/renderdoc/renderdoc/driver/gl"
+                uuid "F92FCDA6-A261-4EEC-9CD0-73A11FBCC459"
                 kind "StaticLib"
                 language "C++"
                 cppdialect "C++17"
@@ -261,6 +179,89 @@ group "ExternLibs"
                     ["Debug"] = "Development",
                     ["Release"] = "Release"
                 }
+
+            externalproject "vulkan"
+                filename "renderdoc_vulkan"
+                location "extern/renderdoc/renderdoc/driver/vulkan"
+                uuid "88C5DAC6-30A0-4CFD-AF51-540A977D1F3F"
+                kind "StaticLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
+            group "ExternLibs/renderdoc/DLL/drivers/IHV"
+                externalproject "Intel"
+                    location "extern/renderdoc/renderdoc/driver/ihv/intel"
+                    uuid "7FCB5FC5-1DBD-4DA6-83A0-6BA4E945BDA5"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "AMD"
+                    location "extern/renderdoc/renderdoc/driver/ihv/amd"
+                    uuid "5DE5A561-548A-4DD7-90F0-06A2B39EAE9A"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "NV"
+                    location "extern/renderdoc/renderdoc/driver/ihv/nv"
+                    uuid "40349AD9-5558-4DF4-84E2-11934DE90A11"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+            group "ExternLibs/renderdoc/DLL/drivers/shaders"
+                externalproject "dxbc"
+                    filename "renderdoc_dxbc"
+                    location "extern/renderdoc/renderdoc/driver/shaders/dxbc"
+                    uuid "C43FF27E-A155-4852-88EC-5CE9334C07A8"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "dxil"
+                    filename "renderdoc_dxil"
+                    location "extern/renderdoc/renderdoc/driver/shaders/dxil"
+                    uuid "8AE46EC2-EA46-441F-BEE2-94097101D6A3"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "spirv"
+                    filename "renderdoc_spirv"
+                    location "extern/renderdoc/renderdoc/driver/shaders/spirv"
+                    uuid "0AAE0AD1-371B-4A36-9ED1-80E10E960605"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
                 
 
 group ""
