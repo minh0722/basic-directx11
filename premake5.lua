@@ -155,6 +155,18 @@ group "ExternLibs"
                 ["Release"] = "Release"
             }
 
+        externalproject "dxgi"
+            filename "renderdoc_dxgi"
+            location "extern/renderdoc/renderdoc/driver/dxgi"
+            uuid "2A793574-BD3C-46D4-9788-C339D9550CE1"
+            kind "StaticLib"
+            language "C++"
+            cppdialect "C++17"
+            configmap {
+                ["Debug"] = "Development",
+                ["Release"] = "Release"
+            }
+
         group "ExternLibs/renderdoc/DLL/drivers/IHV"
             externalproject "Intel"
                 location "extern/renderdoc/renderdoc/driver/ihv/intel"
