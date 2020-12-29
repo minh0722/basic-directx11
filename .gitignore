@@ -13,3 +13,6 @@ VS2015/basic-directx11.vcxproj.user
 *.opendb
 x64
 *.ipch
+*.sln
+*.vcxproj
+*.vcxproj.filters
