@@ -369,7 +369,7 @@ project "basic-directx11"
     cppdialect "C++17"
     targetdir "bin/%{cfg.buildcfg}"
     includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC, IMGUI_INC, IMGUI_EXAMPLES_INC }
-    links {"DirectXTK", "renderdoc"}
+    links {"DirectXTK", "renderdoc", "D3DCompiler", "D3D11.lib", "DXGI.lib"}
 
     pchheader "pch.h"
     pchsource "src/pch.cpp"
