@@ -13,6 +13,13 @@ RENDERDOC_INC = "extern/renderdoc/renderdoc/"
 
 group "ExternLibs"
 
+    project "fastcrc32"
+        files {
+            "extern/fastcrc32/C3c32.h",
+            "extern/fastcrc32/Crc32.cpp"
+        }
+        kind "None"
+
     project "DirectXTK"
         files {
             "extern/DirectXTK/Inc/Audio.h"
