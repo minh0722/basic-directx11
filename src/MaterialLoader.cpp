@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "MaterialLoader.h"
 #include "ObjLoader.h"
-#include "../extern\fastcrc32\Crc32.h"
+#include "../extern/fastcrc32/Crc32.h"
 
 namespace wavefront
 {
