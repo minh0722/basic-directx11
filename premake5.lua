@@ -192,6 +192,52 @@ group "ExternLibs"
                     ["Release"] = "Release"
                 }
 
+            group "ExternLibs/renderdoc/DLL/breakpad"
+                externalproject "breakpad_common"
+                    filename "common"
+                    location "extern/renderdoc/renderdoc/3rdparty/breakpad/client/windows"
+                    uuid "EA1242CF-BB42-B1AC-9B6A-A508D96D1CB7"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "crash_generation_client"
+                    location "extern/renderdoc/renderdoc/3rdparty/breakpad/client/windows/crash_generation"
+                    uuid "EC847717-119A-2391-0477-212E1140082C"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "exception_handler"
+                    location "extern/renderdoc/renderdoc/3rdparty/breakpad/client/windows/handler"
+                    uuid "B7399F39-300F-450E-F471-9490F959D2A7"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
+                externalproject "crash_generation_server"
+                    location "extern/renderdoc/renderdoc/3rdparty/breakpad/client/windows/crash_generation"
+                    uuid "7893E300-3ED0-7F4C-158F-67EA63934C57"
+                    kind "StaticLib"
+                    language "C++"
+                    cppdialect "C++17"
+                    configmap {
+                        ["Debug"] = "Development",
+                        ["Release"] = "Release"
+                    }
+
             group "ExternLibs/renderdoc/DLL/drivers/IHV"
                 externalproject "Intel"
                     location "extern/renderdoc/renderdoc/driver/ihv/intel"
