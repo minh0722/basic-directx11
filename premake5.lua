@@ -10,6 +10,7 @@ workspace "basic-directx11"
 
 DIRECT_XTK_INC = "extern/DirectXTK/Inc/"
 RENDERDOC_INC = "extern/renderdoc/renderdoc/"
+FASTCRC_INC = "extern/fastcrc32/"
 
 group "ExternLibs"
 
@@ -352,7 +353,7 @@ project "basic-directx11"
     language "C++"
     cppdialect "C++17"
     targetdir "bin/%{cfg.buildcfg}"
-    includedirs { DIRECT_XTK_INC, RENDERDOC_INC }
+    includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC }
     links {"DirectXTK", "renderdoc"}
 
     pchheader "pch.h"
