@@ -9,6 +9,7 @@ workspace "basic-directx11"
         architecture "x86_64"
 
 DIRECT_XTK_INC = "extern/DirectXTK/Inc/"
+RENDERDOC_INC = "extern/renderdoc/renderdoc/"
 
 group "ExternLibs"
 
@@ -344,6 +345,8 @@ project "basic-directx11"
     language "C++"
     cppdialect "C++17"
     targetdir "bin/%{cfg.buildcfg}"
+    includedirs { DIRECT_XTK_INC, RENDERDOC_INC }
+    links {"DirectXTK", "renderdoc"}
 
     pchheader "pch.h"
     pchsource "src/pch.cpp"
@@ -355,6 +358,3 @@ project "basic-directx11"
     
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
-    
-    links {"DirectXTK", "renderdoc"}
-    includedirs {DIRECT_XTK_INC}
