@@ -13,7 +13,7 @@ void GPUCapturer::Init(CaptureType type)
 {
     if(type == CaptureType::Renderdoc)
     {
-        if (HMODULE mod = LoadLibrary("renderdoc.dll"))
+        if (HMODULE mod = LoadLibrary(TEXT("renderdoc.dll")))
         {
             pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
             int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_4_0, (void**)&gs_renderdocCapturer);
