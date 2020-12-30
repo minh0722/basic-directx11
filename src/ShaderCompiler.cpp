@@ -27,7 +27,7 @@ HRESULT __stdcall D3DInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileNam
     if (!includeFile.is_open())
         return E_FAIL;
     
-    u32 fileSize = includeFile.tellg();
+    u32 fileSize = (u32)includeFile.tellg();
     char* buf = new char[fileSize];
     includeFile.seekg(0, std::ios::beg);
     includeFile.read(buf, fileSize);

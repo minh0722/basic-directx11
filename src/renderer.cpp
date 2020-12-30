@@ -742,7 +742,7 @@ void Renderer::SetupOctahedronMesh()
 
     std::vector<Vertex> vertices;
     const std::vector<OctahedronVertex>& octVertices = oct.GetVertices();
-    for (int i = 0; i < octVertices.size(); ++i)
+    for (u32 i = 0; i < octVertices.size(); ++i)
     {
         vertices.push_back(Vertex(octVertices[i].m_vertex.Mul3(Vector4f(radius, radius, radius, 1.0f)), green));
     }
