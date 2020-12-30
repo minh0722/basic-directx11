@@ -26,9 +26,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\experimental\renderer1.h">
-      <Filter>experimental</Filter>
-    </ClInclude>
     <ClInclude Include="..\extern\fastcrc32\Crc32.h">
       <Filter>extern\fastcrc32</Filter>
     </ClInclude>
@@ -137,11 +134,11 @@
     <ClInclude Include="..\src\shaders\computeShadersCommon.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\experimental\renderer1.h">
+      <Filter>experimental</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\experimental\renderer1.cpp">
-      <Filter>experimental</Filter>
-    </ClCompile>
     <ClCompile Include="..\extern\fastcrc32\Crc32.cpp">
       <Filter>extern\fastcrc32</Filter>
     </ClCompile>
@@ -231,6 +228,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Vector4f.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\experimental\renderer1.cpp">
+      <Filter>experimental</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
