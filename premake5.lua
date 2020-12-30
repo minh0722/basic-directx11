@@ -339,7 +339,7 @@ group "ExternLibs"
 group ""
 
 project "basic-directx11"
-    dependson "DirectXTK"
+    dependson {"DirectXTK", "renderdoc"}
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -355,6 +355,6 @@ project "basic-directx11"
     
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
-
-    links {"DirectXTK"}
+    
+    links {"DirectXTK", "renderdoc"}
     includedirs {DIRECT_XTK_INC}
