@@ -108,6 +108,19 @@ group "ExternLibs"
 
     group "ExternLibs/renderdoc"
         group "ExternLibs/renderdoc/DLL"
+
+            -- main renderdoc dll project
+            externalproject "renderdoc"
+                location "extern/renderdoc/renderdoc"
+                uuid "E2B46D67-90E2-40B6-9597-72930E7845E5"
+                kind "SharedLib"
+                language "C++"
+                cppdialect "C++17"
+                configmap {
+                    ["Debug"] = "Development",
+                    ["Release"] = "Release"
+                }
+
             group "ExternLibs/renderdoc/DLL/breakpad"
                 externalproject "breakpad_common"
                     filename "common"
