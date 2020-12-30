@@ -1,5 +1,8 @@
 basic-directx11
 
+- a way to integrate external projects with cmake
+https://github.com/premake/premake-core/issues/658
+
 some references:
 http://www.codinglabs.net/article_world_view_projection_matrix.aspx
 http://www.3dgep.com/understanding-the-view-matrix/
