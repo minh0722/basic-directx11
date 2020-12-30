@@ -11,8 +11,23 @@ workspace "basic-directx11"
 DIRECT_XTK_INC = "extern/DirectXTK/Inc/"
 RENDERDOC_INC = "extern/renderdoc/renderdoc/"
 FASTCRC_INC = "extern/fastcrc32/"
+IMGUI_INC = "extern/imgui/"
+IMGUI_EXAMPLES_INC = "extern/imgui/examples/"
 
 group "ExternLibs"
+
+    project "imgui"
+        files {
+            "extern/imgui/*.h",
+            "extern/imgui/*.cpp",
+            "extern/imgui/examples/imgui_impl_dx11.h",
+            "extern/imgui/examples/imgui_impl_dx11.cpp",
+            "extern/imgui/examples/imgui_impl_dx12.h",
+            "extern/imgui/examples/imgui_impl_dx12.cpp",
+            "extern/imgui/examples/imgui_impl_win32.h",
+            "extern/imgui/examples/imgui_impl_win32.cpp",
+        }
+        kind "None"
 
     project "fastcrc32"
         files {
@@ -353,7 +368,7 @@ project "basic-directx11"
     language "C++"
     cppdialect "C++17"
     targetdir "bin/%{cfg.buildcfg}"
-    includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC }
+    includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC, IMGUI_INC, IMGUI_EXAMPLES_INC }
     links {"DirectXTK", "renderdoc"}
 
     pchheader "pch.h"
