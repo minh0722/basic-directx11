@@ -362,8 +362,6 @@ project "basic-directx11"
         "extern/imgui/*.cpp",
         "extern/imgui/examples/imgui_impl_dx11.h",
         "extern/imgui/examples/imgui_impl_dx11.cpp",
-        "extern/imgui/examples/imgui_impl_dx12.h",
-        "extern/imgui/examples/imgui_impl_dx12.cpp",
         "extern/imgui/examples/imgui_impl_win32.h",
         "extern/imgui/examples/imgui_impl_win32.cpp",
 
