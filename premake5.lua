@@ -16,19 +16,6 @@ IMGUI_EXAMPLES_INC = "extern/imgui/examples/"
 
 group "ExternLibs"
 
-    project "imgui"
-        files {
-            "extern/imgui/*.h",
-            "extern/imgui/*.cpp",
-            "extern/imgui/examples/imgui_impl_dx11.h",
-            "extern/imgui/examples/imgui_impl_dx11.cpp",
-            "extern/imgui/examples/imgui_impl_dx12.h",
-            "extern/imgui/examples/imgui_impl_dx12.cpp",
-            "extern/imgui/examples/imgui_impl_win32.h",
-            "extern/imgui/examples/imgui_impl_win32.cpp",
-        }
-        kind "None"
-
     project "fastcrc32"
         files {
             "extern/fastcrc32/C3c32.h",
@@ -363,7 +350,7 @@ group "ExternLibs"
 group ""
 
 project "basic-directx11"
-    dependson {"DirectXTK", "renderdoc"}
+    dependson {"DirectXTK", "renderdoc", "imgui"}
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -374,10 +361,27 @@ project "basic-directx11"
     pchheader "pch.h"
     pchsource "src/pch.cpp"
 
-    files{"src/**"}
+    files{
+        "src/**",
+
+        -- imgui
+        "extern/imgui/*.h",
+        "extern/imgui/*.cpp",
+        "extern/imgui/examples/imgui_impl_dx11.h",
+        "extern/imgui/examples/imgui_impl_dx11.cpp",
+        "extern/imgui/examples/imgui_impl_dx12.h",
+        "extern/imgui/examples/imgui_impl_dx12.cpp",
+        "extern/imgui/examples/imgui_impl_win32.h",
+        "extern/imgui/examples/imgui_impl_win32.cpp",
+    }
+
     vpaths {
-       ["Source/*"] = "*"
+       ["Source/*"] = "src/*",
+       ["3rdparty/imgui"] = "extern/imgui/*"
     }
     
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
+
+    filter {"files:extern/**"}
+        flags "NoPCH"
