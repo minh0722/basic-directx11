@@ -109,6 +109,8 @@ group "ExternLibs"
         language "C++"
         cppdialect "C++14"
         includedirs {DIRECT_XTK_INC}
+        targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
+        objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
 
     group "ExternLibs/renderdoc"
         group "ExternLibs/renderdoc/DLL"
@@ -347,9 +349,10 @@ project "basic-directx11"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
-    targetdir "bin/%{cfg.buildcfg}"
     includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC, IMGUI_INC, IMGUI_EXAMPLES_INC }
     links {"DirectXTK", "renderdoc", "D3DCompiler", "D3D11.lib", "DXGI.lib"}
+    targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
+    objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
 
     pchheader "pch.h"
     pchsource "src/pch.cpp"
