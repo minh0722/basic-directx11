@@ -16,13 +16,6 @@ IMGUI_EXAMPLES_INC = "extern/imgui/examples/"
 
 group "ExternLibs"
 
-    project "fastcrc32"
-        files {
-            "extern/fastcrc32/C3c32.h",
-            "extern/fastcrc32/Crc32.cpp"
-        }
-        kind "None"
-
     project "DirectXTK"
         files {
             "extern/DirectXTK/Inc/Audio.h"
@@ -373,11 +366,16 @@ project "basic-directx11"
         "extern/imgui/examples/imgui_impl_dx12.cpp",
         "extern/imgui/examples/imgui_impl_win32.h",
         "extern/imgui/examples/imgui_impl_win32.cpp",
+
+        -- fastcrc32
+        "extern/fastcrc32/C3c32.h",
+        "extern/fastcrc32/Crc32.cpp"
     }
 
     vpaths {
        ["Source/*"] = "src/*",
-       ["3rdparty/imgui"] = "extern/imgui/*"
+       ["3rdparty/imgui"] = "extern/imgui/*",
+       ["3rdparty/fastcrc32"] = "extern/fastcrc32/*"
     }
     
     filter {"files:**.hlsl"}
