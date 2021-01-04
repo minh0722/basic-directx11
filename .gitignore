@@ -1,19 +1,14 @@
 # HLSL binary
 *.cso
-VS2015/Debug
-vs2015/Release
-VS2017/Debug
-VS2017/Release
-VS2019/Debug
-VS2019/Release
 .vs
-VS2015/basic-directx11.vcxproj.user
 *.log
 *.db
 *.opendb
-x64
 *.ipch
 *.sln
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+x64
+bin
+obj
