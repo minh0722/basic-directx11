@@ -1,6 +1,7 @@
 workspace "basic-directx11"
     configurations {"Debug", "Release"}
     platforms {"x86", "x64"}
+    startproject "basic-directx11"
 
     filter "platforms:x86"
         architecture "x86"
