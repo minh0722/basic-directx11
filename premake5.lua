@@ -353,6 +353,8 @@ project "basic-directx11"
     links {"DirectXTK", "renderdoc", "D3DCompiler", "D3D11.lib", "DXGI.lib"}
     targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
     objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
+    debugdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
+    linkoptions "/SUBSYSTEM:WINDOWS"
 
     pchheader "pch.h"
     pchsource "src/pch.cpp"
