@@ -23,6 +23,18 @@ function CommonRenderdocProjectSettings()
     }
 end
 
+function CommonDirectorySettings()
+
+    -- set directory of output executable and libraries
+    targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
+
+    -- set directory of object files
+    objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
+
+    -- set directory of output solution and project files
+    location "build"
+end
+
 group "ExternLibs"
 
     project "DirectXTK"
@@ -118,8 +130,7 @@ group "ExternLibs"
         language "C++"
         cppdialect "C++14"
         includedirs {DIRECT_XTK_INC}
-        targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-        objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
+        CommonDirectorySettings()
 
     group "ExternLibs/renderdoc"
         group "ExternLibs/renderdoc/DLL"
@@ -259,16 +270,20 @@ group "ExternLibs"
 group ""
 
 project "basic-directx11"
-    dependson {"DirectXTK", "renderdoc", "imgui"}
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
     includedirs { DIRECT_XTK_INC, RENDERDOC_INC, FASTCRC_INC, IMGUI_INC, IMGUI_EXAMPLES_INC }
+
+    -- set project dependencies
+    dependson {"DirectXTK", "renderdoc", "imgui"}
+
+    -- set linker settings
     links {"DirectXTK", "renderdoc", "D3DCompiler", "D3D11.lib", "DXGI.lib"}
-    targetdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
-    objdir "obj/%{cfg.platform}/%{cfg.buildcfg}/%{prj.name}"
-    debugdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
     linkoptions "/SUBSYSTEM:WINDOWS"
+
+    CommonDirectorySettings()
+    debugdir "bin/%{cfg.platform}/%{cfg.buildcfg}"
 
     pchheader "pch.h"
     pchsource "src/pch.cpp"
@@ -295,6 +310,7 @@ project "basic-directx11"
        ["3rdparty/fastcrc32"] = "extern/fastcrc32/*"
     }
     
+    -- dont use VS built-in shader compiler
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
 
