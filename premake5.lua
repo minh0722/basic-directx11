@@ -298,5 +298,6 @@ project "basic-directx11"
     filter {"files:**.hlsl"}
         flags "ExcludeFromBuild"
 
+    -- extern libs dont user our precompiled header
     filter {"files:extern/**"}
         flags "NoPCH"
