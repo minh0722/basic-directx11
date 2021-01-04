@@ -214,6 +214,7 @@ project "basic-directx11"
 
     files{
         "src/**",
+        "premake5.lua",
 
         -- imgui
         "extern/imgui/*.h",
@@ -230,6 +231,7 @@ project "basic-directx11"
 
     vpaths {
        ["Source/*"] = "src/*",
+       ["premake/"] = "premake5.lua",
        ["3rdparty/imgui"] = "extern/imgui/*",
        ["3rdparty/fastcrc32"] = "extern/fastcrc32/*"
     }
