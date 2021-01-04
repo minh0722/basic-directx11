@@ -96,7 +96,7 @@ ComPtr<ID3DBlob> ShaderCompiler::CompileShader(LPCWSTR filePath, const std::vect
     ComPtr<ID3DBlob> compiledBlob;
     ComPtr<ID3DBlob> errors;
 
-    HRESULT hr = D3DCompileFromFile((LPCWSTR)filePath, defines.data(), m_Include, entryPoint, target, compileOptions, 0, compiledBlob.GetAddressOf(), errors.GetAddressOf());
+    HRESULT hr = D3DCompileFromFile(filePath, defines.data(), m_Include, entryPoint, target, compileOptions, 0, compiledBlob.GetAddressOf(), errors.GetAddressOf());
     THROW_IF_FAILED(hr);
 
     return compiledBlob;
