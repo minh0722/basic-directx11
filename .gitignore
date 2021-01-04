@@ -1,5 +1,3 @@
-# HLSL binary
-*.cso
 .vs
 *.log
 *.db
