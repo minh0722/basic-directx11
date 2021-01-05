@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Vector4f.h"
 
-enum ZoomType
+enum class ZoomType
 {
 	ZoomIn,
 	ZoomOut
